@@ -1,260 +1,548 @@
-body{
+/* ========================================= */
+/* GENERAL */
+/* ========================================= */
 
-    background:#202124;
+body {
 
-    color:white;
+    background: #202124;
 
-    font-family:Arial;
+    color: white;
 
-    text-align:center;
+    font-family: Arial, sans-serif;
 
-}
-
-.screen{
-
-    margin-top:40px;
+    text-align: center;
 
 }
 
-.hidden{
+.screen {
 
-    display:none;
-
-}
-
-button{
-
-    padding:15px;
-
-    margin:10px;
-
-    font-size:18px;
-
-    cursor:pointer;
+    margin-top: 40px;
 
 }
 
-#gameBoard{
+.hidden {
 
-    margin:auto;
-
-    width:490px;
-
-    display:grid;
-
-    grid-template-columns:repeat(7,70px);
-
-    gap:5px;
+    display: none;
 
 }
 
-.square{
+button {
 
-    width:70px;
+    padding: 15px;
 
-    height:70px;
+    margin: 10px;
 
-    background:#555;
+    font-size: 18px;
 
-    border:none;
-
-    color:white;
-
-    cursor:pointer;
-
-    font-size:20px;
-
-    transition:.2s;
+    cursor: pointer;
 
 }
 
-.square:hover{
 
-    background:#777;
+/* ========================================= */
+/* MAN MODE BOARD */
+/* ========================================= */
 
-}
+#gameBoard {
 
-.label{
+    margin: 30px auto;
 
-    width:70px;
+    width: 490px;
 
-    height:70px;
+    display: grid;
 
-    display:flex;
+    grid-template-columns: repeat(7, 70px);
 
-    justify-content:center;
-
-    align-items:center;
-
-    font-size:22px;
-
-    font-weight:bold;
+    gap: 5px;
 
 }
 
-#dialogueBox{
 
-    width:700px;
+/* ========================================= */
+/* MOSQUITO MODE BOARD */
+/* ========================================= */
 
-    margin:30px auto;
+#mosquitoBoard {
 
-    display:flex;
+    margin: 30px auto;
 
-    align-items:center;
+    width: 490px;
 
-    justify-content:center;
+    display: grid;
 
-    gap:30px;
+    grid-template-columns: repeat(7, 70px);
 
-}
-
-#mosquitoPortrait{
-
-    width:180px;
-
-    border-radius:15px;
+    gap: 5px;
 
 }
 
-#dialogue{
 
-    background:#333;
+/* ========================================= */
+/* BOARD SQUARES */
+/* ========================================= */
 
-    padding:20px;
+.square {
 
-    border-radius:15px;
+    width: 70px;
 
-    text-align:left;
+    height: 70px;
 
-    width:350px;
+    background: #555;
 
-}
+    border: none;
 
-#speaker{
+    color: white;
 
-    font-size:22px;
+    cursor: pointer;
 
-    color:pink;
+    font-size: 20px;
 
-    font-weight:bold;
-
-}
-
-#hud{
-
-    width:700px;
-
-    margin:20px auto;
-
-    display:flex;
-
-    justify-content:space-around;
+    transition: .2s;
 
 }
 
-.hudBox{
+.square:hover {
 
-    background:#333;
-
-    border-radius:10px;
-
-    padding:15px 25px;
-
-    font-size:20px;
-
-    font-weight:bold;
+    background: #777;
 
 }
 
-.hudBox span{
 
-    color:#7CFF7C;
+/* ========================================= */
+/* BOARD LABELS */
+/* ========================================= */
 
-    margin-left:8px;
+.label {
 
-}
+    width: 70px;
 
-#gambleBtn{
+    height: 70px;
 
-    padding:8px 15px;
+    display: flex;
 
-    font-size:15px;
+    justify-content: center;
 
-    cursor:pointer;
+    align-items: center;
 
-    background:#b11;
+    font-size: 22px;
 
-    color:white;
-
-    border:none;
-
-    border-radius:8px;
-
-    transition:.2s;
+    font-weight: bold;
 
 }
 
-#gambleBtn:hover{
 
-    background:#e22;
+/* ========================================= */
+/* MAN MODE DIALOGUE */
+/* ========================================= */
+
+#dialogueBox {
+
+    width: 700px;
+
+    margin: 30px auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 30px;
 
 }
+
+#mosquitoPortrait {
+
+    width: 180px;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 15px;
+
+}
+
+#dialogue {
+
+    background: #333;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    text-align: left;
+
+    width: 350px;
+
+}
+
+#speaker {
+
+    font-size: 22px;
+
+    color: pink;
+
+    font-weight: bold;
+
+}
+
+
+/* ========================================= */
+/* MAN HUD */
+/* ========================================= */
+
+#hud {
+
+    width: 700px;
+
+    margin: 20px auto;
+
+    display: flex;
+
+    justify-content: space-around;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO HUD */
+/* ========================================= */
+
+#mosquitoHud {
+
+    width: 500px;
+
+    margin: 20px auto;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 30px;
+
+}
+
+
+/* ========================================= */
+/* HUD BOX */
+/* ========================================= */
+
+.hudBox {
+
+    background: #333;
+
+    border-radius: 10px;
+
+    padding: 15px 25px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+}
+
+.hudBox span {
+
+    color: #7CFF7C;
+
+    margin-left: 8px;
+
+}
+
+
+/* ========================================= */
+/* GAMBLE BUTTON */
+/* ========================================= */
+
+#gambleBtn {
+
+    padding: 8px 15px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    background: #b11;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    transition: .2s;
+
+}
+
+#gambleBtn:hover {
+
+    background: #e22;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO MODE — MAN DIALOGUE */
+/* ========================================= */
+
+#manDialogueBox {
+
+    width: 700px;
+
+    margin: 25px auto;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 25px;
+
+}
+
+#manPortrait {
+
+    width: 180px;
+
+    height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 15px;
+
+}
+
+#manDialogue {
+
+    background: #333;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    text-align: left;
+
+    width: 350px;
+
+    min-height: 100px;
+
+}
+
+#manSpeaker {
+
+    font-size: 22px;
+
+    color: #ff7777;
+
+    font-weight: bold;
+
+    margin-top: 0;
+
+}
+
+#manStatus {
+
+    font-size: 18px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO MODE INSTRUCTIONS */
+/* ========================================= */
+
+#mosquitoInstructions {
+
+    margin: 20px auto;
+
+    width: 600px;
+
+}
+
+#mosquitoInstructions h2 {
+
+    margin-bottom: 10px;
+
+}
+
+#mosquitoInstructions p {
+
+    font-size: 18px;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO CONFIRM BUTTON */
+/* ========================================= */
+
+#confirmMosquitoBtn {
+
+    background: #16803c;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 12px 25px;
+
+    font-size: 18px;
+
+}
+
+#confirmMosquitoBtn:hover {
+
+    background: #20a050;
+
+}
+
+#confirmMosquitoBtn:disabled {
+
+    background: #555;
+
+    color: #aaa;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO STAY BUTTON */
+/* ========================================= */
+
+#stayBtn {
+
+    background: #555;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 12px 25px;
+
+}
+
+#stayBtn:hover {
+
+    background: #777;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO STATUS */
+/* ========================================= */
+
+#mosquitoMovementStatus {
+
+    font-size: 18px;
+
+    min-height: 25px;
+
+    margin: 15px auto;
+
+}
+
+
+/* ========================================= */
+/* MOSQUITO MODE — MAN ATTACK MARKERS */
+/* ========================================= */
+
+.man-miss {
+
+    background: #993333 !important;
+
+}
+
+.man-bite {
+
+    background: orange !important;
+
+}
+
+.man-hit {
+
+    background: #00cc66 !important;
+
+}
+
+.mosquito-move-option {
+
+    background: #1683ff !important;
+
+}
+
 
 /* ========================================= */
 /* END SCREEN */
 /* ========================================= */
 
-#endScreen{
+#endScreen {
 
-    text-align:center;
+    text-align: center;
 
-    padding-top:40px;
-
-}
-
-#endTitle{
-
-    font-size:48px;
-
-    color:white;
-
-    margin-bottom:20px;
+    padding-top: 40px;
 
 }
 
-#endImage{
+#endTitle {
 
-    width:350px;
+    font-size: 48px;
 
-    max-width:90%;
+    color: white;
 
-    border-radius:15px;
-
-    margin-bottom:25px;
+    margin-bottom: 20px;
 
 }
 
-#endMessage{
+#endImage {
 
-    color:white;
+    width: 350px;
 
-    font-size:22px;
+    max-width: 90%;
 
-    margin-bottom:30px;
+    border-radius: 15px;
 
-    white-space:pre-line;
+    margin-bottom: 25px;
+
+}
+
+#endMessage {
+
+    color: white;
+
+    font-size: 22px;
+
+    margin-bottom: 30px;
+
+    white-space: pre-line;
 
 }
 
 #playAgainBtn,
-#menuBtn{
+#menuBtn {
 
-    font-size:20px;
+    font-size: 20px;
 
-    padding:12px 28px;
+    padding: 12px 28px;
 
-    margin:10px;
+    margin: 10px;
 
-    cursor:pointer;
+    cursor: pointer;
 
+}
+
+.square {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
