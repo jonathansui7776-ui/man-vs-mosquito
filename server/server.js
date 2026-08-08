@@ -1,8 +1,19 @@
 const WebSocket = require("ws");
 
+const PORT = process.env.PORT || 8080;
+
 const server = new WebSocket.Server({
-    port: 8080
+    port: PORT
 });
+
+console.log(
+    "🦟 Man vs Mosquito server started!"
+);
+
+console.log(
+    "WebSocket server running on port",
+    PORT
+);
 
 
 console.log(
