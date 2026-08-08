@@ -1,27 +1,49 @@
+// ===================================================
+// MAN VS MOSQUITO
+// MULTIPLAYER SERVER
+// ===================================================
+
+const http = require("http");
 const WebSocket = require("ws");
+
+
+// ===================================================
+// PORT
+// ===================================================
 
 const PORT = process.env.PORT || 8080;
 
+
+// ===================================================
+// HTTP SERVER
+// ===================================================
+
+const httpServer = http.createServer(
+    function(req, res){
+
+        res.writeHead(200, {
+            "Content-Type": "text/plain"
+        });
+
+        res.end(
+            "🦟 Man vs Mosquito multiplayer server is running!"
+        );
+
+    }
+);
+
+
+// ===================================================
+// WEBSOCKET SERVER
+// ===================================================
+
 const server = new WebSocket.Server({
-    port: PORT
+    server: httpServer
 });
 
-console.log(
-    "🦟 Man vs Mosquito server started!"
-);
-
-console.log(
-    "WebSocket server running on port",
-    PORT
-);
-
 
 console.log(
     "🦟 Man vs Mosquito server started!"
-);
-
-console.log(
-    "WebSocket server running on port 8080"
 );
 
 
@@ -40,7 +62,6 @@ function generateRoomCode(){
 
     const characters =
         "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
 
     let code;
 
@@ -66,7 +87,6 @@ function generateRoomCode(){
 
 
     return code;
-
 }
 
 
@@ -79,16 +99,16 @@ server.on(
     function(socket){
 
         console.log(
-            "A player connected."
+            "🌐 A player connected."
         );
 
 
         socket.roomCode = null;
 
 
-        // =====================================
+        // =========================================
         // MESSAGE
-        // =====================================
+        // =========================================
 
         socket.on(
             "message",
@@ -167,7 +187,7 @@ server.on(
 
 
                     console.log(
-                        "Room created:",
+                        "🎮 Room created:",
                         code
                     );
 
@@ -184,7 +204,11 @@ server.on(
                 ){
 
                     const code =
-                        data.roomCode;
+                        String(
+                            data.roomCode || ""
+                        )
+                        .trim()
+                        .toUpperCase();
 
 
                     const room =
@@ -277,7 +301,7 @@ server.on(
 
 
                     console.log(
-                        "Player joined room:",
+                        "👥 Player joined room:",
                         code
                     );
 
@@ -287,16 +311,16 @@ server.on(
         );
 
 
-        // =====================================
+        // =========================================
         // DISCONNECT
-        // =====================================
+        // =========================================
 
         socket.on(
             "close",
             function(){
 
                 console.log(
-                    "A player disconnected."
+                    "❌ A player disconnected."
                 );
 
 
@@ -316,7 +340,9 @@ server.on(
                     return;
 
 
-                // Notify other player
+                // -----------------------------
+                // HOST DISCONNECTED
+                // -----------------------------
 
                 if(
                     room.host === socket &&
@@ -334,6 +360,10 @@ server.on(
 
                 }
 
+
+                // -----------------------------
+                // GUEST DISCONNECTED
+                // -----------------------------
 
                 if(
                     room.guest === socket &&
@@ -355,6 +385,24 @@ server.on(
                 rooms.delete(code);
 
             }
+        );
+
+    }
+);
+
+
+// ===================================================
+// START SERVER
+// ===================================================
+
+httpServer.listen(
+    PORT,
+    "0.0.0.0",
+    function(){
+
+        console.log(
+            "🌐 Server listening on 0.0.0.0:" +
+            PORT
         );
 
     }
