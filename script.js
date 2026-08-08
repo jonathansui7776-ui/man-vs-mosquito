@@ -1,12 +1,13 @@
 // ===================================================
 // MAN VS MOSQUITO
 // SCRIPT.JS
-// PART 1
+// MAN MODE — VS COMPUTER
 // ===================================================
 
-// --------------------
-// Dialogue
-// --------------------
+
+// ===================================================
+// DIALOGUE
+// ===================================================
 
 const dialogues = {
 
@@ -39,9 +40,10 @@ const dialogues = {
 
 };
 
-// --------------------
-// HTML Elements
-// --------------------
+
+// ===================================================
+// HTML ELEMENTS
+// ===================================================
 
 const mainMenu =
 document.getElementById("mainMenu");
@@ -73,39 +75,56 @@ document.getElementById("gambleValue");
 const turnValue =
 document.getElementById("turnValue");
 
-// --------------------
+const playerModeMenu =
+    document.getElementById("playerModeMenu");
 
-const letters="ABCDEF";
 
-let sanity=100;
+// ===================================================
+// GAME VARIABLES
+// ===================================================
 
-let gamble=3;
+const letters = "ABCDEF";
 
-let turn=1;
+let sanity = 100;
+
+let gamble = 3;
+
+let turn = 1;
 
 let missStreak = 0;
 
-let gameStarted=false;
+let gameStarted = false;
 
-let gambleMode=false;
+let gambleMode = false;
 
-let boardCreated=false;
+let boardCreated = false;
 
 let lastHighlighted = [];
 
-// --------------------
 
-let mosquito={
+// Current game mode
+// Used by Play Again
 
-    row:0,
+let currentGameMode = null;
 
-    col:0
+
+// ===================================================
+// MOSQUITO POSITION
+// ===================================================
+
+let mosquito = {
+
+    row: 0,
+
+    col: 0
 
 };
 
+
 // Stores every button
 
-let squares=[];
+let squares = [];
+
 
 // ===================================================
 // HUD
@@ -113,27 +132,125 @@ let squares=[];
 
 function updateHUD(){
 
-    sanityValue.innerText=
-    sanity+"%";
+    sanityValue.innerText =
+        sanity + "%";
 
-    gambleValue.innerText=
-    gamble;
+    gambleValue.innerText =
+        gamble;
 
-    turnValue.innerText=
-    turn;
+    turnValue.innerText =
+        turn;
 
 }
 
+
 // ===================================================
-// Portrait
+// PORTRAIT
 // ===================================================
 
 function setExpression(name){
 
-    portrait.src=
-    "images/"+name+".png";
+    portrait.src =
+        "images/" + name + ".png";
 
 }
+
+
+// ===================================================
+// MOSQUITO TAUNT SYSTEM
+// ===================================================
+
+function showMosquitoTaunt(type){
+
+    if(!gameStarted)
+        return;
+
+
+    // =========================================
+    // NORMAL MISS
+    // =========================================
+
+    if(type === "miss"){
+
+        setExpression("smug");
+
+        status.innerText =
+            dialogues.miss[
+                Math.floor(
+                    Math.random() *
+                    dialogues.miss.length
+                )
+            ];
+
+        return;
+
+    }
+
+
+    // =========================================
+    // NEAR MISS
+    // =========================================
+
+    if(type === "near"){
+
+        setExpression("scared");
+
+        status.innerText =
+            dialogues.near[
+                Math.floor(
+                    Math.random() *
+                    dialogues.near.length
+                )
+            ];
+
+        return;
+
+    }
+
+
+    // =========================================
+    // BITE
+    // =========================================
+
+    if(type === "bite"){
+
+        status.innerText =
+            dialogues.bite[
+                Math.floor(
+                    Math.random() *
+                    dialogues.bite.length
+                )
+            ];
+
+        return;
+
+    }
+
+
+    // =========================================
+    // CAUGHT
+    // =========================================
+
+    if(type === "caught"){
+
+        setExpression("dead");
+
+        status.innerText =
+            dialogues.caught[
+                Math.floor(
+                    Math.random() *
+                    dialogues.caught.length
+                )
+            ];
+
+    }
+
+}
+
+
+// ===================================================
+// CLEAR HIGHLIGHTS
+// ===================================================
 
 function clearHighlights(){
 
@@ -147,6 +264,7 @@ function clearHighlights(){
 
 }
 
+
 // ===================================================
 // END SCREEN
 // ===================================================
@@ -155,47 +273,54 @@ function showEndScreen(playerWon){
 
     gameStarted = false;
 
-    show(document.getElementById("endScreen"));
+    show(
+        document.getElementById("endScreen")
+    );
+
 
     const title =
-    document.getElementById("endTitle");
+        document.getElementById("endTitle");
 
     const image =
-    document.getElementById("endImage");
+        document.getElementById("endImage");
 
     const message =
-    document.getElementById("endMessage");
+        document.getElementById("endMessage");
+
 
     if(playerWon){
 
         title.innerText =
-        "🏆 YOU WIN";
+            "🏆 YOU WIN";
 
         image.src =
-        "images/manwin.png";
+            "images/manwin.png";
 
         message.innerText =
-        "Mosquito-chan:\n\"N-No... Impossible...\"";
+            "Mosquito-chan:\n" +
+            "\"N-No... Impossible...\"";
 
     }
 
     else{
 
         title.innerText =
-        "💀 YOU LOST";
+            "💀 YOU LOST";
 
         image.src =
-        "images/mosquitowin.png";
+            "images/mosquitowin.png";
 
         message.innerText =
-        "Mosquito-chan:\n\"BWAHAHA! Better luck next time.\"";
+            "Mosquito-chan:\n" +
+            "\"BWAHAHA! Better luck next time.\"";
 
     }
 
 }
 
+
 // ===================================================
-// Screen Switching
+// SCREEN SWITCHING
 // ===================================================
 
 function show(screen){
@@ -206,69 +331,115 @@ function show(screen){
 
     gameScreen.classList.add("hidden");
 
+    const mosquitoScreen =
+        document.getElementById(
+            "mosquitoGameScreen"
+        );
+
+    if(mosquitoScreen){
+
+        mosquitoScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    const endScreen =
+        document.getElementById(
+            "endScreen"
+        );
+
+    if(endScreen){
+
+        endScreen.classList.add(
+            "hidden"
+        );
+
+    }
+
+
     screen.classList.remove("hidden");
 
 }
 
+
 // ===================================================
-// Start Game
+// START GAME
 // ===================================================
 
 function startGame(){
 
-    sanity=100;
+    currentGameMode = "man";
 
-    gamble=3;
 
-    turn=1;
+    sanity = 100;
+
+    gamble = 3;
+
+    turn = 1;
 
     missStreak = 0;
 
-    gambleMode=false;
+    gambleMode = false;
 
-    mosquito.row=
-    Math.floor(Math.random()*6);
 
-    mosquito.col=
-    Math.floor(Math.random()*6);
+    mosquito.row =
+        Math.floor(
+            Math.random() * 6
+        );
 
-    gameStarted=true;
+    mosquito.col =
+        Math.floor(
+            Math.random() * 6
+        );
+
+
+    gameStarted = true;
+
 
     setExpression("smug");
 
     updateHUD();
 
+
+    status.innerText =
+        "BWAHAHA! You'll never catch me!";
+
+
     console.log(
         "Mosquito:",
-        letters[mosquito.col]+
-        (mosquito.row+1)
+        letters[mosquito.col] +
+        (mosquito.row + 1)
     );
 
 }
 
+
 // ===================================================
-// Mosquito Movement
+// MOSQUITO MOVEMENT
 // ===================================================
 
 function moveMosquito(){
 
-    if(Math.random()<0.5){
+    if(Math.random() < 0.5){
 
-        status.innerText=
-        "🦟 "+
-        dialogues.miss[
-            Math.floor(
-                Math.random()*
-                dialogues.miss.length
-            )
-        ]+
-        "\n(She stayed.)";
+        status.innerText =
+            "🦟 " +
+            dialogues.miss[
+                Math.floor(
+                    Math.random() *
+                    dialogues.miss.length
+                )
+            ] +
+            "\n(She stayed.)";
 
         return;
 
     }
 
-    let moves=[
+
+    let moves = [
 
         [-1,0],
 
@@ -280,86 +451,102 @@ function moveMosquito(){
 
     ];
 
-    let legal=[];
+
+    let legal = [];
+
 
     for(let m of moves){
 
-        let nr=
-        mosquito.row+m[0];
+        let nr =
+            mosquito.row + m[0];
 
-        let nc=
-        mosquito.col+m[1];
+        let nc =
+            mosquito.col + m[1];
+
 
         if(
-            nr>=0 &&
-            nr<6 &&
-            nc>=0 &&
-            nc<6
+            nr >= 0 &&
+            nr < 6 &&
+            nc >= 0 &&
+            nc < 6
         ){
 
-            legal.push([nr,nc]);
+            legal.push([
+                nr,
+                nc
+            ]);
 
         }
 
     }
 
-    let choice=
-    legal[
-        Math.floor(
-            Math.random()*
-            legal.length
-        )
-    ];
 
-    mosquito.row=choice[0];
+    let choice =
+        legal[
+            Math.floor(
+                Math.random() *
+                legal.length
+            )
+        ];
 
-    mosquito.col=choice[1];
 
-    status.innerText=
-    "🦟 "+
-    dialogues.miss[
-        Math.floor(
-            Math.random()*
-            dialogues.miss.length
-        )
-    ]+
-    "\n(She moved.)";
+    mosquito.row =
+        choice[0];
+
+    mosquito.col =
+        choice[1];
+
+
+    status.innerText =
+        "🦟 " +
+        dialogues.miss[
+            Math.floor(
+                Math.random() *
+                dialogues.miss.length
+            )
+        ] +
+        "\n(She moved.)";
 
 }
 
+
 // ===================================================
-// Teleport
+// TELEPORT
 // ===================================================
 
 function teleportMosquito(){
 
-    let oldRow=
-    mosquito.row;
+    let oldRow =
+        mosquito.row;
 
-    let oldCol=
-    mosquito.col;
+    let oldCol =
+        mosquito.col;
+
 
     do{
 
-        mosquito.row=
-        Math.floor(Math.random()*6);
+        mosquito.row =
+            Math.floor(
+                Math.random() * 6
+            );
 
-        mosquito.col=
-        Math.floor(Math.random()*6);
+        mosquito.col =
+            Math.floor(
+                Math.random() * 6
+            );
 
     }
 
     while(
 
-        mosquito.row==
-        oldRow &&
+        mosquito.row == oldRow &&
 
-        mosquito.col==
-        oldCol
+        mosquito.col == oldCol
 
     );
 
 }
+
 
 // ===================================================
 // REVEAL SYSTEM
@@ -371,96 +558,170 @@ function revealHint(){
 
     let lies = [];
 
-    // Truths
+
+    // =========================================
+    // TRUTHS
+    // =========================================
 
     truths.push(
-        "Row " + (mosquito.row + 1)
+        "Row " +
+        (mosquito.row + 1)
     );
+
 
     truths.push(
-        "Column " + letters[mosquito.col]
+        "Column " +
+        letters[mosquito.col]
     );
 
-    // Lies
 
-    for(let i=1;i<=6;i++){
+    // =========================================
+    // LIES
+    // =========================================
 
-        if(i != mosquito.row + 1){
+    for(let i = 1; i <= 6; i++){
 
-            lies.push("Row " + i);
-
-        }
-
-    }
-
-    for(let i=0;i<6;i++){
-
-        if(i != mosquito.col){
+        if(
+            i != mosquito.row + 1
+        ){
 
             lies.push(
-                "Column " + letters[i]
+                "Row " + i
             );
 
         }
 
     }
 
-    // ==========================
+
+    for(let i = 0; i < 6; i++){
+
+        if(
+            i != mosquito.col
+        ){
+
+            lies.push(
+                "Column " +
+                letters[i]
+            );
+
+        }
+
+    }
+
+
+    // =========================================
     // ABOVE 50 SANITY
-    // ==========================
+    // =========================================
 
     if(sanity >= 50){
 
         status.innerText =
-        "🦟 Fine...\n" +
-        truths[
-            Math.floor(Math.random()*2)
-        ];
+            "🦟 Fine...\n" +
+            truths[
+                Math.floor(
+                    Math.random() *
+                    truths.length
+                )
+            ];
+
 
         missStreak = 0;
+
+
+        // Return to normal dialogue
+        setTimeout(function(){
+
+            if(gameStarted){
+
+                showMosquitoTaunt("miss");
+
+            }
+
+        }, 1800);
+
 
         return;
 
     }
 
-    // ==========================
-// BELOW 50 SANITY
-// ==========================
 
-// Number of lies
-let lieCount =
-Math.floor((49 - sanity) / 10) + 1;
+    // =========================================
+    // BELOW 50 SANITY
+    // =========================================
 
-// Pick ONE truth
-let clues = [];
+    let lieCount =
+        Math.floor(
+            (49 - sanity) / 10
+        ) + 1;
 
-clues.push(
-    truths[
-        Math.floor(Math.random() * truths.length)
-    ]
-);
 
-// Shuffle lies
-lies.sort(() => Math.random() - 0.5);
+    let clues = [];
 
-// Add the lies
-for(let i=0; i<lieCount; i++){
 
-    clues.push(lies[i]);
+    // One truth
+
+    clues.push(
+        truths[
+            Math.floor(
+                Math.random() *
+                truths.length
+            )
+        ]
+    );
+
+
+    // Shuffle lies
+
+    lies.sort(
+        () => Math.random() - 0.5
+    );
+
+
+    // Add lies
+
+    for(
+        let i = 0;
+        i < lieCount;
+        i++
+    ){
+
+        clues.push(
+            lies[i]
+        );
+
+    }
+
+
+    // Shuffle everything
+
+    clues.sort(
+        () => Math.random() - 0.5
+    );
+
+
+    status.innerText =
+        "🦟 Hmm... Maybe this helps...\n\n" +
+        clues.join("\n");
+
+
+    missStreak = 0;
+
+
+    // Return to normal dialogue
+
+    setTimeout(function(){
+
+        if(gameStarted){
+
+            showMosquitoTaunt("miss");
+
+        }
+
+    }, 2500);
 
 }
 
-// Shuffle everything
-clues.sort(() => Math.random() - 0.5);
-
-// Display
-status.innerText =
-"🦟 Hmm... Maybe this helps...\n\n" +
-clues.join("\n");
-
-missStreak = 0;
-
-}
 
 // ===================================================
 // CREATE BOARD
@@ -471,195 +732,293 @@ function createBoard(){
     if(boardCreated)
         return;
 
-    boardCreated=true;
 
-    // Empty Corner
+    boardCreated = true;
 
-    const corner=document.createElement("div");
-    corner.className="label";
+
+    // =========================================
+    // EMPTY CORNER
+    // =========================================
+
+    const corner =
+        document.createElement("div");
+
+    corner.className =
+        "label";
+
     board.appendChild(corner);
 
-    // Letters
 
-    for(let c=0;c<6;c++){
+    // =========================================
+    // LETTERS
+    // =========================================
 
-        const label=document.createElement("div");
+    for(
+        let c = 0;
+        c < 6;
+        c++
+    ){
 
-        label.className="label";
+        const label =
+            document.createElement("div");
 
-        label.innerText=letters[c];
+        label.className =
+            "label";
+
+        label.innerText =
+            letters[c];
 
         board.appendChild(label);
 
     }
 
-    // Grid
 
-    for(let r=0;r<6;r++){
+    // =========================================
+    // GRID
+    // =========================================
 
-        const rowLabel=document.createElement("div");
+    for(
+        let r = 0;
+        r < 6;
+        r++
+    ){
 
-        rowLabel.className="label";
+        const rowLabel =
+            document.createElement("div");
 
-        rowLabel.innerText=r+1;
+        rowLabel.className =
+            "label";
 
-        board.appendChild(rowLabel);
+        rowLabel.innerText =
+            r + 1;
 
-        for(let c=0;c<6;c++){
+        board.appendChild(
+            rowLabel
+        );
 
-            const square=document.createElement("button");
 
-            square.className="square";
+        for(
+            let c = 0;
+            c < 6;
+            c++
+        ){
+
+            const square =
+                document.createElement(
+                    "button"
+                );
+
+
+            square.className =
+                "square";
+
 
             if(!squares[r])
-                squares[r]=[];
+                squares[r] = [];
 
-            squares[r][c]=square;
 
-            // -----------------------
+            squares[r][c] =
+                square;
+
+
+            // =================================
             // CLICK
-            // -----------------------
+            // =================================
 
-          square.onclick = function(){
+            square.onclick =
+            function(){
 
-    // Gamble attack
-    if(gambleMode){
+                // -----------------------------
+                // GAMBLE ATTACK
+                // -----------------------------
 
-        gambleAttack(r,c);
+                if(gambleMode){
 
-        return;
-
-    }
-
-    // Ignore clicks if the game is over
-    if(!gameStarted)
-        return;
-
-    // Remove previous attack highlight
-    clearHighlights();
-
-    // Rest of your attack code starts here...
-
-                // Gamble handled in Part 3
-
-                if(gambleMode)
-                    return;
-
-                // ====================
-                // HIT
-                // ====================
-
-                if(
-                    r==mosquito.row &&
-                    c==mosquito.col
-                ){
-
-                    square.style.background="#00bb44";
-
-                    lastHighlighted.push(square);
-
-                    setExpression("dead");
-
-                    status.innerText=
-                    dialogues.caught[
-                        Math.floor(
-                            Math.random()*
-                            dialogues.caught.length
-                        )
-                    ];
-
-                    missStreak = 0;
-                    gameStarted=false;
-
-                    showEndScreen(true);
-
-                    return;
-
-                }
-
-                // ====================
-                // NEAR MISS
-                // ====================
-
-                let distance=
-
-                    Math.abs(
-                        r-mosquito.row
-                    )+
-
-                    Math.abs(
-                        c-mosquito.col
+                    gambleAttack(
+                        r,
+                        c
                     );
 
-                if(distance==1){
+                    return;
 
-                    square.style.background=
-                    "orange";
+                }
 
-                    lastHighlighted.push(square);
 
-                    sanity-=10;
+                // -----------------------------
+                // GAME OVER
+                // -----------------------------
 
-                    setExpression("scared");
+                if(!gameStarted)
+                    return;
 
-                    status.innerText=
-                    dialogues.near[
-                        Math.floor(
-                            Math.random()*
-                            dialogues.near.length
-                        )
-                    ];
+
+                // -----------------------------
+                // CLEAR OLD ATTACK
+                // -----------------------------
+
+                clearHighlights();
+
+
+                // =================================
+                // HIT
+                // =================================
+
+                if(
+                    r == mosquito.row &&
+                    c == mosquito.col
+                ){
+
+                    square.style.background =
+                        "#00bb44";
+
+                    lastHighlighted.push(
+                        square
+                    );
+
+
+                    showMosquitoTaunt(
+                        "caught"
+                    );
+
+
+                    missStreak = 0;
+
+                    gameStarted = false;
+
+
+                    showEndScreen(
+                        true
+                    );
+
+
+                    return;
+
+                }
+
+
+                // =================================
+                // NEAR MISS
+                // =================================
+
+                let distance =
+
+                    Math.abs(
+                        r -
+                        mosquito.row
+                    )
+
+                    +
+
+                    Math.abs(
+                        c -
+                        mosquito.col
+                    );
+
+
+                if(distance == 1){
+
+                    square.style.background =
+                        "orange";
+
+
+                    lastHighlighted.push(
+                        square
+                    );
+
+
+                    sanity -= 10;
+
+
+                    showMosquitoTaunt(
+                        "near"
+                    );
+
 
                     teleportMosquito();
+
+
                     missStreak = 0;
 
                 }
 
-                // ====================
+
+                // =================================
                 // MISS
-                // ====================
+                // =================================
 
                 else{
 
-    square.style.background="#993333";
+                    square.style.background =
+                        "#993333";
 
-    lastHighlighted.push(square);
 
-    sanity--;
+                    lastHighlighted.push(
+                        square
+                    );
 
-    missStreak++;
 
-    setExpression("smug");
+                    sanity--;
 
-    if(missStreak >= 5){
+                    missStreak++;
 
-        revealHint();
 
-    }
+                    setExpression(
+                        "smug"
+                    );
 
-    else{
 
-        moveMosquito();
+                    if(
+                        missStreak >= 5
+                    ){
 
-    }
+                        revealHint();
 
-}
+                    }
+
+                    else{
+
+                        showMosquitoTaunt(
+                            "miss"
+                        );
+
+                        moveMosquito();
+
+                    }
+
+                }
+
 
                 turn++;
 
                 updateHUD();
 
-                if(sanity<=0){
 
-                    gameStarted=false;
+                // =================================
+                // INSANITY / LOSS
+                // =================================
 
-                    showEndScreen(false);
+                if(
+                    sanity <= 0
+                ){
+
+                    sanity = 0;
+
+                    updateHUD();
+
+                    gameStarted = false;
+
+                    showEndScreen(
+                        false
+                    );
 
                 }
 
             };
 
-            board.appendChild(square);
+
+            board.appendChild(
+                square
+            );
 
         }
 
@@ -667,23 +1026,35 @@ function createBoard(){
 
 }
 
+
 // ===================================================
-// BUTTONS
+// MAIN MENU BUTTONS
 // ===================================================
 
-document.getElementById("vsComputerBtn").onclick = function () {
+document.getElementById(
+    "vsComputerBtn"
+).onclick =
+function(){
 
     show(modeMenu);
 
 };
 
-document.getElementById("backBtn").onclick = function () {
+
+document.getElementById(
+    "backBtn"
+).onclick =
+function(){
 
     show(mainMenu);
 
 };
 
-document.getElementById("manBtn").onclick = function () {
+
+document.getElementById(
+    "manBtn"
+).onclick =
+function(){
 
     show(gameScreen);
 
@@ -693,19 +1064,58 @@ document.getElementById("manBtn").onclick = function () {
 
 };
 
-document.getElementById("mosquitoBtn").onclick = function () {
 
-    alert("Mosquito Mode Coming Soon!");
+document.getElementById(
+    "mosquitoBtn"
+).onclick =
+function(){
+
+    // mosquito.js takes over
+    // this button after loading
 
 };
 
-document.getElementById("vsPlayerBtn").onclick = function () {
 
-    alert("VS Player Coming Soon!");
+document.getElementById(
+    "vsPlayerBtn"
+).onclick =
+function(){
+
+    mainMenu.classList.add(
+        "hidden"
+    );
+
+    modeMenu.classList.add(
+        "hidden"
+    );
+
+    playerModeMenu.classList.remove(
+        "hidden"
+    );
 
 };
 
-document.getElementById("rulesBtn").onclick = function () {
+document.getElementById(
+    "playerBackBtn"
+).onclick =
+function(){
+
+    playerModeMenu.classList.add(
+        "hidden"
+    );
+
+    mainMenu.classList.remove(
+        "hidden"
+    );
+
+};
+
+
+
+document.getElementById(
+    "rulesBtn"
+).onclick =
+function(){
 
     alert(`
 
@@ -725,29 +1135,37 @@ Miss = -20 Sanity.
 
 };
 
+
 // ===================================================
 // MAD MAN'S GAMBLE
 // ===================================================
 
-gambleBtn.onclick = function(){
+gambleBtn.onclick =
+function(){
 
     if(!gameStarted)
         return;
 
-    if(gamble<=0){
 
-        alert("No Gambles Remaining!");
+    if(gamble <= 0){
+
+        alert(
+            "No Gambles Remaining!"
+        );
 
         return;
 
     }
 
+
     gambleMode = true;
 
+
     status.innerText =
-    "🎲 Gamble Ready! Click the TOP-LEFT square.";
+        "🎲 Gamble Ready! Click the TOP-LEFT square.";
 
 };
+
 
 // ===================================================
 // GAMBLE ATTACK
@@ -757,24 +1175,54 @@ function gambleAttack(r,c){
 
     gambleMode = false;
 
+
     gamble--;
+
 
     updateHUD();
 
-    if(r>4 || c>4){
+
+    // =========================================
+    // INVALID 2×2 POSITION
+    // =========================================
+
+    if(
+        r > 4 ||
+        c > 4
+    ){
 
         status.innerText =
-        "Choose between A1 and E5.";
+            "Choose between A1 and E5.";
+
 
         gamble++;
 
+
         updateHUD();
+
+
+        // Restore dialogue
+
+        setTimeout(function(){
+
+            if(gameStarted){
+
+                showMosquitoTaunt(
+                    "miss"
+                );
+
+            }
+
+        }, 1000);
+
 
         return;
 
     }
 
+
     let hit = false;
+
 
     const area = [
 
@@ -788,114 +1236,269 @@ function gambleAttack(r,c){
 
     ];
 
-    // Blue flash
 
-   for(const cell of area){
+    // =========================================
+    // BLUE FLASH
+    // =========================================
 
-    const square = squares[cell[0]][cell[1]];
-
-    square.style.background = "dodgerblue";
-
-    lastHighlighted.push(square);
-
-    if(
-        mosquito.row === cell[0] &&
-        mosquito.col === cell[1]
+    for(
+        const cell of area
     ){
 
-        hit = true;
+        const square =
+            squares[
+                cell[0]
+            ][
+                cell[1]
+            ];
+
+
+        square.style.background =
+            "dodgerblue";
+
+
+        lastHighlighted.push(
+            square
+        );
+
+
+        if(
+            mosquito.row === cell[0] &&
+            mosquito.col === cell[1]
+        ){
+
+            hit = true;
+
+        }
 
     }
 
-}
 
-    setTimeout(function(){
+    // =========================================
+    // RESULT
+    // =========================================
+
+    setTimeout(
+    function(){
 
         if(hit){
 
-            setExpression("dead");
+            setExpression(
+                "dead"
+            );
+
 
             status.innerText =
-            "💥 MAD MAN'S GAMBLE!!";
+                "💥 MAD MAN'S GAMBLE!!";
 
-            gameStarted=false;
 
-            showEndScreen(true);
+            gameStarted =
+                false;
+
+
+            showEndScreen(
+                true
+            );
+
 
         }
 
         else{
 
-            for(const cell of area){
+            // -----------------------------
+            // RED 2×2 AREA
+            // -----------------------------
 
-                squares[cell[0]][cell[1]].style.background =
-                "#993333";
+            for(
+                const cell of area
+            ){
+
+                squares[
+                    cell[0]
+                ][
+                    cell[1]
+                ].style.background =
+                    "#993333";
 
             }
+
 
             sanity -= 20;
 
+
+            if(sanity < 0)
+                sanity = 0;
+
+
             updateHUD();
 
-            setExpression("smug");
+
+            setExpression(
+                "smug"
+            );
+
 
             status.innerText =
-            "💀 Gamble Failed! (-20 Sanity)";
+                "💀 Gamble Failed! (-20 Sanity)";
+
+
+            // Move mosquito
 
             moveMosquito();
 
+
             turn++;
+
 
             updateHUD();
 
-            if(sanity<=0){
 
-                gameStarted=false;
+            // -----------------------------
+            // LOSS
+            // -----------------------------
 
-                showEndScreen(false);
+            if(
+                sanity <= 0
+            ){
+
+                gameStarted =
+                    false;
+
+
+                showEndScreen(
+                    false
+                );
+
+                return;
 
             }
 
+
+            // -----------------------------
+            // RESTORE DIALOGUE
+            // -----------------------------
+
+            setTimeout(function(){
+
+                if(gameStarted){
+
+                    showMosquitoTaunt(
+                        "miss"
+                    );
+
+                }
+
+            }, 1200);
+
         }
 
-    },300);
+    }, 300);
 
 }
 
+
 // ===================================================
-// END SCREEN BUTTONS
+// END SCREEN — PLAY AGAIN
 // ===================================================
 
-document.getElementById("playAgainBtn").onclick = function(){
+document.getElementById(
+    "playAgainBtn"
+).onclick =
+function(){
 
-    document.getElementById("endScreen")
-    .classList.add("hidden");
+    // =========================================
+    // MOSQUITO MODE
+    // =========================================
 
-    board.innerHTML = "";
+    if(
+        currentGameMode === "mosquito"
+    ){
+
+        // mosquito.js owns this case
+
+        return;
+
+    }
+
+
+    // =========================================
+    // MAN MODE
+    // =========================================
+
+    document.getElementById(
+        "endScreen"
+    )
+    .classList.add(
+        "hidden"
+    );
+
+
+    board.innerHTML =
+        "";
+
 
     squares = [];
 
-    boardCreated = false;
 
-    show(gameScreen);
+    boardCreated =
+        false;
+
+
+    show(
+        gameScreen
+    );
+
 
     createBoard();
+
 
     startGame();
 
 };
 
-document.getElementById("menuBtn").onclick = function(){
 
-    document.getElementById("endScreen")
-    .classList.add("hidden");
+// ===================================================
+// END SCREEN — MAIN MENU
+// ===================================================
 
-    board.innerHTML = "";
+document.getElementById(
+    "menuBtn"
+).onclick =
+function(){
+
+    // Mosquito mode handles its own
+    // menu button behavior
+
+    if(
+        currentGameMode === "mosquito"
+    ){
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "endScreen"
+    )
+    .classList.add(
+        "hidden"
+    );
+
+
+    board.innerHTML =
+        "";
+
 
     squares = [];
 
-    boardCreated = false;
 
-    show(mainMenu);
+    boardCreated =
+        false;
+
+
+    show(
+        mainMenu
+    );
 
 };
