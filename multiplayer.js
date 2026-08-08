@@ -9,7 +9,7 @@
 // ===================================================
 
 const socket =
-    new WebSocket("ws://localhost:8080");
+    new WebSocket("wss://man-vs-mosquito.onrender.com");
 
 
 // ===================================================
