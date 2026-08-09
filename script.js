@@ -325,16 +325,63 @@ function showEndScreen(playerWon){
 
 function show(screen){
 
-    mainMenu.classList.add("hidden");
+    console.log("SHOW CALLED:", screen);
 
-    modeMenu.classList.add("hidden");
 
-    gameScreen.classList.add("hidden");
+    // =========================================
+    // MAIN MENU
+    // =========================================
+
+    const mainMenu =
+        document.getElementById("mainMenu");
+
+
+    if(mainMenu){
+
+        mainMenu.classList.add("hidden");
+
+    }
+
+
+    // =========================================
+    // VS COMPUTER SIDE MENU
+    // =========================================
+
+    const modeMenu =
+        document.getElementById("modeMenu");
+
+
+    if(modeMenu){
+
+        modeMenu.classList.add("hidden");
+
+    }
+
+
+    // =========================================
+    // VS COMPUTER — MAN
+    // =========================================
+
+    const gameScreen =
+        document.getElementById("gameScreen");
+
+
+    if(gameScreen){
+
+        gameScreen.classList.add("hidden");
+
+    }
+
+
+    // =========================================
+    // VS COMPUTER — MOSQUITO
+    // =========================================
 
     const mosquitoScreen =
         document.getElementById(
             "mosquitoGameScreen"
         );
+
 
     if(mosquitoScreen){
 
@@ -345,10 +392,15 @@ function show(screen){
     }
 
 
+    // =========================================
+    // END SCREEN
+    // =========================================
+
     const endScreen =
         document.getElementById(
             "endScreen"
         );
+
 
     if(endScreen){
 
@@ -359,7 +411,29 @@ function show(screen){
     }
 
 
-    screen.classList.remove("hidden");
+    // =========================================
+    // SHOW REQUESTED SCREEN
+    // =========================================
+
+    if(screen){
+
+        screen.classList.remove(
+            "hidden"
+        );
+
+        console.log(
+            "✅ Screen shown:",
+            screen.id
+        );
+
+    }
+    else{
+
+        console.error(
+            "❌ show() received a NULL screen!"
+        );
+
+    }
 
 }
 
