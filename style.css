@@ -950,6 +950,36 @@ button:disabled {
     border-color: #9dccff !important;
 }
 
+/* =========================================================
+   VS COMPUTER — MAN ATTACK COLORS
+   ========================================================= */
+
+/* Normal Man miss — RED */
+#mosquitoBoard .man-miss {
+    background: red !important;
+    border: 3px solid #ff7777 !important;
+    color: white !important;
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+}
+
+
+/* Man bites mosquito — ORANGE */
+#mosquitoBoard .man-bite {
+    background: orange !important;
+    border: 3px solid #ffd27f !important;
+    color: white !important;
+    box-shadow: 0 0 12px rgba(255, 165, 0, 0.8);
+}
+
+
+/* Man catches mosquito — RED */
+#mosquitoBoard .man-hit {
+    background: red !important;
+    border: 3px solid white !important;
+    color: white !important;
+    box-shadow: 0 0 18px rgba(255, 0, 0, 0.9);
+}
+
 
 /* =========================================================
    VS COMPUTER — MAN'S LATEST ATTACK
