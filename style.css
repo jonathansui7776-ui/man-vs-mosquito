@@ -29,18 +29,11 @@ body {
     display: none !important;
 }
 
-
-/* =========================================================
-   GENERAL BUTTONS
-   ========================================================= */
-
 button {
     padding: 15px;
     margin: 10px;
     font-size: 18px;
     cursor: pointer;
-    border: none;
-    border-radius: 8px;
 }
 
 
@@ -228,7 +221,7 @@ button {
 
 
 /* =========================================================
-   NORMAL GAME GAMBLE
+   GAMBLE
    ========================================================= */
 
 #gambleBtn {
@@ -251,14 +244,6 @@ button {
 
 #gambleBtn:hover {
     background: #e22;
-}
-
-#gambleBtn:disabled {
-    background: #555;
-
-    color: #999;
-
-    cursor: not-allowed;
 }
 
 
@@ -476,7 +461,7 @@ button {
 
 
 /* =========================================================
-   MULTIPLAYER FULL SCREEN
+   MULTIPLAYER
    ========================================================= */
 
 #multiplayerManScreen,
@@ -516,65 +501,6 @@ button {
     gap: 30px;
 
     margin: 20px auto;
-
-    flex-wrap: wrap;
-}
-
-
-/* =========================================================
-   MULTIPLAYER GAMBLE HUD
-   ========================================================= */
-
-.multiplayerGambleBox {
-    min-width: 190px;
-}
-
-
-/* =========================================================
-   MULTIPLAYER GAMBLE BUTTON
-   ========================================================= */
-
-#multiplayerGambleBtn {
-
-    padding: 8px 15px;
-
-    margin: 8px 0 0 0;
-
-    font-size: 15px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    background: #b11;
-
-    color: white;
-
-    border: none;
-
-    border-radius: 8px;
-
-    transition:
-        background 0.2s,
-        transform 0.1s;
-}
-
-#multiplayerGambleBtn:hover {
-
-    background: #e22;
-
-    transform: scale(1.03);
-}
-
-#multiplayerGambleBtn:disabled {
-
-    background: #555;
-
-    color: #999;
-
-    cursor: not-allowed;
-
-    transform: none;
 }
 
 
@@ -712,7 +638,7 @@ button {
 
 
 /* =========================================================
-   MULTIPLAYER CELL HOVER
+   HOVER
    ========================================================= */
 
 .multiplayerCell:hover {
@@ -724,7 +650,7 @@ button {
 
 
 /* =========================================================
-   SELECTED CELL
+   SELECTED
    ========================================================= */
 
 .multiplayerCell.selected {
@@ -738,7 +664,7 @@ button {
 
 
 /* =========================================================
-   MOSQUITO SELECTED CELL
+   MOSQUITO SELECTED
    ========================================================= */
 
 #multiplayerMosquitoBoard
@@ -751,7 +677,7 @@ button {
 
 
 /* =========================================================
-   MAN SELECTED CELL
+   MAN SELECTED
    ========================================================= */
 
 #multiplayerManBoard
@@ -781,108 +707,6 @@ button {
 
 
 /* =========================================================
-   MOSQUITO MOVEMENT
-   BLUE
-   ========================================================= */
-
-.mpMosquitoMoveAllowed {
-
-    background:
-        #1683ff !important;
-
-    border:
-        3px solid #4da3ff !important;
-
-    color: white !important;
-}
-
-.mpMosquitoMoveAllowed:hover {
-
-    background:
-        #3b9aff !important;
-
-}
-
-
-/* =========================================================
-   MULTIPLAYER ATTACK
-   RED
-   ========================================================= */
-
-.mpAttackRed {
-
-    background:
-        red !important;
-
-    border:
-        3px solid #ff6666 !important;
-
-    color: white !important;
-}
-
-
-/* =========================================================
-   MULTIPLAYER BITE
-   ORANGE
-   ========================================================= */
-
-.mpAttackOrange {
-
-    background:
-        orange !important;
-
-    border:
-        3px solid #ffd27f !important;
-
-    color: white !important;
-}
-
-
-/* =========================================================
-   MAD MAN'S GAMBLE
-   2 × 2 AREA
-   ========================================================= */
-
-.mpGambleTile {
-
-    background:
-        rgba(255, 193, 7, 0.55) !important;
-
-    border:
-        3px solid gold !important;
-
-    color: white !important;
-
-    box-shadow:
-        inset 0 0 0 1px #fff2a8;
-}
-
-
-/* =========================================================
-   GAMBLE HOVER
-   ========================================================= */
-
-#multiplayerManBoard
-.multiplayerCell.mpGambleTile:hover {
-
-    background:
-        rgba(255, 193, 7, 0.75) !important;
-
-}
-
-
-/* =========================================================
-   GAMBLE SELECTION CURSOR
-   ========================================================= */
-
-#multiplayerManBoard
-.multiplayerCell {
-
-    position: relative;
-}
-
-
-/* =========================================================
    MULTIPLAYER HIDE BUTTON
    ========================================================= */
 
@@ -908,7 +732,6 @@ button {
 }
 
 #multiplayerHideBtn:hover {
-
     background: #20a050;
 }
 
@@ -933,95 +756,11 @@ button {
     min-height: 25px;
 
     font-size: 18px;
-
-    margin: 15px auto;
 }
 
 
 /* =========================================================
-   MULTIPLAYER VICTORY SCREEN
-   ========================================================= */
-
-#mpVictoryScreen {
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 100000;
-
-    width: 100vw;
-    height: 100vh;
-
-    background:
-        rgba(0, 0, 0, 0.96);
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    text-align: center;
-
-    overflow-y: auto;
-}
-
-
-#mpVictoryScreen h1 {
-
-    font-size: 42px;
-
-    margin: 10px 0 20px;
-
-    color: white;
-}
-
-
-#mpVictoryScreen img {
-
-    width: 350px;
-
-    max-width: 80vw;
-
-    max-height: 50vh;
-
-    object-fit: contain;
-
-    margin-bottom: 20px;
-}
-
-
-#mpVictoryScreen button {
-
-    min-width: 180px;
-
-    padding: 12px 25px;
-
-    margin: 8px;
-
-    font-size: 18px;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-}
-
-
-#mpVictoryScreen button:disabled {
-
-    background: #555;
-
-    color: #aaa;
-
-    cursor: not-allowed;
-}
-
-
-/* =========================================================
-   MOBILE MULTIPLAYER
+   MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
@@ -1077,28 +816,6 @@ button {
         gap: 10px;
 
         flex-wrap: wrap;
-    }
-
-
-    #multiplayerGambleBtn {
-
-        font-size: 12px;
-
-        padding: 7px 10px;
-    }
-
-
-    #mpVictoryScreen h1 {
-
-        font-size: 30px;
-    }
-
-
-    #mpVictoryScreen img {
-
-        max-width: 75vw;
-
-        max-height: 40vh;
     }
 
 }
