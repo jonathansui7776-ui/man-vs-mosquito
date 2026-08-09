@@ -546,3 +546,69 @@ button {
     background-size: cover;
     background-position: center;
 }
+
+/* ================================================= */
+/* MULTIPLAYER BOARDS */
+/* ================================================= */
+
+.multiplayerBoard {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 70px);
+
+    grid-template-rows:
+        repeat(5, 70px);
+
+    gap: 6px;
+
+    justify-content: center;
+
+    margin: 30px auto;
+
+}
+
+
+/* ================================================= */
+/* MULTIPLAYER SQUARE */
+/* ================================================= */
+
+.multiplayerCell {
+
+    width: 70px;
+
+    height: 70px;
+
+    background: #444;
+
+    border: 2px solid #777;
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.1s,
+        background 0.1s;
+
+}
+
+
+.multiplayerCell:hover {
+
+    transform: scale(1.05);
+
+    background: #555;
+
+}
+
+
+.multiplayerCell.selected {
+
+    background: #777;
+
+    border:
+        3px solid white;
+
+}
