@@ -944,3 +944,44 @@ button {
     }
 
 }
+
+/* ================================================= */
+/* FINAL MULTIPLAYER GRID FIX */
+/* ================================================= */
+
+#multiplayerManBoard,
+#multiplayerMosquitoBoard {
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(5, 70px) !important;
+
+    grid-template-rows:
+        repeat(5, 70px) !important;
+
+    gap: 5px !important;
+
+    width: max-content !important;
+
+    height: max-content !important;
+
+    margin: 0 auto !important;
+
+}
+
+
+/* ================================================= */
+/* MULTIPLAYER CELLS */
+/* ================================================= */
+
+#multiplayerManBoard .multiplayerCell,
+#multiplayerMosquitoBoard .multiplayerCell {
+
+    width: 70px !important;
+
+    height: 70px !important;
+
+    box-sizing: border-box;
+
+}
