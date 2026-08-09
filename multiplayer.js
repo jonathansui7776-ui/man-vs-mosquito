@@ -8,10 +8,9 @@
 // CONNECTION
 // ===================================================
 
-const mpSocket =
-    new WebSocket(
-        "wss://man-vs-mosquito.onrender.com"
-    );
+const mpSocket = new WebSocket(
+    "wss://man-vs-mosquito.onrender.com"
+);
 
 
 // ===================================================
@@ -19,9 +18,7 @@ const mpSocket =
 // ===================================================
 
 window.multiplayerRole = null;
-
 window.multiplayerRoomCode = null;
-
 window.multiplayerConnected = false;
 
 
@@ -30,54 +27,34 @@ window.multiplayerConnected = false;
 // ===================================================
 
 const mpCreateGameBtn =
-    document.getElementById(
-        "createGameBtn"
-    );
+    document.getElementById("createGameBtn");
 
 const mpJoinGameBtn =
-    document.getElementById(
-        "joinGameBtn"
-    );
+    document.getElementById("joinGameBtn");
 
 const mpCreateGamePanel =
-    document.getElementById(
-        "createGamePanel"
-    );
+    document.getElementById("createGamePanel");
 
 const mpJoinGamePanel =
-    document.getElementById(
-        "joinGamePanel"
-    );
+    document.getElementById("joinGamePanel");
 
 const mpRoomCode =
-    document.getElementById(
-        "roomCode"
-    );
+    document.getElementById("roomCode");
 
 const mpRoomCodeInput =
-    document.getElementById(
-        "roomCodeInput"
-    );
+    document.getElementById("roomCodeInput");
 
 const mpJoinRoomBtn =
-    document.getElementById(
-        "joinRoomBtn"
-    );
+    document.getElementById("joinRoomBtn");
 
 const mpLobbyStatus =
-    document.getElementById(
-        "lobbyStatus"
-    );
+    document.getElementById("lobbyStatus");
 
 const mpJoinStatus =
-    document.getElementById(
-        "joinStatus"
-    );
+    document.getElementById("joinStatus");
 
 const mpPlayerBackBtn =
-    document.getElementById(
-        "playerBackBtn"
-    );
+    document.getElementById("playerBackBtn");
 
 
 // ===================================================
@@ -85,14 +62,10 @@ const mpPlayerBackBtn =
 // ===================================================
 
 const mpLobbyScreen =
-    document.getElementById(
-        "playerModeMenu"
-    );
+    document.getElementById("playerModeMenu");
 
 const mpManScreen =
-    document.getElementById(
-        "multiplayerManScreen"
-    );
+    document.getElementById("multiplayerManScreen");
 
 const mpMosquitoScreen =
     document.getElementById(
@@ -101,10 +74,288 @@ const mpMosquitoScreen =
 
 
 // ===================================================
-// HIDE MULTIPLAYER SCREENS
+// MULTIPLAYER BOARDS
+// ===================================================
+
+const mpManBoard =
+    document.getElementById(
+        "multiplayerManBoard"
+    );
+
+const mpMosquitoBoard =
+    document.getElementById(
+        "multiplayerMosquitoBoard"
+    );
+
+
+// ===================================================
+// MULTIPLAYER GAME STATE
+// ===================================================
+
+let mpManSelectedCell = null;
+
+let mpMosquitoSelectedCell = null;
+
+
+// ===================================================
+// HIDE EVERYTHING RELATED TO MULTIPLAYER
 // ===================================================
 
 function hideMultiplayerScreens(){
+
+    if(mpLobbyScreen){
+
+        mpLobbyScreen.classList.add("hidden");
+
+    }
+
+    if(mpManScreen){
+
+        mpManScreen.classList.add("hidden");
+
+    }
+
+    if(mpMosquitoScreen){
+
+        mpMosquitoScreen.classList.add("hidden");
+
+    }
+
+}
+
+
+// ===================================================
+// CREATE 5 × 5 MAN BOARD
+// ===================================================
+
+function createMultiplayerManBoard(){
+
+    if(!mpManBoard){
+
+        console.error(
+            "❌ multiplayerManBoard was not found."
+        );
+
+        return;
+
+    }
+
+
+    mpManBoard.innerHTML = "";
+
+    mpManSelectedCell = null;
+
+
+    for(let row = 0; row < 5; row++){
+
+        for(let col = 0; col < 5; col++){
+
+            const cell =
+                document.createElement("div");
+
+
+            cell.className =
+                "multiplayerCell";
+
+
+            cell.dataset.row =
+                row;
+
+            cell.dataset.col =
+                col;
+
+
+            cell.addEventListener(
+                "click",
+                function(){
+
+                    selectMultiplayerManCell(
+                        cell
+                    );
+
+                }
+            );
+
+
+            mpManBoard.appendChild(
+                cell
+            );
+
+        }
+
+    }
+
+
+    console.log(
+        "🧍 5×5 MULTIPLAYER MAN BOARD CREATED"
+    );
+
+}
+
+
+// ===================================================
+// CREATE 5 × 5 MOSQUITO BOARD
+// ===================================================
+
+function createMultiplayerMosquitoBoard(){
+
+    if(!mpMosquitoBoard){
+
+        console.error(
+            "❌ multiplayerMosquitoBoard was not found."
+        );
+
+        return;
+
+    }
+
+
+    mpMosquitoBoard.innerHTML = "";
+
+    mpMosquitoSelectedCell = null;
+
+
+    for(let row = 0; row < 5; row++){
+
+        for(let col = 0; col < 5; col++){
+
+            const cell =
+                document.createElement("div");
+
+
+            cell.className =
+                "multiplayerCell";
+
+
+            cell.dataset.row =
+                row;
+
+            cell.dataset.col =
+                col;
+
+
+            cell.addEventListener(
+                "click",
+                function(){
+
+                    selectMultiplayerMosquitoCell(
+                        cell
+                    );
+
+                }
+            );
+
+
+            mpMosquitoBoard.appendChild(
+                cell
+            );
+
+        }
+
+    }
+
+
+    console.log(
+        "🦟 5×5 MULTIPLAYER MOSQUITO BOARD CREATED"
+    );
+
+}
+
+
+// ===================================================
+// MAN CELL CLICK
+// ===================================================
+
+function selectMultiplayerManCell(cell){
+
+    // Remove previous selection
+
+    if(mpManSelectedCell){
+
+        mpManSelectedCell.classList.remove(
+            "selected"
+        );
+
+    }
+
+
+    // Select new cell
+
+    mpManSelectedCell =
+        cell;
+
+
+    cell.classList.add(
+        "selected"
+    );
+
+
+    console.log(
+        "🧍 MAN SELECTED:",
+        "row =",
+        cell.dataset.row,
+        "col =",
+        cell.dataset.col
+    );
+
+}
+
+
+// ===================================================
+// MOSQUITO CELL CLICK
+// ===================================================
+
+function selectMultiplayerMosquitoCell(cell){
+
+    // Remove previous selection
+
+    if(mpMosquitoSelectedCell){
+
+        mpMosquitoSelectedCell.classList.remove(
+            "selected"
+        );
+
+    }
+
+
+    // Select new cell
+
+    mpMosquitoSelectedCell =
+        cell;
+
+
+    cell.classList.add(
+        "selected"
+    );
+
+
+    console.log(
+        "🦟 MOSQUITO SELECTED:",
+        "row =",
+        cell.dataset.row,
+        "col =",
+        cell.dataset.col
+    );
+
+}
+
+
+// ===================================================
+// SHOW UNIQUE MULTIPLAYER MAN SCREEN
+// ===================================================
+
+function showMultiplayerMan(){
+
+    console.log(
+        "================================="
+    );
+
+    console.log(
+        "🧍 OPENING UNIQUE MULTIPLAYER MAN"
+    );
+
+
+    // Hide multiplayer lobby
 
     if(mpLobbyScreen){
 
@@ -115,14 +366,7 @@ function hideMultiplayerScreens(){
     }
 
 
-    if(mpManScreen){
-
-        mpManScreen.classList.add(
-            "hidden"
-        );
-
-    }
-
+    // Hide mosquito multiplayer screen
 
     if(mpMosquitoScreen){
 
@@ -132,70 +376,55 @@ function hideMultiplayerScreens(){
 
     }
 
-}
+
+    // IMPORTANT:
+    // We deliberately DO NOT TOUCH:
+    //
+    // gameScreen
+    // mosquitoGameScreen
+    // gameBoard
+    // mosquitoBoard
+    //
+    // Those belong to VS Computer.
 
 
-// ===================================================
-// SHOW MAN MULTIPLAYER SCREEN
-// ===================================================
+    // Show multiplayer Man
 
-function showMultiplayerMan(){
-
-    console.log(
-        "🧍 Opening MULTIPLAYER MAN screen..."
-    );
-
-
-    hideMultiplayerScreens();
-
-
-    if(mpManScreen){
-
-        mpManScreen.classList.remove(
-            "hidden"
-        );
-
-
-        console.log(
-            "✅ Multiplayer Man screen opened."
-        );
-
-    }
-    else{
+    if(!mpManScreen){
 
         console.error(
-            "❌ #multiplayerManScreen NOT FOUND"
+            "❌ multiplayerManScreen NOT FOUND"
         );
 
+        return;
+
     }
+
+
+    mpManScreen.classList.remove(
+        "hidden"
+    );
 
 
     window.currentGameMode =
         "multiplayer-man";
 
 
-    // ---------------------------------------------
-    // Reset multiplayer HUD
-    // ---------------------------------------------
+    // Reset HUD
 
     const sanity =
         document.getElementById(
-            "multiplayerManSanity"
-        );
-
-    const gamble =
-        document.getElementById(
-            "multiplayerManGamble"
+            "mpManSanity"
         );
 
     const turn =
         document.getElementById(
-            "multiplayerManTurn"
+            "mpManTurn"
         );
 
     const status =
         document.getElementById(
-            "multiplayerStatus"
+            "mpManStatus"
         );
 
 
@@ -203,14 +432,6 @@ function showMultiplayerMan(){
 
         sanity.innerText =
             "100%";
-
-    }
-
-
-    if(gamble){
-
-        gamble.innerText =
-            "3";
 
     }
 
@@ -226,74 +447,112 @@ function showMultiplayerMan(){
     if(status){
 
         status.innerText =
-            "Waiting for Mosquito-chan...";
+            "Waiting for Mosquito...";
 
     }
 
 
+    // Create board
+
+    createMultiplayerManBoard();
+
+
     console.log(
-        "🎮 Multiplayer Man ready."
+        "✅ UNIQUE MULTIPLAYER MAN SCREEN OPENED"
+    );
+
+    console.log(
+        "================================="
     );
 
 }
 
 
 // ===================================================
-// SHOW MOSQUITO MULTIPLAYER SCREEN
+// SHOW UNIQUE MULTIPLAYER MOSQUITO SCREEN
 // ===================================================
 
 function showMultiplayerMosquito(){
 
     console.log(
-        "🦟 Opening MULTIPLAYER MOSQUITO screen..."
+        "================================="
+    );
+
+    console.log(
+        "🦟 OPENING UNIQUE MULTIPLAYER MOSQUITO"
     );
 
 
-    hideMultiplayerScreens();
+    // Hide multiplayer lobby
 
+    if(mpLobbyScreen){
 
-    if(mpMosquitoScreen){
-
-        mpMosquitoScreen.classList.remove(
+        mpLobbyScreen.classList.add(
             "hidden"
         );
 
+    }
 
-        console.log(
-            "✅ Multiplayer Mosquito screen opened."
+
+    // Hide Man multiplayer screen
+
+    if(mpManScreen){
+
+        mpManScreen.classList.add(
+            "hidden"
         );
 
     }
-    else{
+
+
+    // IMPORTANT:
+    // We deliberately DO NOT TOUCH:
+    //
+    // gameScreen
+    // mosquitoGameScreen
+    // gameBoard
+    // mosquitoBoard
+    //
+    // Those belong to VS Computer.
+
+
+    // Show multiplayer Mosquito
+
+    if(!mpMosquitoScreen){
 
         console.error(
-            "❌ #multiplayerMosquitoScreen NOT FOUND"
+            "❌ multiplayerMosquitoScreen NOT FOUND"
         );
 
+        return;
+
     }
+
+
+    mpMosquitoScreen.classList.remove(
+        "hidden"
+    );
 
 
     window.currentGameMode =
         "multiplayer-mosquito";
 
 
-    // ---------------------------------------------
-    // Reset multiplayer Mosquito HUD
-    // ---------------------------------------------
+    // Reset HUD
 
     const sanity =
         document.getElementById(
-            "multiplayerMosquitoManSanity"
+            "mpMosquitoSanity"
         );
 
     const turn =
         document.getElementById(
-            "multiplayerMosquitoTurn"
+            "mpMosquitoTurn"
         );
 
     const status =
         document.getElementById(
-            "multiplayerManStatus"
+            "mpMosquitoStatus"
         );
 
 
@@ -321,15 +580,24 @@ function showMultiplayerMosquito(){
     }
 
 
+    // Create board
+
+    createMultiplayerMosquitoBoard();
+
+
     console.log(
-        "🎮 Multiplayer Mosquito ready."
+        "✅ UNIQUE MULTIPLAYER MOSQUITO SCREEN OPENED"
+    );
+
+    console.log(
+        "================================="
     );
 
 }
 
 
 // ===================================================
-// CONNECTION OPEN
+// WEBSOCKET OPEN
 // ===================================================
 
 mpSocket.onopen =
@@ -347,7 +615,7 @@ function(){
 
 
 // ===================================================
-// SERVER MESSAGES
+// SERVER MESSAGE
 // ===================================================
 
 mpSocket.onmessage =
@@ -367,7 +635,7 @@ function(event){
     catch(error){
 
         console.error(
-            "❌ Invalid server message:",
+            "❌ Could not parse server message:",
             event.data
         );
 
@@ -393,6 +661,7 @@ function(event){
 
         window.multiplayerRoomCode =
             data.roomCode;
+
 
         window.multiplayerRole =
             "man";
@@ -433,7 +702,7 @@ function(event){
 
 
         console.log(
-            "🧍 Multiplayer role: MAN"
+            "🧍 Your multiplayer role: MAN"
         );
 
     }
@@ -475,6 +744,7 @@ function(event){
         window.multiplayerRoomCode =
             data.roomCode;
 
+
         window.multiplayerRole =
             "mosquito";
 
@@ -488,7 +758,7 @@ function(event){
 
 
         console.log(
-            "🦟 Multiplayer role: MOSQUITO"
+            "🦟 Your multiplayer role: MOSQUITO"
         );
 
     }
@@ -505,6 +775,7 @@ function(event){
 
         window.multiplayerRole =
             data.role;
+
 
         window.multiplayerRoomCode =
             data.roomCode;
@@ -534,19 +805,6 @@ function(event){
 
 
         // ---------------------------------------------
-        // Hide lobby
-        // ---------------------------------------------
-
-        if(mpLobbyScreen){
-
-            mpLobbyScreen.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        // ---------------------------------------------
         // MAN
         // ---------------------------------------------
 
@@ -564,12 +822,22 @@ function(event){
         // MOSQUITO
         // ---------------------------------------------
 
-        if(
+        else if(
             data.role ===
             "mosquito"
         ){
 
             showMultiplayerMosquito();
+
+        }
+
+
+        else{
+
+            console.error(
+                "❌ Unknown multiplayer role:",
+                data.role
+            );
 
         }
 
@@ -648,6 +916,10 @@ if(mpCreateGameBtn){
 
             }
 
+            console.error(
+                "❌ WebSocket is not open."
+            );
+
             return;
 
         }
@@ -688,13 +960,18 @@ if(mpCreateGameBtn){
             })
         );
 
+
+        console.log(
+            "🎮 Create room request sent."
+        );
+
     };
 
 }
 
 
 // ===================================================
-// SHOW JOIN PANEL
+// JOIN GAME PANEL
 // ===================================================
 
 if(mpJoinGameBtn){
@@ -743,7 +1020,7 @@ if(mpJoinGameBtn){
 
 
 // ===================================================
-// JOIN GAME
+// JOIN ROOM
 // ===================================================
 
 if(mpJoinRoomBtn){
@@ -751,11 +1028,18 @@ if(mpJoinRoomBtn){
     mpJoinRoomBtn.onclick =
     function(){
 
+        if(!mpRoomCodeInput){
+
+            return;
+
+        }
+
+
         const code =
             mpRoomCodeInput
-            .value
-            .trim()
-            .toUpperCase();
+                .value
+                .trim()
+                .toUpperCase();
 
 
         if(code.length !== 6){
@@ -809,6 +1093,12 @@ if(mpJoinRoomBtn){
             })
         );
 
+
+        console.log(
+            "🔗 Join room request sent:",
+            code
+        );
+
     };
 
 }
@@ -844,7 +1134,7 @@ if(mpRoomCodeInput){
 
 
 // ===================================================
-// BACK
+// BACK BUTTON
 // ===================================================
 
 if(mpPlayerBackBtn){
@@ -869,13 +1159,20 @@ if(mpPlayerBackBtn){
 
         }
 
+
+        window.multiplayerRole =
+            null;
+
+        window.multiplayerRoomCode =
+            null;
+
     };
 
 }
 
 
 // ===================================================
-// DISCONNECTED
+// WEBSOCKET CLOSE
 // ===================================================
 
 mpSocket.onclose =
@@ -893,7 +1190,7 @@ function(){
 
 
 // ===================================================
-// CONNECTION ERROR
+// WEBSOCKET ERROR
 // ===================================================
 
 mpSocket.onerror =
