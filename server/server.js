@@ -4,9 +4,7 @@
 // ===================================================
 
 const http = require("http");
-
-const WebSocket =
-    require("ws");
+const WebSocket = require("ws");
 
 
 // ===================================================
@@ -91,11 +89,9 @@ function generateRoomCode() {
 
     let code;
 
-
     do {
 
         code = "";
-
 
         for (
             let i = 0;
@@ -117,7 +113,6 @@ function generateRoomCode() {
     while (
         rooms.has(code)
     );
-
 
     return code;
 
@@ -251,7 +246,7 @@ function getRoom(code) {
 
 
 // ===================================================
-// NEW ROUND
+// RESET ROUND
 // ===================================================
 
 function resetRound(
@@ -264,13 +259,11 @@ function resetRound(
     room.gameState =
         "mosquitoHiding";
 
-
     room.mosquitoPosition =
         null;
 
     room.mosquitoReady =
         false;
-
 
     room.manSanity =
         INITIAL_SANITY;
@@ -278,18 +271,14 @@ function resetRound(
     room.turn =
         0;
 
-
     room.biteFreeTurns =
         0;
-
 
     room.gambles =
         INITIAL_GAMBLES;
 
-
     room.mosquitoMoveReason =
         null;
-
 
     room.lastAttack =
         null;
@@ -297,17 +286,14 @@ function resetRound(
     room.lastAttackResult =
         null;
 
-
     room.restartMan =
         false;
 
     room.restartMosquito =
         false;
 
-
     room.restarting =
         false;
-
 
     room.reconnectTimer =
         null;
@@ -328,11 +314,9 @@ function startNewRound(
         room.code
     );
 
-
     resetRound(
         room
     );
-
 
     send(
         room.host,
@@ -347,7 +331,6 @@ function startNewRound(
                 room.code
         }
     );
-
 
     send(
         room.guest,
@@ -381,7 +364,6 @@ function sendGameOver(
             ? "manWon"
             : "mosquitoWon";
 
-
     sendBoth(
         room,
         {
@@ -409,13 +391,26 @@ function sendGameOver(
 // HINT GENERATOR
 // ===================================================
 //
-// Every 5 turns without a bite.
+// BOARD ORIENTATION:
+//
+//        1  2  3  4  5  6
+//     A  A1 A2 A3 A4 A5 A6
+//     B  B1 B2 B3 B4 B5 B6
+//     C  C1 C2 C3 C4 C5 C6
+//     D  D1 D2 D3 D4 D5 D6
+//     E  E1 E2 E3 E4 E5 E6
+//     F  F1 F2 F3 F4 F5 F6
+//
+// row = letter
+// col = number
+//
+// Every 5 turns without a bite:
 //
 // >= 50 sanity:
-//     ONE TRUE ROW OR COLUMN
+//     ONE true row OR column
 //
 // < 50 sanity:
-//     ONE TRUE + lies
+//     ONE truth + lies
 //
 // 49-40 = 1 lie
 // 39-30 = 2 lies
@@ -435,25 +430,35 @@ function generateHint(
     const col =
         room.mosquitoPosition.col;
 
-
     const letters =
         "ABCDEF";
 
 
+    // =================================================
+    // CORRECT COORDINATE ORIENTATION
+    // =================================================
+
+    const trueRow =
+        "Row " +
+        letters[row];
+
+    const trueColumn =
+        "Column " +
+        (col + 1);
+
+
     const truths = [
 
-        "Row " +
-        (row + 1),
+        trueRow,
 
-        "Column " +
-        letters[col]
+        trueColumn
 
     ];
 
 
-    // -----------------------------------------------
-    // Above / equal 50
-    // -----------------------------------------------
+    // =================================================
+    // 50% OR ABOVE
+    // =================================================
 
     if (
         room.manSanity >=
@@ -470,37 +475,43 @@ function generateHint(
 
 
         return {
+
             type:
                 "hint",
 
             message:
                 "🦟 Fine...\n" +
                 truth
+
         };
 
     }
 
 
-    // -----------------------------------------------
-    // Lies
-    // -----------------------------------------------
+    // =================================================
+    // GENERATE LIES
+    // =================================================
 
     const lies = [];
 
 
+    // -------------------------------------------------
+    // ROW LIES
+    // -------------------------------------------------
+
     for (
-        let r = 1;
-        r <= 6;
+        let r = 0;
+        r < BOARD_SIZE;
         r++
     ) {
 
         if (
-            r !==
-            row + 1
+            r !== row
         ) {
 
             lies.push(
-                "Row " + r
+                "Row " +
+                letters[r]
             );
 
         }
@@ -508,9 +519,13 @@ function generateHint(
     }
 
 
+    // -------------------------------------------------
+    // COLUMN LIES
+    // -------------------------------------------------
+
     for (
         let c = 0;
-        c < 6;
+        c < BOARD_SIZE;
         c++
     ) {
 
@@ -520,13 +535,17 @@ function generateHint(
 
             lies.push(
                 "Column " +
-                letters[c]
+                (c + 1)
             );
 
         }
 
     }
 
+
+    // =================================================
+    // NUMBER OF LIES
+    // =================================================
 
     const lieCount =
         Math.floor(
@@ -535,12 +554,25 @@ function generateHint(
         ) + 1;
 
 
+    // =================================================
+    // SHUFFLE LIES
+    // =================================================
+
     lies.sort(
-        () =>
-            Math.random() -
-            0.5
+        function() {
+
+            return (
+                Math.random() -
+                0.5
+            );
+
+        }
     );
 
+
+    // =================================================
+    // ONE TRUE CLUE
+    // =================================================
 
     const clues = [
 
@@ -554,23 +586,42 @@ function generateHint(
     ];
 
 
+    // =================================================
+    // ADD LIES
+    // =================================================
+
     for (
         let i = 0;
         i < lieCount;
         i++
     ) {
 
-        clues.push(
+        if (
             lies[i]
-        );
+        ) {
+
+            clues.push(
+                lies[i]
+            );
+
+        }
 
     }
 
 
+    // =================================================
+    // SHUFFLE TRUTH + LIES
+    // =================================================
+
     clues.sort(
-        () =>
-            Math.random() -
-            0.5
+        function() {
+
+            return (
+                Math.random() -
+                0.5
+            );
+
+        }
     );
 
 
@@ -668,83 +719,57 @@ server.on(
                     const room = {
 
                         code:
-
                             code,
 
                         host:
-
                             socket,
 
                         guest:
-
                             null,
 
-
                         gameStarted:
-
                             false,
 
                         gameState:
-
                             "waiting",
 
-
                         mosquitoPosition:
-
                             null,
 
                         mosquitoReady:
-
                             false,
 
-
                         manSanity:
-
                             INITIAL_SANITY,
 
                         turn:
-
                             0,
 
                         biteFreeTurns:
-
                             0,
 
-
                         gambles:
-
                             INITIAL_GAMBLES,
 
-
                         mosquitoMoveReason:
-
                             null,
 
-
                         lastAttack:
-
                             null,
 
                         lastAttackResult:
-
                             null,
 
-
                         restartMan:
-
                             false,
 
                         restartMosquito:
-
                             false,
 
-
                         restarting:
-
                             false,
 
                         reconnectTimer:
-
                             null
 
                     };
@@ -933,7 +958,7 @@ server.on(
 
 
                 // =================================================
-                // REJOIN AFTER HARD RESTART
+                // REJOIN AFTER RESTART
                 // =================================================
 
                 if (
@@ -979,10 +1004,8 @@ server.on(
 
 
                     if (
-                        role !==
-                            "man" &&
-                        role !==
-                            "mosquito"
+                        role !== "man" &&
+                        role !== "mosquito"
                     ) {
 
                         send(
@@ -1001,20 +1024,14 @@ server.on(
                     }
 
 
-                    // ---------------------------------------------
-                    // Assign correct player slot
-                    // ---------------------------------------------
-
                     if (
-                        role ===
-                        "man"
+                        role === "man"
                     ) {
 
                         room.host =
                             socket;
 
                     }
-
                     else {
 
                         room.guest =
@@ -1051,10 +1068,6 @@ server.on(
                         role
                     );
 
-
-                    // ---------------------------------------------
-                    // BOTH ARE BACK
-                    // ---------------------------------------------
 
                     if (
                         room.host &&
@@ -1103,9 +1116,7 @@ server.on(
 
 
                     if (!room) {
-
                         return;
-
                     }
 
 
@@ -1258,9 +1269,7 @@ server.on(
 
 
                     if (!room) {
-
                         return;
-
                     }
 
 
@@ -1268,9 +1277,7 @@ server.on(
                         socket !==
                         room.host
                     ) {
-
                         return;
-
                     }
 
 
@@ -1434,7 +1441,6 @@ server.on(
                         }
 
 
-                        // Bite resets clue counter.
                         room.biteFreeTurns =
                             0;
 
@@ -1571,9 +1577,9 @@ server.on(
                     room.biteFreeTurns++;
 
 
-                    // ---------------------------------------------
+                    // =================================================
                     // SANITY ZERO
-                    // ---------------------------------------------
+                    // =================================================
 
                     if (
                         room.manSanity <=
@@ -1622,9 +1628,9 @@ server.on(
                     }
 
 
-                    // ---------------------------------------------
-                    // EVERY FIVE BITE-FREE TURNS
-                    // ---------------------------------------------
+                    // =================================================
+                    // EVERY 5 MISS COUNTER
+                    // =================================================
 
                     if (
                         room.biteFreeTurns >=
@@ -1637,8 +1643,6 @@ server.on(
                             );
 
 
-                        // Reset counter just like
-                        // the VS Computer version.
                         room.biteFreeTurns =
                             0;
 
@@ -1646,13 +1650,12 @@ server.on(
                         room.gameState =
                             "mosquitoMoveAfterMiss";
 
-
                         room.mosquitoMoveReason =
                             "miss";
 
 
-                        send(
-                            room.host,
+                        sendBoth(
+                            room,
                             {
                                 type:
                                     "attackResult",
@@ -1681,39 +1684,10 @@ server.on(
                         );
 
 
+                        // Hint goes to Man.
                         send(
                             room.host,
                             hint
-                        );
-
-
-                        send(
-                            room.guest,
-                            {
-                                type:
-                                    "attackResult",
-
-                                result:
-                                    "miss",
-
-                                attackRow:
-                                    attackRow,
-
-                                attackCol:
-                                    attackCol,
-
-                                attackPosition:
-                                    attackPosition,
-
-                                sanity:
-                                    room.manSanity,
-
-                                turn:
-                                    room.turn,
-
-                                biteFreeTurns:
-                                    0
-                            }
                         );
 
 
@@ -1753,9 +1727,9 @@ server.on(
                     }
 
 
-                    // ---------------------------------------------
+                    // =================================================
                     // NORMAL MISS
-                    // ---------------------------------------------
+                    // =================================================
 
                     room.gameState =
                         "mosquitoMoveAfterMiss";
@@ -1839,9 +1813,7 @@ server.on(
 
 
                     if (!room) {
-
                         return;
-
                     }
 
 
@@ -1849,9 +1821,7 @@ server.on(
                         socket !==
                         room.host
                     ) {
-
                         return;
-
                     }
 
 
@@ -1859,9 +1829,7 @@ server.on(
                         room.gameState !==
                         "manTurn"
                     ) {
-
                         return;
-
                     }
 
 
@@ -1897,7 +1865,6 @@ server.on(
                         );
 
 
-                    // Must be A1-E5.
                     if (
                         topRow < 0 ||
                         topRow > 4 ||
@@ -1923,7 +1890,6 @@ server.on(
 
                     room.gambles--;
 
-
                     room.turn++;
 
 
@@ -1936,7 +1902,10 @@ server.on(
 
                     const area = [
 
-                        [topRow, leftCol],
+                        [
+                            topRow,
+                            leftCol
+                        ],
 
                         [
                             topRow,
@@ -2040,11 +2009,6 @@ server.on(
                             0;
 
                     }
-
-
-                    // Gamble is NOT a normal miss.
-                    // Therefore it does not increment
-                    // bite-free counter.
 
 
                     if (
@@ -2170,9 +2134,7 @@ server.on(
 
 
                     if (!room) {
-
                         return;
-
                     }
 
 
@@ -2180,9 +2142,7 @@ server.on(
                         socket !==
                         room.guest
                     ) {
-
                         return;
-
                     }
 
 
@@ -2345,10 +2305,10 @@ server.on(
                     }
 
 
-                    // ---------------------------------------------
-                    // AFTER NORMAL MISS:
-                    // ONE SQUARE ORTHOGONALLY
-                    // ---------------------------------------------
+                    // =================================================
+                    // AFTER MISS:
+                    // ONE ORTHOGONAL SQUARE ONLY
+                    // =================================================
 
                     if (
                         reason ===
@@ -2382,10 +2342,10 @@ server.on(
                     }
 
 
-                    // ---------------------------------------------
+                    // =================================================
                     // AFTER BITE:
                     // ANYWHERE
-                    // ---------------------------------------------
+                    // =================================================
 
                     room.mosquitoPosition = {
 
@@ -2546,10 +2506,6 @@ server.on(
                     );
 
 
-                    // =================================================
-                    // BOTH CLICKED RESTART
-                    // =================================================
-
                     if (
                         room.restartMan &&
                         room.restartMosquito
@@ -2560,16 +2516,10 @@ server.on(
 
 
                         console.log(
-                            "🔄 BOTH PLAYERS READY.",
+                            "🔄 BOTH PLAYERS READY:",
                             room.code
                         );
 
-
-                        // -----------------------------------------
-                        // DO NOT RESET THE ROOM YET.
-                        //
-                        // Keep it alive while both browsers reload.
-                        // -----------------------------------------
 
                         sendBoth(
                             room,
@@ -2582,10 +2532,6 @@ server.on(
                             }
                         );
 
-
-                        // -----------------------------------------
-                        // Wait for both sockets to reconnect.
-                        // -----------------------------------------
 
                         if (
                             room.reconnectTimer
@@ -2746,7 +2692,7 @@ server.on(
 
 
                 // =================================================
-                // UNKNOWN
+                // UNKNOWN MESSAGE
                 // =================================================
 
                 send(
@@ -2778,9 +2724,7 @@ server.on(
 
 
                 if (!code) {
-
                     return;
-
                 }
 
 
@@ -2791,9 +2735,7 @@ server.on(
 
 
                 if (!room) {
-
                     return;
-
                 }
 
 
@@ -2805,8 +2747,8 @@ server.on(
 
 
                 // =================================================
-                // IMPORTANT:
-                // DURING RESTART, KEEP THE ROOM ALIVE.
+                // DURING RESTART
+                // KEEP ROOM ALIVE
                 // =================================================
 
                 if (
