@@ -1,487 +1,463 @@
-<!DOCTYPE html>
-<html lang="en">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<head>
-    <meta charset="UTF-8">
+<title>Man vs Mosquito</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<link
+    rel="stylesheet"
+    href="style.css"
+>
 
-    <title>Man vs Mosquito</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-</head>
+<!-- =========================================================
+     MAIN MENU
+     ========================================================= -->
 
-<body>
+<h1>🦟 Man vs Mosquito</h1>
 
-<!-- ================================================= -->
-<!-- MAIN MENU -->
-<!-- ================================================= -->
+<button id="vsComputerBtn">
+    VS Computer
+</button>
 
-<div id="mainMenu" class="screen">
+<button id="vsPlayerBtn">
+    VS Player
+</button>
 
-    <h1>🦟 Man vs Mosquito</h1>
+<button id="rulesBtn">
+    Rules
+</button>
 
-    <button id="vsComputerBtn">
-        VS Computer
-    </button>
 
-    <button id="vsPlayerBtn">
-        VS Player
-    </button>
+<!-- =========================================================
+     CHOOSE YOUR SIDE
+     ========================================================= -->
 
-    <button id="rulesBtn">
-        Rules
-    </button>
+<h1>Choose Your Side</h1>
+
+<button id="manBtn">
+    Play as Man
+</button>
+
+<button id="mosquitoBtn">
+    Play as Mosquito
+</button>
+
+<button id="backBtn">
+    ⬅ Back
+</button>
+
+
+<!-- =========================================================
+     VS PLAYER
+     ========================================================= -->
+
+<h1>👥 VS Player</h1>
+
+<button id="createGameBtn">
+    🎮 Create Game
+</button>
+
+<button id="joinGameBtn">
+    🔗 Join Game
+</button>
+
+<br>
+
+<button id="playerBackBtn">
+    ⬅ Back
+</button>
+
+
+<!-- CREATE -->
+
+<div
+    id="createGamePanel"
+    class="hidden"
+>
+
+    <h2>Game Created!</h2>
+
+    <p>
+        Give this code to your opponent:
+    </p>
+
+    <h1 id="roomCode">
+        ------
+    </h1>
+
+    <p id="lobbyStatus">
+        Waiting for opponent...
+    </p>
 
 </div>
 
 
-<!-- ================================================= -->
-<!-- VS COMPUTER — CHOOSE SIDE -->
-<!-- ================================================= -->
+<!-- JOIN -->
 
-<div id="modeMenu" class="screen hidden">
+<div
+    id="joinGamePanel"
+    class="hidden"
+>
 
-    <h1>Choose Your Side</h1>
+    <h2>Join Game</h2>
 
-    <button id="manBtn">
-        Play as Man
-    </button>
-
-    <button id="mosquitoBtn">
-        Play as Mosquito
-    </button>
-
-    <button id="backBtn">
-        ⬅ Back
-    </button>
-
-</div>
-
-
-<!-- ================================================= -->
-<!-- VS PLAYER LOBBY -->
-<!-- ================================================= -->
-
-<div id="playerModeMenu" class="screen hidden">
-
-    <h1>👥 VS Player</h1>
-
-    <button id="createGameBtn">
-        🎮 Create Game
-    </button>
-
-    <button id="joinGameBtn">
-        🔗 Join Game
-    </button>
+    <input
+        id="roomCodeInput"
+        type="text"
+        maxlength="6"
+        placeholder="Enter Game Code"
+    >
 
     <br>
 
-    <button id="playerBackBtn">
-        ⬅ Back
+    <button id="joinRoomBtn">
+        Join
     </button>
 
+    <p id="joinStatus"></p>
 
-    <!-- CREATE -->
+</div>
 
-    <div id="createGamePanel" class="hidden">
 
-        <h2>Game Created!</h2>
+<!-- =========================================================
+     NORMAL MAN
+     ========================================================= -->
 
-        <p>
-            Give this code to your opponent:
-        </p>
+<h1>🦟 Man vs Mosquito</h1>
 
-        <h1 id="roomCode">
-            ------
-        </h1>
+<div id="hud">
 
-        <p id="lobbyStatus">
-            Waiting for opponent...
-        </p>
+    <div class="hudBox">
+
+        🧠 Sanity
+
+        <span id="sanityValue">
+            100%
+        </span>
 
     </div>
 
 
-    <!-- JOIN -->
+    <div class="hudBox">
 
-    <div id="joinGamePanel" class="hidden">
+        🎲 Gamble
 
-        <h2>Join Game</h2>
-
-        <input
-            id="roomCodeInput"
-            type="text"
-            maxlength="6"
-            placeholder="Enter Game Code"
-        >
+        <span id="gambleValue">
+            3
+        </span>
 
         <br>
+        <br>
 
-        <button id="joinRoomBtn">
-            Join
+        <button id="gambleBtn">
+            MAD MAN'S GAMBLE
         </button>
 
-        <p id="joinStatus"></p>
+    </div>
+
+
+    <div class="hudBox">
+
+        🕒 Turn
+
+        <span id="turnValue">
+            1
+        </span>
 
     </div>
 
 </div>
 
 
-<!-- ================================================= -->
-<!-- VS COMPUTER — MAN -->
-<!-- ================================================= -->
+<div id="dialogueBox">
 
-<div id="gameScreen" class="screen hidden">
+    <img
+        id="mosquitoPortrait"
+        src="images/smug.png"
+        alt="Mosquito-chan"
+    >
 
-    <h1>🦟 Man vs Mosquito</h1>
+    <div id="dialogue">
 
-    <div id="hud">
-
-        <div class="hudBox">
-            🧠 Sanity
-
-            <span id="sanityValue">
-                100%
-            </span>
-        </div>
-
-
-        <div class="hudBox">
-
-            🎲 Gamble
-
-            <span id="gambleValue">
-                3
-            </span>
-
-            <br>
-            <br>
-
-            <button id="gambleBtn">
-                MAD MAN'S GAMBLE
-            </button>
-
-        </div>
-
-
-        <div class="hudBox">
-
-            🕒 Turn
-
-            <span id="turnValue">
-                1
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <div id="dialogueBox">
-
-        <img
-            id="mosquitoPortrait"
-            src="images/smug.png"
-            alt="Mosquito-chan"
-        >
-
-        <div id="dialogue">
-
-            <h2 id="speaker">
-                Mosquito-chan
-            </h2>
-
-            <p id="status">
-                BWAHAHA! You'll never catch me!
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div id="gameBoard"></div>
-
-</div>
-
-
-<!-- ================================================= -->
-<!-- VS COMPUTER — MOSQUITO -->
-<!-- ================================================= -->
-
-<div id="mosquitoGameScreen" class="screen hidden">
-
-    <h1>🦟 Play as Mosquito</h1>
-
-
-    <div id="mosquitoHud">
-
-        <div class="hudBox">
-
-            🧠 Man's Sanity
-
-            <span id="mosquitoManSanity">
-                100%
-            </span>
-
-        </div>
-
-
-        <div class="hudBox">
-
-            🕒 Turn
-
-            <span id="mosquitoTurnValue">
-                1
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <div id="manDialogueBox">
-
-        <img
-            id="manPortrait"
-            src="images/mannormal.png"
-            alt="The Man"
-        >
-
-        <div id="manDialogue">
-
-            <h2 id="manSpeaker">
-                The Man
-            </h2>
-
-            <p id="manStatus">
-                I'm going to find you.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div id="mosquitoInstructions">
-
-        <h2>
-            Choose Your Hiding Place
+        <h2 id="speaker">
+            Mosquito-chan
         </h2>
 
-        <p>
-            Click a square to choose where
-            Mosquito-chan will begin.
+        <p id="status">
+            BWAHAHA! You'll never catch me!
         </p>
 
     </div>
 
-
-    <div id="mosquitoBoard"></div>
-
-
-    <button
-        id="confirmMosquitoBtn"
-        disabled
-    >
-        🦟 Hide Here
-    </button>
-
-
-    <button
-        id="stayBtn"
-        class="hidden"
-    >
-        🦟 Stay
-    </button>
-
-
-    <p id="mosquitoMovementStatus"></p>
-
 </div>
 
 
-<!-- ================================================= -->
-<!-- MULTIPLAYER — MAN -->
-<!-- ================================================= -->
-
-<div
-    id="multiplayerManScreen"
-    class="screen hidden"
->
-
-    <h1>
-        🧍 Multiplayer — MAN
-    </h1>
+<div id="gameBoard"></div>
 
 
-    <div
-        id="multiplayerManHud"
-        class="hud"
-    >
+<!-- =========================================================
+     NORMAL MOSQUITO
+     ========================================================= -->
 
-        <div class="hudBox">
-
-            🧠 Sanity
-
-            <span id="mpManSanity">
-                100%
-            </span>
-
-        </div>
+<h1>🦟 Play as Mosquito</h1>
 
 
-        <div class="hudBox">
+<div id="mosquitoHud">
 
-            🕒 Turn
+    <div class="hudBox">
 
-            <span id="mpManTurn">
-                1
-            </span>
+        🧠 Man's Sanity
 
-        </div>
+        <span id="mosquitoManSanity">
+            100%
+        </span>
 
     </div>
 
 
-    <p id="mpManStatus">
-        Waiting for Mosquito...
-    </p>
+    <div class="hudBox">
 
+        🕒 Turn
 
-    <!-- NO EXTERNAL ROW/COLUMN LABELS -->
-    <!-- multiplayer.js creates A1 ... F6 itself -->
-
-    <div class="multiplayerBoardWrapper">
-
-        <div
-            id="multiplayerManBoard"
-            class="multiplayerBoard"
-        ></div>
+        <span id="mosquitoTurnValue">
+            1
+        </span>
 
     </div>
 
 </div>
 
 
-<!-- ================================================= -->
-<!-- MULTIPLAYER — MOSQUITO -->
-<!-- ================================================= -->
-
-<div
-    id="multiplayerMosquitoScreen"
-    class="screen hidden"
->
-
-    <h1>
-        🦟 Multiplayer — MOSQUITO
-    </h1>
-
-
-    <div
-        id="multiplayerMosquitoHud"
-        class="hud"
-    >
-
-        <div class="hudBox">
-
-            🧠 Man's Sanity
-
-            <span id="mpMosquitoSanity">
-                100%
-            </span>
-
-        </div>
-
-
-        <div class="hudBox">
-
-            🕒 Turn
-
-            <span id="mpMosquitoTurn">
-                1
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <p id="mpMosquitoStatus">
-        Choose your hiding place.
-    </p>
-
-
-    <!-- NO EXTERNAL ROW/COLUMN LABELS -->
-
-    <div class="multiplayerBoardWrapper">
-
-        <div
-            id="multiplayerMosquitoBoard"
-            class="multiplayerBoard"
-        ></div>
-
-    </div>
-
-
-    <button
-        id="multiplayerHideBtn"
-        disabled
-    >
-        🦟 Hide Here
-    </button>
-
-
-    <p id="multiplayerMosquitoMovementStatus"></p>
-
-</div>
-
-
-<!-- ================================================= -->
-<!-- END SCREEN -->
-<!-- ================================================= -->
-
-<div
-    id="endScreen"
-    class="screen hidden"
->
-
-    <h1 id="endTitle"></h1>
+<div id="manDialogueBox">
 
     <img
-        id="endImage"
-        src=""
-        alt="Result"
+        id="manPortrait"
+        src="images/mannormal.png"
+        alt="The Man"
     >
 
-    <p id="endMessage"></p>
+    <div id="manDialogue">
 
-    <button id="playAgainBtn">
-        🔄 Play Again
-    </button>
+        <h2 id="manSpeaker">
+            The Man
+        </h2>
 
-    <button id="menuBtn">
-        🏠 Main Menu
-    </button>
+        <p id="manStatus">
+            I'm going to find you.
+        </p>
+
+    </div>
 
 </div>
 
 
-<!-- ================================================= -->
-<!-- SCRIPTS -->
-<!-- ================================================= -->
+<div id="mosquitoInstructions">
 
-<script src="script.js"></script>
-<script src="mosquito.js"></script>
-<script src="multiplayer.js"></script>
+    <h2>
+        Choose Your Hiding Place
+    </h2>
 
-</body>
-</html>
+    <p>
+        Click a square to choose where
+        Mosquito-chan will begin.
+    </p>
+
+</div>
+
+
+<div id="mosquitoBoard"></div>
+
+
+<button
+    id="confirmMosquitoBtn"
+    disabled
+>
+    🦟 Hide Here
+</button>
+
+
+<button
+    id="stayBtn"
+    class="hidden"
+>
+    🦟 Stay
+</button>
+
+
+<p id="mosquitoMovementStatus"></p>
+
+
+<!-- =========================================================
+     MULTIPLAYER MAN
+     ========================================================= -->
+
+<h1>
+    🧍 Multiplayer — MAN
+</h1>
+
+
+<div
+    id="multiplayerManHud"
+    class="hud"
+>
+
+    <!-- SANITY -->
+
+    <div class="hudBox">
+
+        🧠 Sanity
+
+        <span id="mpManSanity">
+            100%
+        </span>
+
+    </div>
+
+
+    <!-- MAD MAN'S GAMBLE -->
+
+    <div
+        class="hudBox multiplayerGambleBox"
+    >
+
+        🎲 Gamble
+
+        <span id="mpManGamble">
+            3
+        </span>
+
+        <br>
+        <br>
+
+        <button
+            id="multiplayerGambleBtn"
+            type="button"
+        >
+            MAD MAN'S GAMBLE
+        </button>
+
+    </div>
+
+
+    <!-- TURN -->
+
+    <div class="hudBox">
+
+        🕒 Turn
+
+        <span id="mpManTurn">
+            1
+        </span>
+
+    </div>
+
+</div>
+
+
+<p id="mpManStatus">
+    Waiting for Mosquito...
+</p>
+
+
+<!-- NO EXTERNAL ROW/COLUMN LABELS -->
+<!-- multiplayer.js creates A1 ... F6 itself -->
+
+<div class="multiplayerBoardWrapper">
+
+    <div
+        id="multiplayerManBoard"
+        class="multiplayerBoard"
+    ></div>
+
+</div>
+
+
+<!-- =========================================================
+     MULTIPLAYER MOSQUITO
+     ========================================================= -->
+
+<h1>
+    🦟 Multiplayer — MOSQUITO
+</h1>
+
+
+<div
+    id="multiplayerMosquitoHud"
+    class="hud"
+>
+
+    <div class="hudBox">
+
+        🧠 Man's Sanity
+
+        <span id="mpMosquitoSanity">
+            100%
+        </span>
+
+    </div>
+
+
+    <div class="hudBox">
+
+        🕒 Turn
+
+        <span id="mpMosquitoTurn">
+            1
+        </span>
+
+    </div>
+
+</div>
+
+
+<p id="mpMosquitoStatus">
+    Choose your hiding place.
+</p>
+
+
+<!-- NO EXTERNAL ROW/COLUMN LABELS -->
+
+<div class="multiplayerBoardWrapper">
+
+    <div
+        id="multiplayerMosquitoBoard"
+        class="multiplayerBoard"
+    ></div>
+
+</div>
+
+
+<button
+    id="multiplayerHideBtn"
+    disabled
+>
+    🦟 Hide Here
+</button>
+
+
+<p id="multiplayerMosquitoMovementStatus"></p>
+
+
+<!-- =========================================================
+     END SCREEN
+     ========================================================= -->
+
+<h1 id="endTitle"></h1>
+
+<img
+    id="endImage"
+    src=""
+    alt="Result"
+>
+
+<p id="endMessage"></p>
+
+<button id="playAgainBtn">
+    🔄 Play Again
+</button>
+
+<button id="menuBtn">
+    🏠 Main Menu
+</button>
