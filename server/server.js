@@ -41,7 +41,6 @@ const server = new WebSocket.Server({
     server: httpServer
 });
 
-
 console.log(
     "🦟 Man vs Mosquito server started!"
 );
@@ -104,6 +103,7 @@ server.on(
 
 
         socket.roomCode = null;
+        socket.role = null;
 
 
         // =========================================
@@ -163,7 +163,11 @@ server.on(
 
                             host: socket,
 
-                            guest: null
+                            guest: null,
+
+                            hostRole: "man",
+
+                            guestRole: "mosquito"
 
                         }
                     );
@@ -171,6 +175,9 @@ server.on(
 
                     socket.roomCode =
                         code;
+
+                    socket.role =
+                        "man";
 
 
                     socket.send(
@@ -180,7 +187,10 @@ server.on(
                                 "roomCreated",
 
                             roomCode:
-                                code
+                                code,
+
+                            role:
+                                "man"
 
                         })
                     );
@@ -189,6 +199,10 @@ server.on(
                     console.log(
                         "🎮 Room created:",
                         code
+                    );
+
+                    console.log(
+                        "🧍 Host role: MAN"
                     );
 
                 }
@@ -272,8 +286,13 @@ server.on(
                     socket.roomCode =
                         code;
 
+                    socket.role =
+                        "mosquito";
 
-                    // Tell guest
+
+                    // -----------------------------
+                    // Tell guest they joined
+                    // -----------------------------
 
                     socket.send(
                         JSON.stringify({
@@ -282,19 +301,27 @@ server.on(
                                 "joinedRoom",
 
                             roomCode:
-                                code
+                                code,
+
+                            role:
+                                "mosquito"
 
                         })
                     );
 
 
+                    // -----------------------------
                     // Tell host
+                    // -----------------------------
 
                     room.host.send(
                         JSON.stringify({
 
                             type:
-                                "playerJoined"
+                                "playerJoined",
+
+                            role:
+                                "man"
 
                         })
                     );
@@ -302,6 +329,56 @@ server.on(
 
                     console.log(
                         "👥 Player joined room:",
+                        code
+                    );
+
+                    console.log(
+                        "🧍 Host role: MAN"
+                    );
+
+                    console.log(
+                        "🦟 Guest role: MOSQUITO"
+                    );
+
+
+                    // =================================
+                    // START MULTIPLAYER GAME
+                    // =================================
+
+                    room.host.send(
+                        JSON.stringify({
+
+                            type:
+                                "gameStart",
+
+                            role:
+                                "man",
+
+                            roomCode:
+                                code
+
+                        })
+                    );
+
+
+                    room.guest.send(
+                        JSON.stringify({
+
+                            type:
+                                "gameStart",
+
+                            role:
+                                "mosquito",
+
+                            roomCode:
+                                code
+
+                        })
+                    );
+
+
+                    console.log(
+                        "🎮 Multiplayer game starting:",
                         code
                     );
 
