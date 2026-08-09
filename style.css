@@ -1,90 +1,85 @@
-/* ========================================= */
-/* GENERAL */
-/* ========================================= */
+/* =========================================================
+   MAN VS MOSQUITO
+   COMPLETE STYLE SHEET
+   ========================================================= */
+
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
 
 body {
-
     background: #202124;
-
     color: white;
-
     font-family: Arial, sans-serif;
-
     text-align: center;
-
 }
 
 .screen {
-
     margin-top: 40px;
-
 }
 
 .hidden {
-
-    display: none;
-
+    display: none !important;
 }
 
 button {
-
     padding: 15px;
-
     margin: 10px;
-
     font-size: 18px;
-
     cursor: pointer;
-
 }
 
 
-/* ========================================= */
-/* MAN MODE BOARD */
-/* ========================================= */
+/* =========================================================
+   NORMAL MAN MODE BOARD
+   ========================================================= */
 
 #gameBoard {
-
     margin: 30px auto;
-
-    width: 490px;
+    width: max-content;
 
     display: grid;
 
     grid-template-columns: repeat(7, 70px);
 
     gap: 5px;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO MODE BOARD */
-/* ========================================= */
+/* =========================================================
+   NORMAL MOSQUITO MODE BOARD
+   ========================================================= */
 
 #mosquitoBoard {
-
     margin: 30px auto;
-
-    width: 490px;
+    width: max-content;
 
     display: grid;
 
     grid-template-columns: repeat(7, 70px);
 
     gap: 5px;
-
 }
 
 
-/* ========================================= */
-/* BOARD SQUARES */
-/* ========================================= */
+/* =========================================================
+   NORMAL GAME SQUARES
+   ========================================================= */
 
 .square {
-
     width: 70px;
-
     height: 70px;
 
     background: #555;
@@ -97,46 +92,41 @@ button {
 
     font-size: 20px;
 
-    transition: .2s;
+    transition: 0.2s;
 
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 .square:hover {
-
     background: #777;
-
 }
 
 
-/* ========================================= */
-/* BOARD LABELS */
-/* ========================================= */
+/* =========================================================
+   NORMAL LABELS
+   ========================================================= */
 
 .label {
-
     width: 70px;
-
     height: 70px;
 
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     font-size: 22px;
-
     font-weight: bold;
-
 }
 
 
-/* ========================================= */
-/* MAN MODE DIALOGUE */
-/* ========================================= */
+/* =========================================================
+   MAN DIALOGUE
+   ========================================================= */
 
 #dialogueBox {
-
     width: 700px;
 
     margin: 30px auto;
@@ -148,23 +138,18 @@ button {
     justify-content: center;
 
     gap: 30px;
-
 }
 
 #mosquitoPortrait {
-
     width: 180px;
-
     height: 180px;
 
     object-fit: cover;
 
     border-radius: 15px;
-
 }
 
 #dialogue {
-
     background: #333;
 
     padding: 20px;
@@ -174,26 +159,22 @@ button {
     text-align: left;
 
     width: 350px;
-
 }
 
 #speaker {
-
     font-size: 22px;
 
     color: pink;
 
     font-weight: bold;
-
 }
 
 
-/* ========================================= */
-/* MAN HUD */
-/* ========================================= */
+/* =========================================================
+   MAN HUD
+   ========================================================= */
 
 #hud {
-
     width: 700px;
 
     margin: 20px auto;
@@ -201,16 +182,14 @@ button {
     display: flex;
 
     justify-content: space-around;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO HUD */
-/* ========================================= */
+/* =========================================================
+   MOSQUITO HUD
+   ========================================================= */
 
 #mosquitoHud {
-
     width: 500px;
 
     margin: 20px auto;
@@ -220,16 +199,14 @@ button {
     justify-content: center;
 
     gap: 30px;
-
 }
 
 
-/* ========================================= */
-/* HUD BOX */
-/* ========================================= */
+/* =========================================================
+   HUD BOX
+   ========================================================= */
 
 .hudBox {
-
     background: #333;
 
     border-radius: 10px;
@@ -239,24 +216,20 @@ button {
     font-size: 20px;
 
     font-weight: bold;
-
 }
 
 .hudBox span {
-
     color: #7CFF7C;
 
     margin-left: 8px;
-
 }
 
 
-/* ========================================= */
-/* GAMBLE BUTTON */
-/* ========================================= */
+/* =========================================================
+   GAMBLE BUTTON
+   ========================================================= */
 
 #gambleBtn {
-
     padding: 8px 15px;
 
     font-size: 15px;
@@ -271,23 +244,19 @@ button {
 
     border-radius: 8px;
 
-    transition: .2s;
-
+    transition: 0.2s;
 }
 
 #gambleBtn:hover {
-
     background: #e22;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO MODE — MAN DIALOGUE */
-/* ========================================= */
+/* =========================================================
+   MOSQUITO MODE — MAN DIALOGUE
+   ========================================================= */
 
 #manDialogueBox {
-
     width: 700px;
 
     margin: 25px auto;
@@ -299,23 +268,18 @@ button {
     justify-content: center;
 
     gap: 25px;
-
 }
 
 #manPortrait {
-
     width: 180px;
-
     height: 180px;
 
     object-fit: cover;
 
     border-radius: 15px;
-
 }
 
 #manDialogue {
-
     background: #333;
 
     padding: 20px;
@@ -327,11 +291,9 @@ button {
     width: 350px;
 
     min-height: 100px;
-
 }
 
 #manSpeaker {
-
     font-size: 22px;
 
     color: #ff7777;
@@ -339,49 +301,39 @@ button {
     font-weight: bold;
 
     margin-top: 0;
-
 }
 
 #manStatus {
-
     font-size: 18px;
 
     line-height: 1.5;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO MODE INSTRUCTIONS */
-/* ========================================= */
+/* =========================================================
+   MOSQUITO INSTRUCTIONS
+   ========================================================= */
 
 #mosquitoInstructions {
-
     margin: 20px auto;
 
     width: 600px;
-
 }
 
 #mosquitoInstructions h2 {
-
     margin-bottom: 10px;
-
 }
 
 #mosquitoInstructions p {
-
     font-size: 18px;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO CONFIRM BUTTON */
-/* ========================================= */
+/* =========================================================
+   MOSQUITO CONFIRM BUTTON
+   ========================================================= */
 
 #confirmMosquitoBtn {
-
     background: #16803c;
 
     color: white;
@@ -393,32 +345,26 @@ button {
     padding: 12px 25px;
 
     font-size: 18px;
-
 }
 
 #confirmMosquitoBtn:hover {
-
     background: #20a050;
-
 }
 
 #confirmMosquitoBtn:disabled {
-
     background: #555;
 
     color: #aaa;
 
     cursor: not-allowed;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO STAY BUTTON */
-/* ========================================= */
+/* =========================================================
+   MOSQUITO STAY BUTTON
+   ========================================================= */
 
 #stayBtn {
-
     background: #555;
 
     color: white;
@@ -428,84 +374,66 @@ button {
     border-radius: 8px;
 
     padding: 12px 25px;
-
 }
 
 #stayBtn:hover {
-
     background: #777;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO STATUS */
-/* ========================================= */
+/* =========================================================
+   MOSQUITO STATUS
+   ========================================================= */
 
 #mosquitoMovementStatus {
-
     font-size: 18px;
 
     min-height: 25px;
 
     margin: 15px auto;
-
 }
 
 
-/* ========================================= */
-/* MOSQUITO MODE — MAN ATTACK MARKERS */
-/* ========================================= */
+/* =========================================================
+   NORMAL GAME MARKERS
+   ========================================================= */
 
 .man-miss {
-
     background: #993333 !important;
-
 }
 
 .man-bite {
-
     background: orange !important;
-
 }
 
 .man-hit {
-
     background: #00cc66 !important;
-
 }
 
 .mosquito-move-option {
-
     background: #1683ff !important;
-
 }
 
 
-/* ========================================= */
-/* END SCREEN */
-/* ========================================= */
+/* =========================================================
+   END SCREEN
+   ========================================================= */
 
 #endScreen {
-
     text-align: center;
 
     padding-top: 40px;
-
 }
 
 #endTitle {
-
     font-size: 48px;
 
     color: white;
 
     margin-bottom: 20px;
-
 }
 
 #endImage {
-
     width: 350px;
 
     max-width: 90%;
@@ -513,11 +441,9 @@ button {
     border-radius: 15px;
 
     margin-bottom: 25px;
-
 }
 
 #endMessage {
-
     color: white;
 
     font-size: 22px;
@@ -525,12 +451,10 @@ button {
     margin-bottom: 30px;
 
     white-space: pre-line;
-
 }
 
 #playAgainBtn,
 #menuBtn {
-
     font-size: 20px;
 
     padding: 12px 28px;
@@ -538,18 +462,19 @@ button {
     margin: 10px;
 
     cursor: pointer;
-
 }
 
-.square {
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
 
-/* ================================================= */
-/* MULTIPLAYER SCREENS */
-/* ================================================= */
+/* =========================================================
+   =========================================================
+   MULTIPLAYER
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   MULTIPLAYER FULL SCREEN
+   ========================================================= */
 
 #multiplayerManScreen,
 #multiplayerMosquitoScreen {
@@ -559,7 +484,6 @@ button {
     inset: 0;
 
     width: 100vw;
-
     height: 100vh;
 
     z-index: 99999;
@@ -567,17 +491,15 @@ button {
     background: #202124;
 
     overflow-y: auto;
-
-    box-sizing: border-box;
+    overflow-x: hidden;
 
     text-align: center;
-
 }
 
 
-/* ================================================= */
-/* MULTIPLAYER HUD */
-/* ================================================= */
+/* =========================================================
+   MULTIPLAYER HUD
+   ========================================================= */
 
 #multiplayerManHud,
 #multiplayerMosquitoHud {
@@ -591,13 +513,12 @@ button {
     gap: 30px;
 
     margin: 20px auto;
-
 }
 
 
-/* ================================================= */
-/* MULTIPLAYER BOARD WRAPPER */
-/* ================================================= */
+/* =========================================================
+   MULTIPLAYER BOARD WRAPPER
+   ========================================================= */
 
 .multiplayerBoardWrapper {
 
@@ -609,68 +530,71 @@ button {
 
     justify-content: center;
 
-    margin: 30px auto;
+    width: 100%;
 
+    margin: 25px auto;
 }
 
 
-/* ================================================= */
-/* COLUMN LABELS */
-/* ================================================= */
+/* =========================================================
+   COLUMN LABELS
+   1 2 3 4 5 6
+   ========================================================= */
 
 .multiplayerColumnLabels {
 
     display: grid;
 
     grid-template-columns:
-        35px repeat(5, 70px);
+        repeat(6, 70px);
 
     gap: 5px;
 
-    width: max-content;
+    width: 445px;
 
-    margin-bottom: 5px;
-
+    margin: 0 auto 5px auto;
 }
-
 
 .multiplayerColumnLabels span {
 
     width: 70px;
-
     height: 25px;
 
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     font-size: 18px;
 
     font-weight: bold;
-
 }
 
 
-/* ================================================= */
-/* BOARD + ROW LABELS */
-/* ================================================= */
+/* =========================================================
+   BOARD + ROW LABELS
+   ========================================================= */
 
 .multiplayerBoardWithRows {
 
     display: flex;
 
-    align-items: center;
+    align-items: flex-start;
+
+    justify-content: center;
 
     gap: 5px;
 
+    width: max-content;
+
+    margin: 0 auto;
 }
 
 
-/* ================================================= */
-/* ROW LABELS */
-/* ================================================= */
+/* =========================================================
+   ROW LABELS
+   A B C D E F
+   ========================================================= */
 
 .multiplayerRowLabels {
 
@@ -679,77 +603,128 @@ button {
     flex-direction: column;
 
     gap: 5px;
-
 }
-
 
 .multiplayerRowLabels span {
 
     width: 35px;
-
     height: 70px;
 
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
     font-size: 18px;
 
     font-weight: bold;
-
 }
 
 
-/* ================================================= */
-/* 5 × 5 BOARD */
-/* ================================================= */
+/* =========================================================
+   ⭐ THE ACTUAL MULTIPLAYER BOARD
+   ⭐ 6 COLUMNS
+   ⭐ 6 ROWS
+   ⭐ 36 CELLS
+   ========================================================= */
 
 .multiplayerBoard {
 
-    display: grid;
+    display: grid !important;
 
     grid-template-columns:
-        repeat(5, 70px);
+        repeat(6, 70px) !important;
 
     grid-template-rows:
-        repeat(5, 70px);
+        repeat(6, 70px) !important;
 
-    gap: 5px;
+    grid-auto-flow: row !important;
 
-    width: max-content;
+    gap: 5px !important;
 
-    height: max-content;
+    width: 445px !important;
 
+    height: 445px !important;
+
+    min-width: 445px !important;
+    max-width: 445px !important;
+
+    min-height: 445px !important;
+    max-height: 445px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
 }
 
 
-/* ================================================= */
-/* MULTIPLAYER CELL */
-/* ================================================= */
+/* =========================================================
+   SPECIFIC MULTIPLAYER BOARDS
+   ========================================================= */
+
+#multiplayerManBoard,
+#multiplayerMosquitoBoard {
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(6, 70px) !important;
+
+    grid-template-rows:
+        repeat(6, 70px) !important;
+
+    grid-auto-flow: row !important;
+
+    gap: 5px !important;
+
+    width: 445px !important;
+    height: 445px !important;
+
+    min-width: 445px !important;
+    max-width: 445px !important;
+
+    min-height: 445px !important;
+    max-height: 445px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* =========================================================
+   MULTIPLAYER CELL
+   ========================================================= */
 
 .multiplayerCell {
 
-    width: 70px;
+    width: 70px !important;
+    height: 70px !important;
 
-    height: 70px;
+    min-width: 70px !important;
+    max-width: 70px !important;
 
-    box-sizing: border-box;
+    min-height: 70px !important;
+    max-height: 70px !important;
+
+    box-sizing: border-box !important;
 
     background: #444;
 
     border: 2px solid #777;
 
-    display: flex;
+    display: flex !important;
 
-    justify-content: center;
-
-    align-items: center;
+    justify-content: center !important;
+    align-items: center !important;
 
     color: #ddd;
 
-    font-size: 16px;
+    font-size: 18px;
 
     font-weight: bold;
 
@@ -761,26 +736,24 @@ button {
         background 0.15s,
         border 0.15s,
         transform 0.1s;
-
 }
 
 
-/* ================================================= */
-/* HOVER */
-/* ================================================= */
+/* =========================================================
+   MULTIPLAYER HOVER
+   ========================================================= */
 
 .multiplayerCell:hover {
 
     background: #555;
 
     transform: scale(1.03);
-
 }
 
 
-/* ================================================= */
-/* SELECTED CELL */
-/* ================================================= */
+/* =========================================================
+   MULTIPLAYER SELECTED
+   ========================================================= */
 
 .multiplayerCell.selected {
 
@@ -789,13 +762,38 @@ button {
     border: 3px solid white;
 
     color: white;
-
 }
 
 
-/* ================================================= */
-/* MOSQUITO HIDE BUTTON */
-/* ================================================= */
+/* =========================================================
+   MOSQUITO SELECTED
+   ========================================================= */
+
+#multiplayerMosquitoBoard
+.multiplayerCell.selected {
+
+    background: #16803c;
+
+    border: 3px solid white;
+}
+
+
+/* =========================================================
+   MAN SELECTED
+   ========================================================= */
+
+#multiplayerManBoard
+.multiplayerCell.selected {
+
+    background: #555;
+
+    border: 3px solid white;
+}
+
+
+/* =========================================================
+   MULTIPLAYER HIDE BUTTON
+   ========================================================= */
 
 #multiplayerHideBtn {
 
@@ -816,16 +814,12 @@ button {
     font-size: 18px;
 
     cursor: pointer;
-
 }
-
 
 #multiplayerHideBtn:hover {
 
     background: #20a050;
-
 }
-
 
 #multiplayerHideBtn:disabled {
 
@@ -834,13 +828,12 @@ button {
     color: #999;
 
     cursor: not-allowed;
-
 }
 
 
-/* ================================================= */
-/* MULTIPLAYER STATUS */
-/* ================================================= */
+/* =========================================================
+   MULTIPLAYER STATUS
+   ========================================================= */
 
 #mpManStatus,
 #mpMosquitoStatus,
@@ -849,139 +842,119 @@ button {
     min-height: 25px;
 
     font-size: 18px;
-
 }
 
 
-/* ================================================= */
-/* OPTIONAL: MAN'S SELECTED CELL */
-/* ================================================= */
-
-#multiplayerManBoard
-.multiplayerCell.selected {
-
-    background: #666;
-
-    border: 3px solid #ffffff;
-
-}
-
-
-/* ================================================= */
-/* OPTIONAL: MOSQUITO'S HIDING CELL */
-/* ================================================= */
-
-#multiplayerMosquitoBoard
-.multiplayerCell.selected {
-
-    background: #16803c;
-
-    border: 3px solid white;
-
-}
-
-
-/* ================================================= */
-/* MOBILE */
-/* ================================================= */
+/* =========================================================
+   MOBILE MULTIPLAYER
+   ========================================================= */
 
 @media (max-width: 600px) {
 
     .multiplayerBoard {
 
         grid-template-columns:
-            repeat(5, 55px);
+            repeat(6, 48px) !important;
 
         grid-template-rows:
-            repeat(5, 55px);
+            repeat(6, 48px) !important;
 
-        gap: 4px;
+        gap: 3px !important;
 
+        width: 303px !important;
+        height: 303px !important;
+
+        min-width: 303px !important;
+        max-width: 303px !important;
+
+        min-height: 303px !important;
+        max-height: 303px !important;
+    }
+
+
+    #multiplayerManBoard,
+    #multiplayerMosquitoBoard {
+
+        grid-template-columns:
+            repeat(6, 48px) !important;
+
+        grid-template-rows:
+            repeat(6, 48px) !important;
+
+        gap: 3px !important;
+
+        width: 303px !important;
+        height: 303px !important;
+
+        min-width: 303px !important;
+        max-width: 303px !important;
+
+        min-height: 303px !important;
+        max-height: 303px !important;
     }
 
 
     .multiplayerCell {
 
-        width: 55px;
+        width: 48px !important;
+        height: 48px !important;
 
-        height: 55px;
+        min-width: 48px !important;
+        max-width: 48px !important;
+
+        min-height: 48px !important;
+        max-height: 48px !important;
 
         font-size: 13px;
-
     }
 
 
     .multiplayerColumnLabels {
 
         grid-template-columns:
-            30px repeat(5, 55px);
+            repeat(6, 48px);
 
-        gap: 4px;
+        width: 303px;
 
+        gap: 3px;
     }
 
 
     .multiplayerColumnLabels span {
 
-        width: 55px;
+        width: 48px;
 
+        font-size: 14px;
     }
 
 
     .multiplayerRowLabels {
 
-        gap: 4px;
-
+        gap: 3px;
     }
 
 
     .multiplayerRowLabels span {
 
-        width: 30px;
+        width: 25px;
+        height: 48px;
 
-        height: 55px;
-
+        font-size: 14px;
     }
 
-}
 
-/* ================================================= */
-/* FINAL MULTIPLAYER GRID FIX */
-/* ================================================= */
+    .multiplayerBoardWithRows {
 
-#multiplayerManBoard,
-#multiplayerMosquitoBoard {
-
-    display: grid !important;
-
-    grid-template-columns:
-        repeat(5, 70px) !important;
-
-    grid-template-rows:
-        repeat(5, 70px) !important;
-
-    gap: 5px !important;
-
-    width: max-content !important;
-
-    height: max-content !important;
-
-    margin: 0 auto !important;
-
-}
+        gap: 3px;
+    }
 
 
-/* ================================================= */
-/* MULTIPLAYER CELLS */
-/* ================================================= */
+    #multiplayerManHud,
+    #multiplayerMosquitoHud {
 
-#multiplayerManBoard .multiplayerCell,
-#multiplayerMosquitoBoard .multiplayerCell {
+        gap: 10px;
 
-    width: 70px !important;
-
-    height: 70px !important;
-
-    box-sizing: border-box;
+        flex-wrap: wrap;
+    }
 
 }
