@@ -59,21 +59,21 @@ const rooms =
 
 
 // ===================================================
-// BOARD SIZE
+// BOARD
 // ===================================================
 
 const BOARD_SIZE = 6;
 
 
 // ===================================================
-// INITIAL SANITY
+// SANITY
 // ===================================================
 
 const INITIAL_SANITY = 100;
 
 
 // ===================================================
-// CREATE ROOM CODE
+// ROOM CODE
 // ===================================================
 
 function generateRoomCode(){
@@ -83,11 +83,9 @@ function generateRoomCode(){
 
     let code;
 
-
     do{
 
         code = "";
-
 
         for(
             let i = 0;
@@ -110,14 +108,13 @@ function generateRoomCode(){
         rooms.has(code)
     );
 
-
     return code;
 
 }
 
 
 // ===================================================
-// SEND JSON
+// SEND
 // ===================================================
 
 function send(socket, data){
@@ -154,7 +151,7 @@ function getPositionName(row, col){
 
 
 // ===================================================
-// VALIDATE BOARD COORDINATES
+// VALID COORDINATE
 // ===================================================
 
 function isValidCoordinate(row, col){
@@ -172,18 +169,7 @@ function isValidCoordinate(row, col){
 
 
 // ===================================================
-// CHECK SIDE-ADJACENCY
-// ===================================================
-//
-// TRUE ONLY IF:
-//
-// up
-// down
-// left
-// right
-//
-// Diagonals are NOT adjacent.
-//
+// ORTHOGONAL ADJACENCY
 // ===================================================
 
 function isOrthogonallyAdjacent(
@@ -198,18 +184,89 @@ function isOrthogonallyAdjacent(
             row1 - row2
         );
 
-
     const colDifference =
         Math.abs(
             col1 - col2
         );
-
 
     return (
         rowDifference +
         colDifference ===
         1
     );
+
+}
+
+
+// ===================================================
+// GET ORTHOGONAL MOVES
+// ===================================================
+
+function getOrthogonalMoves(row, col){
+
+    const moves = [];
+
+    const directions = [
+
+        {
+            row: -1,
+            col: 0
+        },
+
+        {
+            row: 1,
+            col: 0
+        },
+
+        {
+            row: 0,
+            col: -1
+        },
+
+        {
+            row: 0,
+            col: 1
+        }
+
+    ];
+
+
+    for(
+        const direction of directions
+    ){
+
+        const newRow =
+            row +
+            direction.row;
+
+        const newCol =
+            col +
+            direction.col;
+
+
+        if(
+            isValidCoordinate(
+                newRow,
+                newCol
+            )
+        ){
+
+            moves.push({
+
+                row:
+                    newRow,
+
+                col:
+                    newCol
+
+            });
+
+        }
+
+    }
+
+
+    return moves;
 
 }
 
@@ -234,9 +291,9 @@ server.on(
             null;
 
 
-        // =========================================
+        // =================================================
         // MESSAGE
-        // =========================================
+        // =================================================
 
         socket.on(
             "message",
@@ -244,10 +301,6 @@ server.on(
 
                 let data;
 
-
-                // =================================
-                // PARSE MESSAGE
-                // =================================
 
                 try{
 
@@ -284,9 +337,9 @@ server.on(
                 );
 
 
-                // =================================
+                // =================================================
                 // CREATE ROOM
-                // =================================
+                // =================================================
 
                 if(
                     data.type ===
@@ -301,20 +354,11 @@ server.on(
                         code,
                         {
 
-                            // -------------------------
-                            // PLAYERS
-                            // -------------------------
-
                             host:
                                 socket,
 
                             guest:
                                 null,
-
-
-                            // -------------------------
-                            // ROLES
-                            // -------------------------
 
                             hostRole:
                                 "man",
@@ -322,32 +366,17 @@ server.on(
                             guestRole:
                                 "mosquito",
 
-
-                            // -------------------------
-                            // GAME STATE
-                            // -------------------------
-
                             gameStarted:
                                 false,
 
                             gameState:
                                 "waiting",
 
-
-                            // -------------------------
-                            // MOSQUITO
-                            // -------------------------
-
                             mosquitoPosition:
                                 null,
 
                             mosquitoReady:
                                 false,
-
-
-                            // -------------------------
-                            // MAN
-                            // -------------------------
 
                             manSanity:
                                 INITIAL_SANITY,
@@ -356,7 +385,13 @@ server.on(
                                 0,
 
                             biteFreeTurns:
-                                0
+                                0,
+
+                            lastAttack:
+                                null,
+
+                            mosquitoMoveReason:
+                                null
 
                         }
                     );
@@ -368,10 +403,6 @@ server.on(
                     socket.role =
                         "man";
 
-
-                    // -----------------------------
-                    // TELL HOST
-                    // -----------------------------
 
                     send(
                         socket,
@@ -402,9 +433,9 @@ server.on(
                 }
 
 
-                // =================================
+                // =================================================
                 // JOIN ROOM
-                // =================================
+                // =================================================
 
                 else if(
                     data.type ===
@@ -422,10 +453,6 @@ server.on(
                     const room =
                         rooms.get(code);
 
-
-                    // -----------------------------
-                    // ROOM NOT FOUND
-                    // -----------------------------
 
                     if(!room){
 
@@ -447,10 +474,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // ROOM FULL
-                    // -----------------------------
-
                     if(room.guest){
 
                         send(
@@ -471,10 +494,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // JOIN
-                    // -----------------------------
-
                     room.guest =
                         socket;
 
@@ -485,10 +504,6 @@ server.on(
                     socket.role =
                         "mosquito";
 
-
-                    // -----------------------------
-                    // TELL GUEST
-                    // -----------------------------
 
                     send(
                         socket,
@@ -506,10 +521,6 @@ server.on(
                         }
                     );
 
-
-                    // -----------------------------
-                    // TELL HOST
-                    // -----------------------------
 
                     send(
                         room.host,
@@ -530,18 +541,20 @@ server.on(
                         code
                     );
 
+
                     console.log(
                         "🧍 Host role: MAN"
                     );
+
 
                     console.log(
                         "🦟 Guest role: MOSQUITO"
                     );
 
 
-                    // =================================
-                    // START MULTIPLAYER GAME
-                    // =================================
+                    // =============================================
+                    // START GAME
+                    // =============================================
 
                     room.gameStarted =
                         true;
@@ -549,6 +562,11 @@ server.on(
                     room.gameState =
                         "mosquitoHiding";
 
+                    room.mosquitoPosition =
+                        null;
+
+                    room.mosquitoReady =
+                        false;
 
                     room.manSanity =
                         INITIAL_SANITY;
@@ -558,6 +576,12 @@ server.on(
 
                     room.biteFreeTurns =
                         0;
+
+                    room.lastAttack =
+                        null;
+
+                    room.mosquitoMoveReason =
+                        null;
 
 
                     send(
@@ -602,18 +626,14 @@ server.on(
                 }
 
 
-                // =================================
-                // MOSQUITO HIDING POSITION
-                // =================================
+                // =================================================
+                // MOSQUITO INITIAL POSITION
+                // =================================================
 
                 else if(
                     data.type ===
                     "mosquitoPosition"
                 ){
-
-                    // -----------------------------
-                    // CHECK ROOM
-                    // -----------------------------
 
                     const code =
                         String(
@@ -647,10 +667,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // ONLY MOSQUITO
-                    // -----------------------------
-
                     if(
                         socket !==
                         room.guest ||
@@ -676,10 +692,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // GAME STATE
-                    // -----------------------------
-
                     if(
                         room.gameState !==
                         "mosquitoHiding"
@@ -693,7 +705,7 @@ server.on(
                                     "error",
 
                                 message:
-                                    "The Mosquito cannot choose a new hiding place right now."
+                                    "The Mosquito cannot choose a hiding place right now."
 
                             }
                         );
@@ -702,10 +714,6 @@ server.on(
 
                     }
 
-
-                    // -----------------------------
-                    // PREVENT SECOND SELECTION
-                    // -----------------------------
 
                     if(
                         room.mosquitoReady
@@ -729,19 +737,11 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // VALIDATE ROW
-                    // -----------------------------
-
                     const row =
                         Number(
                             data.row
                         );
 
-
-                    // -----------------------------
-                    // VALIDATE COLUMN
-                    // -----------------------------
 
                     const col =
                         Number(
@@ -774,20 +774,12 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // SERVER GENERATES POSITION
-                    // -----------------------------
-
                     const position =
                         getPositionName(
                             row,
                             col
                         );
 
-
-                    // -----------------------------
-                    // STORE SECRET POSITION
-                    // -----------------------------
 
                     room.mosquitoPosition = {
 
@@ -815,32 +807,30 @@ server.on(
                         0;
 
 
-                    room.biteFreeTurns =
-                        0;
-
-
                     room.manSanity =
                         INITIAL_SANITY;
+
+
+                    room.biteFreeTurns =
+                        0;
 
 
                     console.log(
                         "🦟 Mosquito has hidden."
                     );
 
+
                     console.log(
                         "Room:",
                         code
                     );
+
 
                     console.log(
                         "Position:",
                         position
                     );
 
-
-                    // =================================
-                    // TELL MOSQUITO
-                    // =================================
 
                     send(
                         room.guest,
@@ -852,20 +842,6 @@ server.on(
                         }
                     );
 
-
-                    // =================================
-                    // TELL MAN
-                    // =================================
-                    //
-                    // IMPORTANT:
-                    //
-                    // NEVER SEND:
-                    //
-                    // row
-                    // col
-                    // position
-                    //
-                    // =================================
 
                     send(
                         room.host,
@@ -882,6 +858,7 @@ server.on(
                         "🧍 Man notified:"
                     );
 
+
                     console.log(
                         "The hunt has started."
                     );
@@ -889,18 +866,14 @@ server.on(
                 }
 
 
-                // =================================
+                // =================================================
                 // MAN ATTACK
-                // =================================
+                // =================================================
 
                 else if(
                     data.type ===
                     "manAttack"
                 ){
-
-                    // -----------------------------
-                    // CHECK ROOM
-                    // -----------------------------
 
                     const code =
                         String(
@@ -934,10 +907,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // ONLY MAN
-                    // -----------------------------
-
                     if(
                         socket !==
                         room.host ||
@@ -963,10 +932,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // MUST BE MAN'S TURN
-                    // -----------------------------
-
                     if(
                         room.gameState !==
                         "manTurn"
@@ -990,10 +955,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // MOSQUITO MUST BE HIDDEN
-                    // -----------------------------
-
                     if(
                         !room.mosquitoReady ||
                         !room.mosquitoPosition
@@ -1016,10 +977,6 @@ server.on(
 
                     }
 
-
-                    // -----------------------------
-                    // VALIDATE ATTACK
-                    // -----------------------------
 
                     const attackRow =
                         Number(
@@ -1058,10 +1015,6 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // GET MOSQUITO POSITION
-                    // -----------------------------
-
                     const mosquitoRow =
                         room.mosquitoPosition.row;
 
@@ -1081,16 +1034,27 @@ server.on(
                         room.mosquitoPosition.position;
 
 
-                    // -----------------------------
-                    // ADVANCE TURN
-                    // -----------------------------
-
-                    room.turn += 1;
+                    room.turn +=
+                        1;
 
 
-                    // =================================
+                    room.lastAttack = {
+
+                        row:
+                            attackRow,
+
+                        col:
+                            attackCol,
+
+                        position:
+                            attackPosition
+
+                    };
+
+
+                    // =================================================
                     // EXACT HIT
-                    // =================================
+                    // =================================================
 
                     if(
                         attackRow ===
@@ -1101,21 +1065,6 @@ server.on(
 
                         console.log(
                             "🎯 MAN HIT MOSQUITO!"
-                        );
-
-                        console.log(
-                            "Room:",
-                            code
-                        );
-
-                        console.log(
-                            "Turn:",
-                            room.turn
-                        );
-
-                        console.log(
-                            "Position:",
-                            mosquitoPosition
                         );
 
 
@@ -1180,9 +1129,9 @@ server.on(
                     }
 
 
-                    // =================================
+                    // =================================================
                     // BITE
-                    // =================================
+                    // =================================================
 
                     if(
                         isOrthogonallyAdjacent(
@@ -1192,10 +1141,6 @@ server.on(
                             mosquitoCol
                         )
                     ){
-
-                        // -----------------------------
-                        // SANITY -10
-                        // -----------------------------
 
                         room.manSanity -=
                             10;
@@ -1212,57 +1157,52 @@ server.on(
                         }
 
 
-                        // -----------------------------
-                        // RESET BITE-FREE COUNTER
-                        // -----------------------------
-
                         room.biteFreeTurns =
                             0;
+
+
+                        room.gameState =
+                            "mosquitoMoveAfterBite";
+
+
+                        room.mosquitoMoveReason =
+                            "bite";
 
 
                         console.log(
                             "🩸 BITE!"
                         );
 
+
                         console.log(
                             "Room:",
                             code
                         );
+
 
                         console.log(
                             "Turn:",
                             room.turn
                         );
 
+
                         console.log(
                             "Attack:",
                             attackPosition
                         );
+
 
                         console.log(
                             "Mosquito:",
                             mosquitoPosition
                         );
 
+
                         console.log(
                             "Sanity:",
                             room.manSanity
                         );
 
-
-                        // --------------------------------
-                        // FOR NOW:
-                        // GAME WAITS FOR NEXT MOVEMENT
-                        // SYSTEM.
-                        // --------------------------------
-
-                        room.gameState =
-                            "mosquitoMoveAfterBite";
-
-
-                        // -----------------------------
-                        // TELL MAN
-                        // -----------------------------
 
                         send(
                             room.host,
@@ -1290,10 +1230,6 @@ server.on(
                         );
 
 
-                        // -----------------------------
-                        // TELL MOSQUITO
-                        // -----------------------------
-
                         send(
                             room.guest,
                             {
@@ -1307,8 +1243,20 @@ server.on(
                                 turn:
                                     room.turn,
 
+                                canFlyAnywhere:
+                                    true,
+
+                                currentPosition:
+                                    {
+                                        row:
+                                            mosquitoRow,
+
+                                        col:
+                                            mosquitoCol
+                                    },
+
                                 message:
-                                    "🩸 The Man detected a bite. You may move."
+                                    "🩸 The Man detected a bite. Stay or fly anywhere."
 
                             }
                         );
@@ -1319,13 +1267,9 @@ server.on(
                     }
 
 
-                    // =================================
-                    // NORMAL MISS
-                    // =================================
-                    //
-                    // MISS = -1 SANITY
-                    //
-                    // =================================
+                    // =================================================
+                    // MISS
+                    // =================================================
 
                     room.manSanity -=
                         1;
@@ -1342,51 +1286,52 @@ server.on(
                     }
 
 
-                    // -----------------------------
-                    // INCREMENT BITE-FREE TURNS
-                    // -----------------------------
-
                     room.biteFreeTurns +=
                         1;
-
-
-                    console.log(
-                        "❌ MAN MISSED."
-                    );
-
-                    console.log(
-                        "Room:",
-                        code
-                    );
-
-                    console.log(
-                        "Turn:",
-                        room.turn
-                    );
-
-                    console.log(
-                        "Attack:",
-                        attackPosition
-                    );
-
-                    console.log(
-                        "Sanity:",
-                        room.manSanity
-                    );
-
-                    console.log(
-                        "Bite-free turns:",
-                        room.biteFreeTurns
-                    );
 
 
                     room.gameState =
                         "mosquitoMoveAfterMiss";
 
 
-                    // -----------------------------
-                    // TELL MAN
-                    // -----------------------------
+                    room.mosquitoMoveReason =
+                        "miss";
+
+
+                    console.log(
+                        "❌ MAN MISSED."
+                    );
+
+
+                    console.log(
+                        "Room:",
+                        code
+                    );
+
+
+                    console.log(
+                        "Turn:",
+                        room.turn
+                    );
+
+
+                    console.log(
+                        "Attack:",
+                        attackPosition
+                    );
+
+
+                    console.log(
+                        "Sanity:",
+                                        room.manSanity
+                    );
+
+
+                    console.log(
+                        "Bite-free turns:",
+                        room.biteFreeTurns
+                    );
+
 
                     send(
                         room.host,
@@ -1417,10 +1362,6 @@ server.on(
                     );
 
 
-                    // -----------------------------
-                    // TELL MOSQUITO
-                    // -----------------------------
-
                     send(
                         room.guest,
                         {
@@ -1434,17 +1375,483 @@ server.on(
                             turn:
                                 room.turn,
 
+                            canFlyAnywhere:
+                                false,
+
+                            currentPosition:
+                                {
+                                    row:
+                                        mosquitoRow,
+
+                                    col:
+                                        mosquitoCol
+                                },
+
                             message:
-                                "❌ The Man missed. Your turn."
+                                "❌ The Man missed. Stay or move one square orthogonally."
 
                         }
                     );
 
                 }
 
-                // =================================
+
+                // =================================================
+                // MOSQUITO MOVE
+                // =================================================
+
+                else if(
+                    data.type ===
+                    "mosquitoMove"
+                ){
+
+                    const code =
+                        String(
+                            data.roomCode || ""
+                        )
+                        .trim()
+                        .toUpperCase();
+
+
+                    const room =
+                        rooms.get(code);
+
+
+                    if(!room){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Game room not found."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ---------------------------------------------
+                    // ONLY MOSQUITO
+                    // ---------------------------------------------
+
+                    if(
+                        socket !==
+                        room.guest ||
+                        socket.role !==
+                        "mosquito"
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Only the Mosquito can move."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // ---------------------------------------------
+                    // VALID GAME STATES
+                    // ---------------------------------------------
+
+                    if(
+                        room.gameState !==
+                            "mosquitoMoveAfterMiss" &&
+                        room.gameState !==
+                            "mosquitoMoveAfterBite"
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "It is not the Mosquito's movement turn."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    if(
+                        !room.mosquitoPosition
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Mosquito position is unavailable."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    const reason =
+                        room.mosquitoMoveReason;
+
+
+                    const currentRow =
+                        room.mosquitoPosition.row;
+
+
+                    const currentCol =
+                        room.mosquitoPosition.col;
+
+
+                    const action =
+                        String(
+                            data.action || ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    // =================================================
+                    // STAY
+                    // =================================================
+
+                    if(
+                        action ===
+                        "stay"
+                    ){
+
+                        console.log(
+                            "🦟 MOSQUITO STAYS"
+                        );
+
+
+                        console.log(
+                            "Room:",
+                            code
+                        );
+
+
+                        console.log(
+                            "Position:",
+                            room.mosquitoPosition.position
+                        );
+
+
+                        // ---------------------------------------------
+                        // MAN TURN
+                        // ---------------------------------------------
+
+                        room.gameState =
+                            "manTurn";
+
+
+                        room.mosquitoMoveReason =
+                            null;
+
+
+                        send(
+                            room.guest,
+                            {
+
+                                type:
+                                    "mosquitoMoveResult",
+
+                                action:
+                                    "stay",
+
+                                position:
+                                    room.mosquitoPosition.position,
+
+                                message:
+                                    "🦟 You stayed. The Man's turn."
+
+                            }
+                        );
+
+
+                        send(
+                            room.host,
+                            {
+
+                                type:
+                                    "mosquitoMoved",
+
+                                action:
+                                    "stay",
+
+                                message:
+                                    "🦟 The Mosquito stayed. Your turn."
+
+                            }
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    // =================================================
+                    // MOVE
+                    // =================================================
+
+                    if(
+                        action !==
+                        "move"
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Choose Stay or Move."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    const newRow =
+                        Number(
+                            data.row
+                        );
+
+
+                    const newCol =
+                        Number(
+                            data.col
+                        );
+
+
+                    if(
+                        !isValidCoordinate(
+                            newRow,
+                            newCol
+                        )
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Invalid movement position."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // =================================================
+                    // MISS = ORTHOGONAL ONLY
+                    // =================================================
+
+                    if(
+                        reason ===
+                        "miss"
+                    ){
+
+                        if(
+                            !isOrthogonallyAdjacent(
+                                currentRow,
+                                currentCol,
+                                newRow,
+                                newCol
+                            )
+                        ){
+
+                            send(
+                                socket,
+                                {
+
+                                    type:
+                                        "error",
+
+                                    message:
+                                        "After a miss, the Mosquito can only move one square orthogonally."
+
+                                }
+                            );
+
+                            return;
+
+                        }
+
+                    }
+
+
+                    // =================================================
+                    // BITE = ANYWHERE
+                    // =================================================
+
+                    if(
+                        reason ===
+                        "bite"
+                    ){
+
+                        // Any valid square is allowed.
+                        // No adjacency restriction.
+
+                    }
+
+
+                    // =================================================
+                    // UPDATE SECRET POSITION
+                    // =================================================
+
+                    const newPosition =
+                        getPositionName(
+                            newRow,
+                            newCol
+                        );
+
+
+                    room.mosquitoPosition = {
+
+                        row:
+                            newRow,
+
+                        col:
+                            newCol,
+
+                        position:
+                            newPosition
+
+                    };
+
+
+                    room.gameState =
+                        "manTurn";
+
+
+                    room.mosquitoMoveReason =
+                        null;
+
+
+                    console.log(
+                        "🦟 MOSQUITO MOVED"
+                    );
+
+
+                    console.log(
+                        "Room:",
+                        code
+                    );
+
+
+                    console.log(
+                        "Reason:",
+                        reason
+                    );
+
+
+                    console.log(
+                        "New position:",
+                        newPosition
+                    );
+
+
+                    // =================================================
+                    // TELL MOSQUITO
+                    // =================================================
+
+                    send(
+                        room.guest,
+                        {
+
+                            type:
+                                "mosquitoMoveResult",
+
+                            action:
+                                "move",
+
+                            position:
+                                newPosition,
+
+                            row:
+                                newRow,
+
+                            col:
+                                newCol,
+
+                            message:
+                                "🦟 Movement complete. The Man's turn."
+
+                        }
+                    );
+
+
+                    // =================================================
+                    // TELL MAN
+                    //
+                    // IMPORTANT:
+                    // DO NOT SEND POSITION.
+                    // =================================================
+
+                    send(
+                        room.host,
+                        {
+
+                            type:
+                                "mosquitoMoved",
+
+                            action:
+                                "move",
+
+                            message:
+                                "🦟 The Mosquito moved. Your turn."
+
+                        }
+                    );
+
+
+                    return;
+
+                }
+
+
+                // =================================================
                 // UNKNOWN MESSAGE
-                // =================================
+                // =================================================
 
                 else{
 
@@ -1473,9 +1880,9 @@ server.on(
         );
 
 
-        // =========================================
+        // =================================================
         // DISCONNECT
-        // =========================================
+        // =================================================
 
         socket.on(
             "close",
@@ -1507,10 +1914,6 @@ server.on(
 
                 }
 
-
-                // -----------------------------
-                // HOST DISCONNECTED
-                // -----------------------------
 
                 if(
                     room.host ===
@@ -1548,10 +1951,6 @@ server.on(
                 }
 
 
-                // -----------------------------
-                // GUEST DISCONNECTED
-                // -----------------------------
-
                 if(
                     room.guest ===
                     socket
@@ -1575,33 +1974,32 @@ server.on(
                     room.guest =
                         null;
 
-
                     room.mosquitoPosition =
                         null;
-
 
                     room.mosquitoReady =
                         false;
 
-
                     room.gameStarted =
                         false;
-
 
                     room.gameState =
                         "waiting";
 
-
                     room.manSanity =
                         INITIAL_SANITY;
-
 
                     room.turn =
                         0;
 
-
                     room.biteFreeTurns =
                         0;
+
+                    room.lastAttack =
+                        null;
+
+                    room.mosquitoMoveReason =
+                        null;
 
 
                     console.log(
