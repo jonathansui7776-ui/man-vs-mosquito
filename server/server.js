@@ -11,35 +11,39 @@ const WebSocket = require("ws");
 // PORT
 // ===================================================
 
-const PORT = process.env.PORT || 8080;
+const PORT =
+    process.env.PORT || 8080;
 
 
 // ===================================================
 // HTTP SERVER
 // ===================================================
 
-const httpServer = http.createServer(
-    function(req, res){
+const httpServer =
+    http.createServer(
+        function(req, res){
 
-        res.writeHead(200, {
-            "Content-Type": "text/plain"
-        });
+            res.writeHead(200, {
+                "Content-Type": "text/plain"
+            });
 
-        res.end(
-            "🦟 Man vs Mosquito multiplayer server is running!"
-        );
+            res.end(
+                "🦟 Man vs Mosquito multiplayer server is running!"
+            );
 
-    }
-);
+        }
+    );
 
 
 // ===================================================
 // WEBSOCKET SERVER
 // ===================================================
 
-const server = new WebSocket.Server({
-    server: httpServer
-});
+const server =
+    new WebSocket.Server({
+        server: httpServer
+    });
+
 
 console.log(
     "🦟 Man vs Mosquito server started!"
@@ -50,7 +54,8 @@ console.log(
 // ROOMS
 // ===================================================
 
-const rooms = new Map();
+const rooms =
+    new Map();
 
 
 // ===================================================
@@ -69,7 +74,12 @@ function generateRoomCode(){
 
         code = "";
 
-        for(let i = 0; i < 6; i++){
+
+        for(
+            let i = 0;
+            i < 6;
+            i++
+        ){
 
             code +=
                 characters[
@@ -82,10 +92,34 @@ function generateRoomCode(){
         }
 
     }
-    while(rooms.has(code));
+    while(
+        rooms.has(code)
+    );
 
 
     return code;
+
+}
+
+
+// ===================================================
+// SEND JSON
+// ===================================================
+
+function send(socket, data){
+
+    if(
+        socket &&
+        socket.readyState ===
+        WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify(data)
+        );
+
+    }
+
 }
 
 
@@ -102,8 +136,11 @@ server.on(
         );
 
 
-        socket.roomCode = null;
-        socket.role = null;
+        socket.roomCode =
+            null;
+
+        socket.role =
+            null;
 
 
         // =========================================
@@ -117,6 +154,10 @@ server.on(
                 let data;
 
 
+                // =================================
+                // PARSE MESSAGE
+                // =================================
+
                 try{
 
                     data =
@@ -128,20 +169,28 @@ server.on(
 
                 catch(error){
 
-                    socket.send(
-                        JSON.stringify({
+                    send(
+                        socket,
+                        {
 
-                            type: "error",
+                            type:
+                                "error",
 
                             message:
                                 "Invalid message."
 
-                        })
+                        }
                     );
 
                     return;
 
                 }
+
+
+                console.log(
+                    "📨 Message:",
+                    data.type
+                );
 
 
                 // =================================
@@ -161,13 +210,40 @@ server.on(
                         code,
                         {
 
-                            host: socket,
+                            // -------------------------
+                            // PLAYERS
+                            // -------------------------
 
-                            guest: null,
+                            host:
+                                socket,
 
-                            hostRole: "man",
+                            guest:
+                                null,
 
-                            guestRole: "mosquito"
+
+                            // -------------------------
+                            // ROLES
+                            // -------------------------
+
+                            hostRole:
+                                "man",
+
+                            guestRole:
+                                "mosquito",
+
+
+                            // -------------------------
+                            // GAME STATE
+                            // -------------------------
+
+                            mosquitoPosition:
+                                null,
+
+                            gameStarted:
+                                false,
+
+                            mosquitoReady:
+                                false
 
                         }
                     );
@@ -180,8 +256,13 @@ server.on(
                         "man";
 
 
-                    socket.send(
-                        JSON.stringify({
+                    // -----------------------------
+                    // TELL HOST
+                    // -----------------------------
+
+                    send(
+                        socket,
+                        {
 
                             type:
                                 "roomCreated",
@@ -192,7 +273,7 @@ server.on(
                             role:
                                 "man"
 
-                        })
+                        }
                     );
 
 
@@ -230,13 +311,14 @@ server.on(
 
 
                     // -----------------------------
-                    // ROOM DOESN'T EXIST
+                    // ROOM NOT FOUND
                     // -----------------------------
 
                     if(!room){
 
-                        socket.send(
-                            JSON.stringify({
+                        send(
+                            socket,
+                            {
 
                                 type:
                                     "error",
@@ -244,7 +326,7 @@ server.on(
                                 message:
                                     "Game room not found."
 
-                            })
+                            }
                         );
 
                         return;
@@ -258,8 +340,9 @@ server.on(
 
                     if(room.guest){
 
-                        socket.send(
-                            JSON.stringify({
+                        send(
+                            socket,
+                            {
 
                                 type:
                                     "error",
@@ -267,7 +350,7 @@ server.on(
                                 message:
                                     "This game is already full."
 
-                            })
+                            }
                         );
 
                         return;
@@ -291,11 +374,12 @@ server.on(
 
 
                     // -----------------------------
-                    // Tell guest they joined
+                    // TELL GUEST
                     // -----------------------------
 
-                    socket.send(
-                        JSON.stringify({
+                    send(
+                        socket,
+                        {
 
                             type:
                                 "joinedRoom",
@@ -306,16 +390,17 @@ server.on(
                             role:
                                 "mosquito"
 
-                        })
+                        }
                     );
 
 
                     // -----------------------------
-                    // Tell host
+                    // TELL HOST
                     // -----------------------------
 
-                    room.host.send(
-                        JSON.stringify({
+                    send(
+                        room.host,
+                        {
 
                             type:
                                 "playerJoined",
@@ -323,7 +408,7 @@ server.on(
                             role:
                                 "man"
 
-                        })
+                        }
                     );
 
 
@@ -345,8 +430,13 @@ server.on(
                     // START MULTIPLAYER GAME
                     // =================================
 
-                    room.host.send(
-                        JSON.stringify({
+                    room.gameStarted =
+                        true;
+
+
+                    send(
+                        room.host,
+                        {
 
                             type:
                                 "gameStart",
@@ -357,12 +447,13 @@ server.on(
                             roomCode:
                                 code
 
-                        })
+                        }
                     );
 
 
-                    room.guest.send(
-                        JSON.stringify({
+                    send(
+                        room.guest,
+                        {
 
                             type:
                                 "gameStart",
@@ -373,13 +464,288 @@ server.on(
                             roomCode:
                                 code
 
-                        })
+                        }
                     );
 
 
                     console.log(
                         "🎮 Multiplayer game starting:",
                         code
+                    );
+
+                }
+
+
+                // =================================
+                // MOSQUITO HIDING POSITION
+                // =================================
+
+                else if(
+                    data.type ===
+                    "mosquitoPosition"
+                ){
+
+                    // -----------------------------
+                    // CHECK ROOM
+                    // -----------------------------
+
+                    const code =
+                        String(
+                            data.roomCode || ""
+                        )
+                        .trim()
+                        .toUpperCase();
+
+
+                    const room =
+                        rooms.get(code);
+
+
+                    if(!room){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Game room not found."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------
+                    // ONLY MOSQUITO
+                    // -----------------------------
+
+                    if(
+                        socket !==
+                        room.guest ||
+                        socket.role !==
+                        "mosquito"
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Only the Mosquito can choose the hiding place."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------
+                    // PREVENT SECOND SELECTION
+                    // -----------------------------
+
+                    if(
+                        room.mosquitoReady
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "The hiding place has already been selected."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------
+                    // VALIDATE ROW
+                    // -----------------------------
+
+                    const row =
+                        Number(
+                            data.row
+                        );
+
+
+                    // -----------------------------
+                    // VALIDATE COLUMN
+                    // -----------------------------
+
+                    const col =
+                        Number(
+                            data.col
+                        );
+
+
+                    if(
+                        !Number.isInteger(row) ||
+                        !Number.isInteger(col) ||
+                        row < 0 ||
+                        row > 4 ||
+                        col < 0 ||
+                        col > 4
+                    ){
+
+                        send(
+                            socket,
+                            {
+
+                                type:
+                                    "error",
+
+                                message:
+                                    "Invalid hiding position."
+
+                            }
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------
+                    // GENERATE POSITION SERVER-SIDE
+                    // -----------------------------
+
+                    const position =
+                        String.fromCharCode(
+                            65 + row
+                        ) +
+                        (col + 1);
+
+
+                    // -----------------------------
+                    // STORE SECRET POSITION
+                    // -----------------------------
+
+                    room.mosquitoPosition = {
+
+                        row:
+                            row,
+
+                        col:
+                            col,
+
+                        position:
+                            position
+
+                    };
+
+
+                    room.mosquitoReady =
+                        true;
+
+
+                    console.log(
+                        "🦟 Mosquito has hidden."
+                    );
+
+                    console.log(
+                        "Room:",
+                        code
+                    );
+
+                    console.log(
+                        "Position:",
+                        position
+                    );
+
+
+                    // =================================
+                    // TELL MOSQUITO
+                    // =================================
+
+                    send(
+                        room.guest,
+                        {
+
+                            type:
+                                "mosquitoHidden"
+
+                        }
+                    );
+
+
+                    // =================================
+                    // TELL MAN
+                    // =================================
+                    //
+                    // IMPORTANT:
+                    //
+                    // DO NOT SEND:
+                    // row
+                    // col
+                    // position
+                    //
+                    // The Man must NOT know
+                    // where the Mosquito is.
+                    // =================================
+
+                    send(
+                        room.host,
+                        {
+
+                            type:
+                                "mosquitoReady"
+
+                        }
+                    );
+
+
+                    console.log(
+                        "🧍 Man notified:"
+                    );
+
+                    console.log(
+                        "The hunt has started."
+                    );
+
+                }
+
+
+                // =================================
+                // UNKNOWN MESSAGE
+                // =================================
+
+                else{
+
+                    send(
+                        socket,
+                        {
+
+                            type:
+                                "error",
+
+                            message:
+                                "Unknown message type."
+
+                        }
+                    );
+
+
+                    console.log(
+                        "⚠️ Unknown message:",
+                        data.type
                     );
 
                 }
@@ -405,16 +771,22 @@ server.on(
                     socket.roomCode;
 
 
-                if(!code)
+                if(!code){
+
                     return;
+
+                }
 
 
                 const room =
                     rooms.get(code);
 
 
-                if(!room)
+                if(!room){
+
                     return;
+
+                }
 
 
                 // -----------------------------
@@ -422,18 +794,37 @@ server.on(
                 // -----------------------------
 
                 if(
-                    room.host === socket &&
-                    room.guest
+                    room.host ===
+                    socket
                 ){
 
-                    room.guest.send(
-                        JSON.stringify({
+                    if(room.guest){
 
-                            type:
-                                "opponentDisconnected"
+                        send(
+                            room.guest,
+                            {
 
-                        })
+                                type:
+                                    "opponentDisconnected"
+
+                            }
+                        );
+
+                    }
+
+
+                    rooms.delete(
+                        code
                     );
+
+
+                    console.log(
+                        "🗑️ Room deleted:",
+                        code
+                    );
+
+
+                    return;
 
                 }
 
@@ -443,23 +834,45 @@ server.on(
                 // -----------------------------
 
                 if(
-                    room.guest === socket &&
-                    room.host
+                    room.guest ===
+                    socket
                 ){
 
-                    room.host.send(
-                        JSON.stringify({
+                    if(room.host){
 
-                            type:
-                                "opponentDisconnected"
+                        send(
+                            room.host,
+                            {
 
-                        })
+                                type:
+                                    "opponentDisconnected"
+
+                            }
+                        );
+
+                    }
+
+
+                    room.guest =
+                        null;
+
+
+                    room.mosquitoPosition =
+                        null;
+
+                    room.mosquitoReady =
+                        false;
+
+                    room.gameStarted =
+                        false;
+
+
+                    console.log(
+                        "👥 Guest left room:",
+                        code
                     );
 
                 }
-
-
-                rooms.delete(code);
 
             }
         );
