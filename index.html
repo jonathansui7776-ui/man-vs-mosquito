@@ -192,9 +192,7 @@
 
 
 <!-- ================================================= -->
-<!-- ================================================ -->
-<!-- VS COMPUTER — PLAY AS MAN -->
-<!-- ================================================ -->
+<!-- VS COMPUTER — MAN -->
 <!-- ================================================= -->
 
 <div
@@ -207,10 +205,7 @@
     </h1>
 
 
-
-    <!-- ============================================= -->
     <!-- HUD -->
-    <!-- ============================================= -->
 
     <div id="hud">
 
@@ -258,10 +253,7 @@
     </div>
 
 
-
-    <!-- ============================================= -->
     <!-- MOSQUITO DIALOGUE -->
-    <!-- ============================================= -->
 
     <div id="dialogueBox">
 
@@ -288,10 +280,7 @@
     </div>
 
 
-
-    <!-- ============================================= -->
     <!-- COMPUTER MAN BOARD -->
-    <!-- ============================================= -->
 
     <div id="gameBoard"></div>
 
@@ -300,9 +289,7 @@
 
 
 <!-- ================================================= -->
-<!-- ================================================ -->
-<!-- VS COMPUTER — PLAY AS MOSQUITO -->
-<!-- ================================================ -->
+<!-- VS COMPUTER — MOSQUITO -->
 <!-- ================================================= -->
 
 <div
@@ -315,10 +302,7 @@
     </h1>
 
 
-
-    <!-- ============================================= -->
-    <!-- MOSQUITO HUD -->
-    <!-- ============================================= -->
+    <!-- HUD -->
 
     <div id="mosquitoHud">
 
@@ -346,10 +330,7 @@
     </div>
 
 
-
-    <!-- ============================================= -->
     <!-- MAN DIALOGUE -->
-    <!-- ============================================= -->
 
     <div id="manDialogueBox">
 
@@ -376,10 +357,7 @@
     </div>
 
 
-
-    <!-- ============================================= -->
     <!-- STARTING POSITION -->
-    <!-- ============================================= -->
 
     <div id="mosquitoInstructions">
 
@@ -396,48 +374,30 @@
     </div>
 
 
-
-    <!-- ============================================= -->
     <!-- COMPUTER MOSQUITO BOARD -->
-    <!-- ============================================= -->
 
     <div id="mosquitoBoard"></div>
 
 
-
-    <!-- ============================================= -->
-    <!-- CONFIRM STARTING POSITION -->
-    <!-- ============================================= -->
+    <!-- CONFIRM -->
 
     <button
         id="confirmMosquitoBtn"
         disabled
     >
-
         🦟 Hide Here
-
     </button>
 
 
-
-    <!-- ============================================= -->
-    <!-- STAY BUTTON -->
-    <!-- ============================================= -->
+    <!-- STAY -->
 
     <button
         id="stayBtn"
         class="hidden"
     >
-
         🦟 Stay
-
     </button>
 
-
-
-    <!-- ============================================= -->
-    <!-- STATUS -->
-    <!-- ============================================= -->
 
     <p id="mosquitoMovementStatus"></p>
 
@@ -446,264 +406,7 @@
 
 
 <!-- ================================================= -->
-<!-- ================================================ -->
-<!-- VS PLAYER — MAN -->
-<!-- ================================================ -->
-<!-- ================================================= -->
-
-<div
-    id="multiplayerManScreen"
-    class="screen hidden"
->
-
-    <h1>
-        🦟 Man vs Mosquito
-    </h1>
-
-
-    <!-- ============================================= -->
-    <!-- MULTIPLAYER MAN HUD -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerManHud">
-
-        <div class="hudBox">
-
-            🧠 Sanity
-
-            <span id="multiplayerManSanity">
-                100%
-            </span>
-
-        </div>
-
-
-        <div class="hudBox">
-
-            🎲 Gamble
-
-            <span id="multiplayerManGamble">
-                3
-            </span>
-
-
-            <br>
-            <br>
-
-
-            <button id="multiplayerGambleBtn">
-                MAD MAN'S GAMBLE
-            </button>
-
-        </div>
-
-
-        <div class="hudBox">
-
-            🕒 Turn
-
-            <span id="multiplayerManTurn">
-                1
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ============================================= -->
-    <!-- MOSQUITO DIALOGUE -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerManDialogueBox">
-
-        <img
-            id="multiplayerMosquitoPortrait"
-            src="images/smug.png"
-            alt="Mosquito-chan"
-        >
-
-
-        <div id="multiplayerManDialogue">
-
-            <h2 id="multiplayerSpeaker">
-                Mosquito-chan
-            </h2>
-
-
-            <p id="multiplayerStatus">
-                BWAHAHA! You'll never catch me!
-            </p>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ============================================= -->
-    <!-- MULTIPLAYER MAN BOARD -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerManBoard"></div>
-
-
-
-    <p id="multiplayerManConnectionStatus">
-        Waiting for game...
-    </p>
-
-</div>
-
-
-
-<!-- ================================================= -->
-<!-- ================================================ -->
-<!-- VS PLAYER — MOSQUITO -->
-<!-- ================================================ -->
-<!-- ================================================= -->
-
-<div
-    id="multiplayerMosquitoScreen"
-    class="screen hidden"
->
-
-    <h1>
-        🦟 Play as Mosquito
-    </h1>
-
-
-
-    <!-- ============================================= -->
-    <!-- MULTIPLAYER MOSQUITO HUD -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerMosquitoHud">
-
-        <div class="hudBox">
-
-            🧠 Man's Sanity
-
-            <span id="multiplayerMosquitoManSanity">
-                100%
-            </span>
-
-        </div>
-
-
-        <div class="hudBox">
-
-            🕒 Turn
-
-            <span id="multiplayerMosquitoTurn">
-                1
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ============================================= -->
-    <!-- MAN DIALOGUE -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerMosquitoDialogueBox">
-
-        <img
-            id="multiplayerManPortrait"
-            src="images/mannormal.png"
-            alt="The Man"
-        >
-
-
-        <div id="multiplayerMosquitoDialogue">
-
-            <h2 id="multiplayerManSpeaker">
-                The Man
-            </h2>
-
-
-            <p id="multiplayerManStatus">
-                I'm going to find you.
-            </p>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ============================================= -->
-    <!-- STARTING POSITION -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerMosquitoInstructions">
-
-        <h2>
-            Choose Your Hiding Place
-        </h2>
-
-
-        <p>
-            Click a square to choose where
-            Mosquito-chan will begin.
-        </p>
-
-    </div>
-
-
-
-    <!-- ============================================= -->
-    <!-- MULTIPLAYER MOSQUITO BOARD -->
-    <!-- ============================================= -->
-
-    <div id="multiplayerMosquitoBoard"></div>
-
-
-
-    <!-- ============================================= -->
-    <!-- CONFIRM STARTING POSITION -->
-    <!-- ============================================= -->
-
-    <button
-        id="multiplayerConfirmMosquitoBtn"
-        disabled
-    >
-
-        🦟 Hide Here
-
-    </button>
-
-
-
-    <!-- ============================================= -->
-    <!-- STAY BUTTON -->
-    <!-- ============================================= -->
-
-    <button
-        id="multiplayerStayBtn"
-        class="hidden"
-    >
-
-        🦟 Stay
-
-    </button>
-
-
-
-    <!-- ============================================= -->
-    <!-- STATUS -->
-    <!-- ============================================= -->
-
-    <p id="multiplayerMosquitoMovementStatus"></p>
-
-</div>
-
-<!-- ================================================= -->
-<!-- MULTIPLAYER MAN SCREEN -->
+<!-- MULTIPLAYER — MAN -->
 <!-- ================================================= -->
 
 <div
@@ -718,7 +421,10 @@
 
     <!-- HUD -->
 
-    <div id="multiplayerManHud">
+    <div
+        id="multiplayerManHud"
+        class="hud"
+    >
 
         <div class="hudBox">
 
@@ -749,19 +455,59 @@
     </p>
 
 
-    <!-- 5 × 5 BOARD -->
+    <!-- ============================================= -->
+    <!-- 5 × 5 MAN BOARD -->
+    <!-- ============================================= -->
 
-    <div
-        id="multiplayerManBoard"
-        class="multiplayerBoard"
-    ></div>
+    <div class="multiplayerBoardWrapper">
+
+
+        <!-- COLUMN LABELS -->
+
+        <div class="multiplayerColumnLabels">
+
+            <span></span>
+
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+
+        </div>
+
+
+        <!-- BOARD -->
+
+        <div class="multiplayerBoardWithRows">
+
+
+            <div class="multiplayerRowLabels">
+
+                <span>A</span>
+                <span>B</span>
+                <span>C</span>
+                <span>D</span>
+                <span>E</span>
+
+            </div>
+
+
+            <div
+                id="multiplayerManBoard"
+                class="multiplayerBoard"
+            ></div>
+
+        </div>
+
+    </div>
 
 </div>
 
 
 
 <!-- ================================================= -->
-<!-- MULTIPLAYER MOSQUITO SCREEN -->
+<!-- MULTIPLAYER — MOSQUITO -->
 <!-- ================================================= -->
 
 <div
@@ -776,7 +522,10 @@
 
     <!-- HUD -->
 
-    <div id="multiplayerMosquitoHud">
+    <div
+        id="multiplayerMosquitoHud"
+        class="hud"
+    >
 
         <div class="hudBox">
 
@@ -803,16 +552,71 @@
 
 
     <p id="mpMosquitoStatus">
-        Waiting for The Man...
+        Choose your hiding place.
     </p>
 
 
-    <!-- 5 × 5 BOARD -->
+    <!-- ============================================= -->
+    <!-- 5 × 5 MOSQUITO BOARD -->
+    <!-- ============================================= -->
 
-    <div
-        id="multiplayerMosquitoBoard"
-        class="multiplayerBoard"
-    ></div>
+    <div class="multiplayerBoardWrapper">
+
+
+        <!-- COLUMN LABELS -->
+
+        <div class="multiplayerColumnLabels">
+
+            <span></span>
+
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+
+        </div>
+
+
+        <!-- BOARD -->
+
+        <div class="multiplayerBoardWithRows">
+
+
+            <div class="multiplayerRowLabels">
+
+                <span>A</span>
+                <span>B</span>
+                <span>C</span>
+                <span>D</span>
+                <span>E</span>
+
+            </div>
+
+
+            <div
+                id="multiplayerMosquitoBoard"
+                class="multiplayerBoard"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================= -->
+    <!-- HIDE HERE -->
+    <!-- ============================================= -->
+
+    <button
+        id="multiplayerHideBtn"
+        disabled
+    >
+        🦟 Hide Here
+    </button>
+
+
+    <p id="multiplayerMosquitoMovementStatus"></p>
 
 </div>
 
