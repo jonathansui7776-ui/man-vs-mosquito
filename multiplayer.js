@@ -61,6 +61,50 @@ const playerBackBtn =
 
 
 // ===================================================
+// HELPER — HIDE VS PLAYER LOBBY
+// ===================================================
+
+function hideMultiplayerLobby(){
+
+    // VS Player menu
+
+    if(
+        typeof playerModeMenu !== "undefined" &&
+        playerModeMenu
+    ){
+
+        playerModeMenu.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    // Create panel
+
+    if(createGamePanel){
+
+        createGamePanel.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    // Join panel
+
+    if(joinGamePanel){
+
+        joinGamePanel.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+// ===================================================
 // CONNECTION OPEN
 // ===================================================
 
@@ -68,6 +112,7 @@ socket.onopen = function(){
 
     window.multiplayerConnected =
         true;
+
 
     console.log(
         "🌐 Connected to multiplayer server!"
@@ -92,9 +137,9 @@ socket.onmessage = function(event){
     );
 
 
-    // =========================================
+    // =================================================
     // ROOM CREATED
-    // =========================================
+    // =================================================
 
     if(data.type === "roomCreated"){
 
@@ -105,21 +150,38 @@ socket.onmessage = function(event){
             data.role;
 
 
-        roomCode.innerText =
-            data.roomCode;
+        if(roomCode){
+
+            roomCode.innerText =
+                data.roomCode;
+
+        }
 
 
-        createGamePanel.classList.remove(
-            "hidden"
-        );
+        if(createGamePanel){
 
-        joinGamePanel.classList.add(
-            "hidden"
-        );
+            createGamePanel.classList.remove(
+                "hidden"
+            );
+
+        }
 
 
-        lobbyStatus.innerText =
-            "Waiting for opponent...";
+        if(joinGamePanel){
+
+            joinGamePanel.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if(lobbyStatus){
+
+            lobbyStatus.innerText =
+                "Waiting for opponent...";
+
+        }
 
 
         console.log(
@@ -129,14 +191,18 @@ socket.onmessage = function(event){
     }
 
 
-    // =========================================
+    // =================================================
     // PLAYER JOINED
-    // =========================================
+    // =================================================
 
     if(data.type === "playerJoined"){
 
-        lobbyStatus.innerText =
-            "✅ Opponent connected!";
+        if(lobbyStatus){
+
+            lobbyStatus.innerText =
+                "✅ Opponent connected!";
+
+        }
 
 
         console.log(
@@ -146,9 +212,9 @@ socket.onmessage = function(event){
     }
 
 
-    // =========================================
+    // =================================================
     // JOIN SUCCESS
-    // =========================================
+    // =================================================
 
     if(data.type === "joinedRoom"){
 
@@ -159,8 +225,12 @@ socket.onmessage = function(event){
             data.role;
 
 
-        joinStatus.innerText =
-            "✅ Joined game!";
+        if(joinStatus){
+
+            joinStatus.innerText =
+                "✅ Joined game!";
+
+        }
 
 
         console.log(
@@ -176,9 +246,9 @@ socket.onmessage = function(event){
     }
 
 
-    // =========================================
+    // =================================================
     // GAME START
-    // =========================================
+    // =================================================
 
     if(data.type === "gameStart"){
 
@@ -212,53 +282,201 @@ socket.onmessage = function(event){
         );
 
 
-        // -----------------------------------------
+        // ---------------------------------------------
+        // HIDE MULTIPLAYER LOBBY
+        // ---------------------------------------------
+
+        hideMultiplayerLobby();
+
+
+        // =============================================
         // MAN
-        // -----------------------------------------
+        // =============================================
 
         if(data.role === "man"){
 
-            lobbyStatus.innerText =
-                "🧍 You are the MAN!";
+            console.log(
+                "🧍 Opening multiplayer MAN game..."
+            );
 
 
-            joinStatus.innerText =
-                "🧍 You are the MAN!";
+            // -----------------------------------------
+            // Hide mosquito game
+            // -----------------------------------------
+
+            if(
+                typeof mosquitoGameScreen !==
+                    "undefined" &&
+                mosquitoGameScreen
+            ){
+
+                mosquitoGameScreen.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            // -----------------------------------------
+            // Show man game
+            // -----------------------------------------
+
+            if(
+                typeof gameScreen !==
+                    "undefined" &&
+                gameScreen
+            ){
+
+                gameScreen.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            // -----------------------------------------
+            // Set multiplayer mode
+            // -----------------------------------------
+
+            if(
+                typeof currentGameMode !==
+                    "undefined"
+            ){
+
+                currentGameMode =
+                    "multiplayer-man";
+
+            }
+
+
+            // -----------------------------------------
+            // Optional HUD reset
+            // -----------------------------------------
+
+            if(
+                typeof sanityValue !==
+                    "undefined" &&
+                sanityValue
+            ){
+
+                sanityValue.innerText =
+                    "100%";
+
+            }
+
+
+            if(
+                typeof turnValue !==
+                    "undefined" &&
+                turnValue
+            ){
+
+                turnValue.innerText =
+                    "1";
+
+            }
+
+
+            console.log(
+                "🧍 Multiplayer MAN screen opened."
+            );
 
         }
 
 
-        // -----------------------------------------
+        // =============================================
         // MOSQUITO
-        // -----------------------------------------
+        // =============================================
 
         if(data.role === "mosquito"){
 
-            lobbyStatus.innerText =
-                "🦟 You are the MOSQUITO!";
+            console.log(
+                "🦟 Opening multiplayer MOSQUITO game..."
+            );
 
 
-            joinStatus.innerText =
-                "🦟 You are the MOSQUITO!";
+            // -----------------------------------------
+            // Hide normal man game
+            // -----------------------------------------
+
+            if(
+                typeof gameScreen !==
+                    "undefined" &&
+                gameScreen
+            ){
+
+                gameScreen.classList.add(
+                    "hidden"
+                );
+
+            }
+
+
+            // -----------------------------------------
+            // Show mosquito game
+            // -----------------------------------------
+
+            if(
+                typeof mosquitoGameScreen !==
+                    "undefined" &&
+                mosquitoGameScreen
+            ){
+
+                mosquitoGameScreen.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            // -----------------------------------------
+            // Set multiplayer mode
+            // -----------------------------------------
+
+            if(
+                typeof currentGameMode !==
+                    "undefined"
+            ){
+
+                currentGameMode =
+                    "multiplayer-mosquito";
+
+            }
+
+
+            // -----------------------------------------
+            // Start mosquito screen fresh
+            // -----------------------------------------
+
+            if(
+                typeof startMosquitoMode ===
+                    "function"
+            ){
+
+                startMosquitoMode();
+
+            }
+            else{
+
+                console.warn(
+                    "⚠️ startMosquitoMode() not found."
+                );
+
+            }
+
+
+            console.log(
+                "🦟 Multiplayer MOSQUITO screen opened."
+            );
 
         }
 
-
-        /*
-         * IMPORTANT:
-         *
-         * We are NOT starting the actual
-         * game screens yet.
-         *
-         * First we are confirming that the
-         * server correctly assigns roles.
-         */
     }
 
 
-    // =========================================
+    // =================================================
     // OPPONENT DISCONNECTED
-    // =========================================
+    // =================================================
 
     if(data.type === "opponentDisconnected"){
 
@@ -276,14 +494,24 @@ socket.onmessage = function(event){
     }
 
 
-    // =========================================
+    // =================================================
     // SERVER ERROR
-    // =========================================
+    // =================================================
 
     if(data.type === "error"){
 
-        joinStatus.innerText =
-            "❌ " + data.message;
+        if(joinStatus){
+
+            joinStatus.innerText =
+                "❌ " + data.message;
+
+        }
+
+
+        console.error(
+            "❌ Server error:",
+            data.message
+        );
 
     }
 
@@ -299,25 +527,42 @@ if(createGameBtn){
     createGameBtn.onclick =
     function(){
 
-        createGamePanel.classList.remove(
-            "hidden"
-        );
-
-        joinGamePanel.classList.add(
-            "hidden"
-        );
-
-
-        lobbyStatus.innerText =
-            "Creating game...";
-
-
         if(socket.readyState !== WebSocket.OPEN){
 
-            lobbyStatus.innerText =
-                "❌ Not connected to server.";
+            if(lobbyStatus){
+
+                lobbyStatus.innerText =
+                    "❌ Not connected to server.";
+
+            }
 
             return;
+
+        }
+
+
+        if(createGamePanel){
+
+            createGamePanel.classList.remove(
+                "hidden"
+            );
+
+        }
+
+
+        if(joinGamePanel){
+
+            joinGamePanel.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if(lobbyStatus){
+
+            lobbyStatus.innerText =
+                "Creating game...";
 
         }
 
@@ -345,24 +590,40 @@ if(joinGameBtn){
     joinGameBtn.onclick =
     function(){
 
-        joinGamePanel.classList.remove(
-            "hidden"
-        );
+        if(joinGamePanel){
 
-        createGamePanel.classList.add(
-            "hidden"
-        );
+            joinGamePanel.classList.remove(
+                "hidden"
+            );
 
-
-        joinStatus.innerText =
-            "";
+        }
 
 
-        roomCodeInput.value =
-            "";
+        if(createGamePanel){
+
+            createGamePanel.classList.add(
+                "hidden"
+            );
+
+        }
 
 
-        roomCodeInput.focus();
+        if(joinStatus){
+
+            joinStatus.innerText =
+                "";
+
+        }
+
+
+        if(roomCodeInput){
+
+            roomCodeInput.value =
+                "";
+
+            roomCodeInput.focus();
+
+        }
 
     };
 
@@ -437,7 +698,11 @@ if(roomCodeInput){
 
             if(event.key === "Enter"){
 
-                joinRoomBtn.click();
+                if(joinRoomBtn){
+
+                    joinRoomBtn.click();
+
+                }
 
             }
 
@@ -456,16 +721,13 @@ if(playerBackBtn){
     playerBackBtn.onclick =
     function(){
 
-        if(typeof playerModeMenu !== "undefined"){
-
-            playerModeMenu.classList.add(
-                "hidden"
-            );
-
-        }
+        hideMultiplayerLobby();
 
 
-        if(typeof mainMenu !== "undefined"){
+        if(
+            typeof mainMenu !== "undefined" &&
+            mainMenu
+        ){
 
             mainMenu.classList.remove(
                 "hidden"
