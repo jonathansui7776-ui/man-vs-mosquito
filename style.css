@@ -933,3 +933,30 @@ button:disabled {
     }
 
 }
+
+/* =========================================================
+   VS COMPUTER — MOSQUITO LEGAL MOVEMENT
+   ========================================================= */
+
+.mosquito-move-option {
+    background: #1677ff !important;
+    border: 3px solid #70b5ff !important;
+    color: white !important;
+    box-shadow: 0 0 12px rgba(22, 119, 255, 0.8);
+}
+
+.mosquito-move-option:hover {
+    background: #3290ff !important;
+    border-color: #9dccff !important;
+}
+
+
+/* =========================================================
+   VS COMPUTER — MAN'S LATEST ATTACK
+   ========================================================= */
+
+.mosquito-man-attack {
+    background: red !important;
+    border: 3px solid #ff7777 !important;
+    color: white !important;
+}
