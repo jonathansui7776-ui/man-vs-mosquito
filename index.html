@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -15,15 +16,21 @@
         rel="stylesheet"
         href="style.css"
     >
+
 </head>
+
 
 <body>
 
-<!-- ================================================= --
-<!-- MAIN MENU -->
-<!-- ================================================= --
 
-<div id="mainMenu" class="screen">
+<!-- ===================================================== -->
+<!-- MAIN MENU                                             -->
+<!-- ===================================================== -->
+
+<section
+    id="mainMenu"
+    class="screen"
+>
 
     <h1>🦟 Man vs Mosquito</h1>
 
@@ -39,14 +46,17 @@
         Rules
     </button>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- VS COMPUTER — CHOOSE SIDE -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- MODE / SIDE MENU                                      -->
+<!-- ===================================================== -->
 
-<div id="modeMenu" class="screen hidden">
+<section
+    id="modeMenu"
+    class="screen hidden"
+>
 
     <h1>Choose Your Side</h1>
 
@@ -62,14 +72,17 @@
         ⬅ Back
     </button>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- VS PLAYER LOBBY -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- VS PLAYER LOBBY                                       -->
+<!-- ===================================================== -->
 
-<div id="playerModeMenu" class="screen hidden">
+<section
+    id="playerModeMenu"
+    class="screen hidden"
+>
 
     <h1>👥 VS Player</h1>
 
@@ -88,9 +101,12 @@
     </button>
 
 
-    <!-- CREATE -->
+    <!-- CREATE GAME -->
 
-    <div id="createGamePanel" class="hidden">
+    <div
+        id="createGamePanel"
+        class="hidden"
+    >
 
         <h2>Game Created!</h2>
 
@@ -109,9 +125,12 @@
     </div>
 
 
-    <!-- JOIN -->
+    <!-- JOIN GAME -->
 
-    <div id="joinGamePanel" class="hidden">
+    <div
+        id="joinGamePanel"
+        class="hidden"
+    >
 
         <h2>Join Game</h2>
 
@@ -120,6 +139,7 @@
             type="text"
             maxlength="6"
             placeholder="Enter Game Code"
+            autocomplete="off"
         >
 
         <br>
@@ -132,25 +152,33 @@
 
     </div>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- VS COMPUTER — MAN -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- NORMAL VS COMPUTER — MAN                             -->
+<!-- ===================================================== -->
 
-<div id="gameScreen" class="screen hidden">
+<section
+    id="gameScreen"
+    class="screen hidden"
+>
 
-    <h1>🦟 Man vs Mosquito</h1>
+    <h1>
+        🦟 Man vs Mosquito
+    </h1>
+
 
     <div id="hud">
 
         <div class="hudBox">
+
             🧠 Sanity
 
             <span id="sanityValue">
                 100%
             </span>
+
         </div>
 
 
@@ -210,16 +238,21 @@
 
     <div id="gameBoard"></div>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- VS COMPUTER — MOSQUITO -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- NORMAL VS COMPUTER — MOSQUITO                        -->
+<!-- ===================================================== -->
 
-<div id="mosquitoGameScreen" class="screen hidden">
+<section
+    id="mosquitoGameScreen"
+    class="screen hidden"
+>
 
-    <h1>🦟 Play as Mosquito</h1>
+    <h1>
+        🦟 Play as Mosquito
+    </h1>
 
 
     <div id="mosquitoHud">
@@ -306,14 +339,14 @@
 
     <p id="mosquitoMovementStatus"></p>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- MULTIPLAYER — MAN -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- MULTIPLAYER — MAN                                   -->
+<!-- ===================================================== -->
 
-<div
+<section
     id="multiplayerManScreen"
     class="screen hidden"
 >
@@ -341,6 +374,25 @@
 
         <div class="hudBox">
 
+            🎲 Gamble
+
+            <span id="mpManGamble">
+                3
+            </span>
+
+            <br>
+
+            <button
+                id="multiplayerGambleBtn"
+            >
+                MAD MAN'S GAMBLE
+            </button>
+
+        </div>
+
+
+        <div class="hudBox">
+
             🕒 Turn
 
             <span id="mpManTurn">
@@ -357,8 +409,17 @@
     </p>
 
 
-    <!-- NO EXTERNAL ROW/COLUMN LABELS -->
-    <!-- multiplayer.js creates A1 ... F6 itself -->
+    <!--
+        NO EXTERNAL ROW/COLUMN LABELS.
+
+        multiplayer.js creates:
+        A1 A2 A3 A4 A5 A6
+        B1 B2 B3 B4 B5 B6
+        C1 C2 C3 C4 C5 C6
+        D1 D2 D3 D4 D5 D6
+        E1 E2 E3 E4 E5 E6
+        F1 F2 F3 F4 F5 F6
+    -->
 
     <div class="multiplayerBoardWrapper">
 
@@ -369,14 +430,14 @@
 
     </div>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- MULTIPLAYER — MOSQUITO -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- MULTIPLAYER — MOSQUITO                              -->
+<!-- ===================================================== -->
 
-<div
+<section
     id="multiplayerMosquitoScreen"
     class="screen hidden"
 >
@@ -420,7 +481,10 @@
     </p>
 
 
-    <!-- NO EXTERNAL ROW/COLUMN LABELS -->
+    <!--
+        NO EXTERNAL ROW/COLUMN LABELS.
+        Board is generated by multiplayer.js.
+    -->
 
     <div class="multiplayerBoardWrapper">
 
@@ -442,19 +506,20 @@
 
     <p id="multiplayerMosquitoMovementStatus"></p>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- END SCREEN -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- NORMAL VS COMPUTER END SCREEN                       -->
+<!-- ===================================================== -->
 
-<div
+<section
     id="endScreen"
     class="screen hidden"
 >
 
     <h1 id="endTitle"></h1>
+
 
     <img
         id="endImage"
@@ -462,26 +527,33 @@
         alt="Result"
     >
 
+
     <p id="endMessage"></p>
+
 
     <button id="playAgainBtn">
         🔄 Play Again
     </button>
 
+
     <button id="menuBtn">
         🏠 Main Menu
     </button>
 
-</div>
+</section>
 
 
-<!-- ================================================= -->
-<!-- SCRIPTS -->
-<!-- ================================================= -->
+<!-- ===================================================== -->
+<!-- SCRIPT FILES                                         -->
+<!-- ===================================================== -->
 
 <script src="script.js"></script>
+
 <script src="mosquito.js"></script>
+
 <script src="multiplayer.js"></script>
 
+
 </body>
+
 </html>
