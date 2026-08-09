@@ -1,16 +1,22 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Man vs Mosquito</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
 </head>
 
@@ -22,17 +28,25 @@
 <!-- MAIN MENU -->
 <!-- ================================================= -->
 
-<div id="mainMenu" class="screen">
+<div
+    id="mainMenu"
+    class="screen"
+>
 
-    <h1>🦟 Man vs Mosquito</h1>
+    <h1>
+        🦟 Man vs Mosquito
+    </h1>
+
 
     <button id="vsComputerBtn">
         VS Computer
     </button>
 
+
     <button id="vsPlayerBtn">
         VS Player
     </button>
+
 
     <button id="rulesBtn">
         Rules
@@ -42,20 +56,28 @@
 
 
 <!-- ================================================= -->
-<!-- COMPUTER MODE MENU -->
+<!-- CHOOSE YOUR SIDE -->
 <!-- ================================================= -->
 
-<div id="modeMenu" class="screen hidden">
+<div
+    id="sideMenu"
+    class="screen hidden"
+>
 
-    <h1>Choose Your Side</h1>
+    <h1>
+        Choose Your Side
+    </h1>
+
 
     <button id="manBtn">
         Play as Man
     </button>
 
+
     <button id="mosquitoBtn">
         Play as Mosquito
     </button>
+
 
     <button id="backBtn">
         ⬅ Back
@@ -68,38 +90,57 @@
 <!-- VS PLAYER LOBBY -->
 <!-- ================================================= -->
 
-<div id="playerModeMenu" class="screen hidden">
+<div
+    id="playerModeMenu"
+    class="screen hidden"
+>
 
-    <h1>👥 VS Player</h1>
+    <h1>
+        👥 VS Player
+    </h1>
+
 
     <button id="createGameBtn">
         🎮 Create Game
     </button>
 
+
     <button id="joinGameBtn">
         🔗 Join Game
     </button>
 
+
     <br>
+
 
     <button id="playerBackBtn">
         ⬅ Back
     </button>
 
 
+    <!-- ============================================= -->
     <!-- CREATE GAME -->
+    <!-- ============================================= -->
 
-    <div id="createGamePanel" class="hidden">
+    <div
+        id="createGamePanel"
+        class="hidden"
+    >
 
-        <h2>Game Created!</h2>
+        <h2>
+            Game Created!
+        </h2>
+
 
         <p>
             Give this code to your opponent:
         </p>
 
+
         <h1 id="roomCode">
             ------
         </h1>
+
 
         <p id="lobbyStatus">
             Waiting for opponent...
@@ -108,11 +149,19 @@
     </div>
 
 
+    <!-- ============================================= -->
     <!-- JOIN GAME -->
+    <!-- ============================================= -->
 
-    <div id="joinGamePanel" class="hidden">
+    <div
+        id="joinGamePanel"
+        class="hidden"
+    >
 
-        <h2>Join Game</h2>
+        <h2>
+            Join Game
+        </h2>
+
 
         <input
             id="roomCodeInput"
@@ -121,11 +170,14 @@
             placeholder="Enter Game Code"
         >
 
+
         <br>
+
 
         <button id="joinRoomBtn">
             Join
         </button>
+
 
         <p id="joinStatus"></p>
 
@@ -135,15 +187,22 @@
 
 
 <!-- ================================================= -->
-<!-- MAN MODE -->
+<!-- MAN GAME -->
 <!-- ================================================= -->
 
-<div id="gameScreen" class="screen hidden">
+<div
+    id="gameScreen"
+    class="screen hidden"
+>
 
-    <h1>🦟 Man vs Mosquito</h1>
+    <h1>
+        🦟 Man vs Mosquito
+    </h1>
 
 
+    <!-- ============================================= -->
     <!-- HUD -->
+    <!-- ============================================= -->
 
     <div id="hud">
 
@@ -166,7 +225,10 @@
                 3
             </span>
 
-            <br><br>
+
+            <br>
+            <br>
+
 
             <button id="gambleBtn">
                 MAD MAN'S GAMBLE
@@ -188,7 +250,9 @@
     </div>
 
 
+    <!-- ============================================= -->
     <!-- MOSQUITO DIALOGUE -->
+    <!-- ============================================= -->
 
     <div id="dialogueBox">
 
@@ -198,11 +262,13 @@
             alt="Mosquito-chan"
         >
 
+
         <div id="dialogue">
 
             <h2 id="speaker">
                 Mosquito-chan
             </h2>
+
 
             <p id="status">
                 BWAHAHA! You'll never catch me!
@@ -213,7 +279,9 @@
     </div>
 
 
-    <!-- BOARD -->
+    <!-- ============================================= -->
+    <!-- MAN BOARD -->
+    <!-- ============================================= -->
 
     <div id="gameBoard"></div>
 
@@ -221,15 +289,22 @@
 
 
 <!-- ================================================= -->
-<!-- MOSQUITO MODE -->
+<!-- MOSQUITO GAME -->
 <!-- ================================================= -->
 
-<div id="mosquitoGameScreen" class="screen hidden">
+<div
+    id="mosquitoGameScreen"
+    class="screen hidden"
+>
 
-    <h1>🦟 Play as Mosquito</h1>
+    <h1>
+        🦟 Play as Mosquito
+    </h1>
 
 
+    <!-- ============================================= -->
     <!-- MOSQUITO HUD -->
+    <!-- ============================================= -->
 
     <div id="mosquitoHud">
 
@@ -257,7 +332,9 @@
     </div>
 
 
+    <!-- ============================================= -->
     <!-- MAN DIALOGUE -->
+    <!-- ============================================= -->
 
     <div id="manDialogueBox">
 
@@ -267,11 +344,13 @@
             alt="The Man"
         >
 
+
         <div id="manDialogue">
 
             <h2 id="manSpeaker">
                 The Man
             </h2>
+
 
             <p id="manStatus">
                 I'm going to find you.
@@ -282,13 +361,16 @@
     </div>
 
 
+    <!-- ============================================= -->
     <!-- STARTING POSITION -->
+    <!-- ============================================= -->
 
     <div id="mosquitoInstructions">
 
         <h2>
             Choose Your Hiding Place
         </h2>
+
 
         <p>
             Click a square to choose where
@@ -298,12 +380,16 @@
     </div>
 
 
+    <!-- ============================================= -->
     <!-- MOSQUITO BOARD -->
+    <!-- ============================================= -->
 
     <div id="mosquitoBoard"></div>
 
 
+    <!-- ============================================= -->
     <!-- CONFIRM STARTING POSITION -->
+    <!-- ============================================= -->
 
     <button
         id="confirmMosquitoBtn"
@@ -315,7 +401,9 @@
     </button>
 
 
+    <!-- ============================================= -->
     <!-- STAY BUTTON -->
+    <!-- ============================================= -->
 
     <button
         id="stayBtn"
@@ -327,7 +415,9 @@
     </button>
 
 
+    <!-- ============================================= -->
     <!-- STATUS -->
+    <!-- ============================================= -->
 
     <p id="mosquitoMovementStatus"></p>
 
@@ -338,7 +428,10 @@
 <!-- END SCREEN -->
 <!-- ================================================= -->
 
-<div id="endScreen" class="screen hidden">
+<div
+    id="endScreen"
+    class="screen hidden"
+>
 
     <h1 id="endTitle"></h1>
 
@@ -354,16 +447,12 @@
 
 
     <button id="playAgainBtn">
-
         🔄 Play Again
-
     </button>
 
 
     <button id="menuBtn">
-
         🏠 Main Menu
-
     </button>
 
 </div>
