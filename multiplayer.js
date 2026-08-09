@@ -1,21 +1,21 @@
-// =========================================================
+// ===================================================
 // MAN VS MOSQUITO
 // MULTIPLAYER.JS
-// =========================================================
+// ===================================================
 
 
-// =========================================================
+// ===================================================
 // WEBSOCKET
-// =========================================================
+// ===================================================
 
 const mpSocket = new WebSocket(
     "wss://man-vs-mosquito.onrender.com"
 );
 
 
-// =========================================================
-// GLOBAL STATE
-// =========================================================
+// ===================================================
+// GLOBAL MULTIPLAYER STATE
+// ===================================================
 
 window.multiplayerRole = null;
 window.multiplayerRoomCode = null;
@@ -25,9 +25,9 @@ window.multiplayerMosquitoReady = false;
 window.multiplayerManReady = false;
 
 
-// =========================================================
-// GAME STATE
-// =========================================================
+// ===================================================
+// MULTIPLAYER GAME STATE
+// ===================================================
 
 let mpManCanAttack = false;
 let mpWaitingForAttackResult = false;
@@ -38,12 +38,20 @@ let mpManTurn = 1;
 let mpBiteFreeTurns = 0;
 
 
-// =========================================================
-// MOSQUITO MOVEMENT STATE
-// =========================================================
+// ===================================================
+// IMPORTANT:
+// MULTIPLAYER-ONLY ATTACK VARIABLES
+// ===================================================
+
+let mpMultiplayerLastAttackCell = null;
+let mpMultiplayerLastAttackResult = null;
+
+
+// ===================================================
+// MULTIPLAYER MOSQUITO STATE
+// ===================================================
 
 let mpMosquitoCanMove = false;
-
 let mpMosquitoMoveReason = null;
 
 let mpMosquitoCurrentRow = null;
@@ -52,17 +60,24 @@ let mpMosquitoCurrentCol = null;
 let mpMosquitoSelectedCell = null;
 
 
-// =========================================================
+// ===================================================
+// RESTART STATE
+// ===================================================
+
+let mpRestartWaiting = false;
+
+
+// ===================================================
 // BOARD
-// =========================================================
+// ===================================================
 
 const MP_ROWS = 6;
 const MP_COLS = 6;
 
 
-// =========================================================
-// LOBBY
-// =========================================================
+// ===================================================
+// LOBBY ELEMENTS
+// ===================================================
 
 const mpCreateGameBtn =
     document.getElementById(
@@ -115,9 +130,9 @@ const mpPlayerBackBtn =
     );
 
 
-// =========================================================
+// ===================================================
 // SCREENS
-// =========================================================
+// ===================================================
 
 const mpManScreen =
     document.getElementById(
@@ -130,9 +145,9 @@ const mpMosquitoScreen =
     );
 
 
-// =========================================================
+// ===================================================
 // BOARDS
-// =========================================================
+// ===================================================
 
 const mpManBoard =
     document.getElementById(
@@ -145,9 +160,9 @@ const mpMosquitoBoard =
     );
 
 
-// =========================================================
-// ORIGINAL HIDE BUTTON
-// =========================================================
+// ===================================================
+// BUTTONS
+// ===================================================
 
 const mpHideBtn =
     document.getElementById(
@@ -155,9 +170,9 @@ const mpHideBtn =
     );
 
 
-// =========================================================
+// ===================================================
 // STATUS
-// =========================================================
+// ===================================================
 
 const mpManStatus =
     document.getElementById(
@@ -175,39 +190,32 @@ const mpMosquitoMovementStatus =
     );
 
 
-// =========================================================
+// ===================================================
 // MOVEMENT CONTROLS
-// =========================================================
+// ===================================================
 
 let mpMosquitoControls = null;
-
 let mpStayBtn = null;
-
 let mpMoveBtn = null;
 
 
-// =========================================================
+// ===================================================
 // POSITION
-// =========================================================
+// ===================================================
 
-function mpPosition(
-    row,
-    col
-){
+function mpPosition(row, col){
 
     return (
-        String.fromCharCode(
-            65 + row
-        ) +
+        String.fromCharCode(65 + row) +
         (col + 1)
     );
 
 }
 
 
-// =========================================================
+// ===================================================
 // SEND
-// =========================================================
+// ===================================================
 
 function mpSend(data){
 
@@ -224,28 +232,23 @@ function mpSend(data){
 
     }
 
-
     console.log(
-        "📤 Client:",
+        "📤 Multiplayer:",
         data
     );
 
-
     mpSocket.send(
-        JSON.stringify(
-            data
-        )
+        JSON.stringify(data)
     );
-
 
     return true;
 
 }
 
 
-// =========================================================
-// HIDE SCREENS
-// =========================================================
+// ===================================================
+// HIDE MULTIPLAYER SCREENS
+// ===================================================
 
 function hideAllMultiplayerScreens(){
 
@@ -256,7 +259,6 @@ function hideAllMultiplayerScreens(){
         );
 
     }
-
 
     if(mpMosquitoScreen){
 
@@ -269,9 +271,9 @@ function hideAllMultiplayerScreens(){
 }
 
 
-// =========================================================
+// ===================================================
 // HIDE NORMAL SCREENS
-// =========================================================
+// ===================================================
 
 function hideNormalGameScreens(){
 
@@ -285,7 +287,6 @@ function hideNormalGameScreens(){
             "mosquitoGameScreen"
         );
 
-
     if(gameScreen){
 
         gameScreen.classList.add(
@@ -293,7 +294,6 @@ function hideNormalGameScreens(){
         );
 
     }
-
 
     if(mosquitoGameScreen){
 
@@ -306,13 +306,11 @@ function hideNormalGameScreens(){
 }
 
 
-// =========================================================
+// ===================================================
 // BOARD STYLE
-// =========================================================
+// ===================================================
 
-function setupMultiplayerBoardStyle(
-    board
-){
+function setupMultiplayerBoardStyle(board){
 
     if(!board){
 
@@ -320,13 +318,11 @@ function setupMultiplayerBoardStyle(
 
     }
 
-
     board.style.setProperty(
         "display",
         "grid",
         "important"
     );
-
 
     board.style.setProperty(
         "grid-template-columns",
@@ -334,13 +330,11 @@ function setupMultiplayerBoardStyle(
         "important"
     );
 
-
     board.style.setProperty(
         "grid-template-rows",
         "repeat(6, 70px)",
         "important"
     );
-
 
     board.style.setProperty(
         "grid-auto-flow",
@@ -348,13 +342,11 @@ function setupMultiplayerBoardStyle(
         "important"
     );
 
-
     board.style.setProperty(
         "gap",
         "5px",
         "important"
     );
-
 
     board.style.setProperty(
         "width",
@@ -362,27 +354,17 @@ function setupMultiplayerBoardStyle(
         "important"
     );
 
-
     board.style.setProperty(
         "height",
         "445px",
         "important"
     );
 
-
     board.style.setProperty(
         "margin",
         "0 auto",
         "important"
     );
-
-
-    board.style.setProperty(
-        "padding",
-        "0",
-        "important"
-    );
-
 
     board.style.setProperty(
         "box-sizing",
@@ -393,13 +375,11 @@ function setupMultiplayerBoardStyle(
 }
 
 
-// =========================================================
+// ===================================================
 // CELL STYLE
-// =========================================================
+// ===================================================
 
-function setupMultiplayerCell(
-    cell
-){
+function setupMultiplayerCell(cell){
 
     cell.style.setProperty(
         "width",
@@ -407,20 +387,17 @@ function setupMultiplayerCell(
         "important"
     );
 
-
     cell.style.setProperty(
         "height",
         "70px",
         "important"
     );
 
-
     cell.style.setProperty(
         "box-sizing",
         "border-box",
         "important"
     );
-
 
     cell.style.display =
         "flex";
@@ -443,34 +420,31 @@ function setupMultiplayerCell(
     cell.style.fontSize =
         "18px";
 
+    cell.style.position =
+        "relative";
+
 }
 
 
-// =========================================================
+// ===================================================
 // CREATE CELL
-// =========================================================
+// ===================================================
 
-function createMultiplayerCell(
-    row,
-    col
-){
+function createMultiplayerCell(row, col){
 
     const cell =
         document.createElement(
             "div"
         );
 
-
     cell.className =
         "multiplayerCell";
-
 
     const position =
         mpPosition(
             row,
             col
         );
-
 
     cell.dataset.row =
         row;
@@ -481,65 +455,166 @@ function createMultiplayerCell(
     cell.dataset.position =
         position;
 
-
     cell.innerText =
         position;
-
 
     setupMultiplayerCell(
         cell
     );
-
 
     return cell;
 
 }
 
 
-// =========================================================
+// ===================================================
+// CLEAR ATTACK VISUAL
+// ===================================================
+
+function clearMultiplayerAttackVisuals(){
+
+    document
+        .querySelectorAll(
+            ".mpMultiplayerAttackMiss, " +
+            ".mpMultiplayerAttackBite, " +
+            ".mpMultiplayerAttackHit"
+        )
+        .forEach(
+            function(cell){
+
+                cell.classList.remove(
+                    "mpMultiplayerAttackMiss"
+                );
+
+                cell.classList.remove(
+                    "mpMultiplayerAttackBite"
+                );
+
+                cell.classList.remove(
+                    "mpMultiplayerAttackHit"
+                );
+
+                cell.style.background =
+                    "";
+
+            }
+        );
+
+}
+
+
+// ===================================================
+// APPLY ATTACK VISUAL
+// ===================================================
+
+function applyMultiplayerAttackVisual(
+    row,
+    col,
+    result
+){
+
+    clearMultiplayerAttackVisuals();
+
+    const boards = [
+        mpManBoard,
+        mpMosquitoBoard
+    ];
+
+    boards.forEach(
+        function(board){
+
+            if(!board){
+
+                return;
+
+            }
+
+            const cell =
+                board.querySelector(
+                    `[data-row="${row}"][data-col="${col}"]`
+                );
+
+            if(!cell){
+
+                return;
+
+            }
+
+            if(result === "miss"){
+
+                cell.classList.add(
+                    "mpMultiplayerAttackMiss"
+                );
+
+                cell.style.background =
+                    "red";
+
+            }
+
+            else if(result === "bite"){
+
+                cell.classList.add(
+                    "mpMultiplayerAttackBite"
+                );
+
+                cell.style.background =
+                    "orange";
+
+            }
+
+            else if(result === "hit"){
+
+                cell.classList.add(
+                    "mpMultiplayerAttackHit"
+                );
+
+                cell.style.background =
+                    "red";
+
+            }
+
+        }
+    );
+
+    mpMultiplayerLastAttackCell = {
+        row: row,
+        col: col
+    };
+
+    mpMultiplayerLastAttackResult =
+        result;
+
+}
+
+
+// ===================================================
 // CREATE MAN BOARD
-// =========================================================
+// ===================================================
 
 function createMultiplayerManBoard(){
 
     if(!mpManBoard){
 
-        console.error(
-            "❌ multiplayerManBoard not found."
-        );
-
         return;
 
     }
 
-
     mpManBoard.innerHTML =
         "";
-
 
     setupMultiplayerBoardStyle(
         mpManBoard
     );
 
+    for(let row = 0; row < MP_ROWS; row++){
 
-    for(
-        let row = 0;
-        row < MP_ROWS;
-        row++
-    ){
-
-        for(
-            let col = 0;
-            col < MP_COLS;
-            col++
-        ){
+        for(let col = 0; col < MP_COLS; col++){
 
             const cell =
                 createMultiplayerCell(
                     row,
                     col
                 );
-
 
             cell.addEventListener(
                 "click",
@@ -552,7 +627,6 @@ function createMultiplayerManBoard(){
                 }
             );
 
-
             mpManBoard.appendChild(
                 cell
             );
@@ -561,65 +635,43 @@ function createMultiplayerManBoard(){
 
     }
 
-
     mpManBoard.style.pointerEvents =
         "none";
 
     mpManBoard.style.opacity =
         "0.55";
 
-
-    console.log(
-        "🧍 6×6 MULTIPLAYER MAN BOARD CREATED"
-    );
-
 }
 
 
-// =========================================================
+// ===================================================
 // CREATE MOSQUITO BOARD
-// =========================================================
+// ===================================================
 
 function createMultiplayerMosquitoBoard(){
 
     if(!mpMosquitoBoard){
 
-        console.error(
-            "❌ multiplayerMosquitoBoard not found."
-        );
-
         return;
 
     }
 
-
     mpMosquitoBoard.innerHTML =
         "";
-
 
     setupMultiplayerBoardStyle(
         mpMosquitoBoard
     );
 
+    for(let row = 0; row < MP_ROWS; row++){
 
-    for(
-        let row = 0;
-        row < MP_ROWS;
-        row++
-    ){
-
-        for(
-            let col = 0;
-            col < MP_COLS;
-            col++
-        ){
+        for(let col = 0; col < MP_COLS; col++){
 
             const cell =
                 createMultiplayerCell(
                     row,
                     col
                 );
-
 
             cell.addEventListener(
                 "click",
@@ -632,7 +684,6 @@ function createMultiplayerMosquitoBoard(){
                 }
             );
 
-
             mpMosquitoBoard.appendChild(
                 cell
             );
@@ -641,98 +692,313 @@ function createMultiplayerMosquitoBoard(){
 
     }
 
+}
 
-    console.log(
-        "🦟 6×6 MULTIPLAYER MOSQUITO BOARD CREATED"
+
+// ===================================================
+// SHOW MOSQUITO IMAGE
+// ===================================================
+
+function showMultiplayerMosquitoPosition(){
+
+    if(
+        mpMosquitoCurrentRow === null ||
+        mpMosquitoCurrentCol === null
+    ){
+
+        return;
+
+    }
+
+    if(!mpMosquitoBoard){
+
+        return;
+
+    }
+
+    mpMosquitoBoard
+        .querySelectorAll(
+            ".mpMosquitoCurrent"
+        )
+        .forEach(
+            function(cell){
+
+                cell.classList.remove(
+                    "mpMosquitoCurrent"
+                );
+
+                const image =
+                    cell.querySelector(
+                        ".mpMosquitoImage"
+                    );
+
+                if(image){
+
+                    image.remove();
+
+                }
+
+            }
+        );
+
+    const cell =
+        mpMosquitoBoard.querySelector(
+            `[data-row="${mpMosquitoCurrentRow}"][data-col="${mpMosquitoCurrentCol}"]`
+        );
+
+    if(!cell){
+
+        return;
+
+    }
+
+    cell.classList.add(
+        "mpMosquitoCurrent"
+    );
+
+    cell.innerHTML =
+        "";
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+    image.src =
+        "images/mosquitochan.png";
+
+    image.alt =
+        "Mosquito-chan";
+
+    image.className =
+        "mpMosquitoImage";
+
+    image.style.width =
+        "52px";
+
+    image.style.height =
+        "52px";
+
+    image.style.objectFit =
+        "contain";
+
+    image.style.pointerEvents =
+        "none";
+
+    cell.appendChild(
+        image
     );
 
 }
 
 
-// =========================================================
-// MAN SELECT / ATTACK
-// =========================================================
+// ===================================================
+// CLEAR MOSQUITO IMAGE
+// ===================================================
 
-function selectManCell(
-    cell
+function clearMultiplayerMosquitoPosition(){
+
+    if(!mpMosquitoBoard){
+
+        return;
+
+    }
+
+    mpMosquitoBoard
+        .querySelectorAll(
+            ".mpMosquitoCurrent"
+        )
+        .forEach(
+            function(cell){
+
+                cell.classList.remove(
+                    "mpMosquitoCurrent"
+                );
+
+                cell.innerHTML =
+                    cell.dataset.position;
+
+            }
+        );
+
+}
+
+
+// ===================================================
+// HIGHLIGHT LEGAL MOSQUITO MOVES
+// ===================================================
+
+function highlightMultiplayerMosquitoMoves(
+    reason
 ){
 
+    if(!mpMosquitoBoard){
+
+        return;
+
+    }
+
+    mpMosquitoBoard
+        .querySelectorAll(
+            ".mpMosquitoMoveAllowed"
+        )
+        .forEach(
+            function(cell){
+
+                cell.classList.remove(
+                    "mpMosquitoMoveAllowed"
+                );
+
+                cell.style.outline =
+                    "";
+
+                cell.style.background =
+                    "";
+
+            }
+        );
+
     if(
-        !window.multiplayerManReady
+        mpMosquitoCurrentRow === null ||
+        mpMosquitoCurrentCol === null
     ){
 
         return;
 
     }
 
+    if(reason === "bite"){
 
-    if(
-        !mpManCanAttack
-    ){
+        for(let row = 0; row < MP_ROWS; row++){
+
+            for(let col = 0; col < MP_COLS; col++){
+
+                const cell =
+                    mpMosquitoBoard.querySelector(
+                        `[data-row="${row}"][data-col="${col}"]`
+                    );
+
+                if(cell){
+
+                    if(
+                        row ===
+                            mpMosquitoCurrentRow &&
+                        col ===
+                            mpMosquitoCurrentCol
+                    ){
+
+                        continue;
+
+                    }
+
+                    cell.classList.add(
+                        "mpMosquitoMoveAllowed"
+                    );
+
+                    cell.style.background =
+                        "rgba(0, 110, 255, 0.45)";
+
+                    cell.style.outline =
+                        "3px solid blue";
+
+                }
+
+            }
+
+        }
 
         return;
 
     }
 
+    // MISS = orthogonal
 
-    if(
-        mpWaitingForAttackResult
-    ){
+    const directions = [
+
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1]
+
+    ];
+
+    directions.forEach(
+        function(direction){
+
+            const row =
+                mpMosquitoCurrentRow +
+                direction[0];
+
+            const col =
+                mpMosquitoCurrentCol +
+                direction[1];
+
+            if(
+                row < 0 ||
+                row >= MP_ROWS ||
+                col < 0 ||
+                col >= MP_COLS
+            ){
+
+                return;
+
+            }
+
+            const cell =
+                mpMosquitoBoard.querySelector(
+                    `[data-row="${row}"][data-col="${col}"]`
+                );
+
+            if(cell){
+
+                cell.classList.add(
+                    "mpMosquitoMoveAllowed"
+                );
+
+                cell.style.background =
+                    "rgba(0, 110, 255, 0.45)";
+
+                cell.style.outline =
+                    "3px solid blue";
+
+            }
+
+        }
+    );
+
+}
+
+
+// ===================================================
+// MAN SELECT
+// ===================================================
+
+function selectManCell(cell){
+
+    if(!mpManCanAttack){
 
         return;
 
     }
 
+    if(mpWaitingForAttackResult){
+
+        return;
+
+    }
 
     const row =
         Number(
             cell.dataset.row
         );
 
-
     const col =
         Number(
             cell.dataset.col
         );
 
-
     const position =
         cell.dataset.position;
-
-
-    console.log(
-        "🧍 MAN SELECTED:",
-        position
-    );
-
-
-    // ---------------------------------------------
-    // VISUAL SELECTION
-    // ---------------------------------------------
-
-    const oldSelected =
-        mpManBoard.querySelector(
-            ".selected"
-        );
-
-
-    if(oldSelected){
-
-        oldSelected.classList.remove(
-            "selected"
-        );
-
-    }
-
-
-    cell.classList.add(
-        "selected"
-    );
-
-
-    // ---------------------------------------------
-    // LOCK
-    // ---------------------------------------------
 
     mpManCanAttack =
         false;
@@ -740,10 +1006,8 @@ function selectManCell(
     mpWaitingForAttackResult =
         true;
 
-
     mpManBoard.style.pointerEvents =
         "none";
-
 
     if(mpManStatus){
 
@@ -754,86 +1018,57 @@ function selectManCell(
 
     }
 
+    mpSend({
 
-    // ---------------------------------------------
-    // SEND
-    // ---------------------------------------------
+        type:
+            "manAttack",
 
-    const sent =
-        mpSend({
+        roomCode:
+            window.multiplayerRoomCode,
 
-            type:
-                "manAttack",
+        row:
+            row,
 
-            roomCode:
-                window.multiplayerRoomCode,
+        col:
+            col
 
-            row:
-                row,
-
-            col:
-                col
-
-        });
-
-
-    if(!sent){
-
-        mpManCanAttack =
-            true;
-
-        mpWaitingForAttackResult =
-            false;
-
-
-        mpManBoard.style.pointerEvents =
-            "auto";
-
-    }
+    });
 
 }
 
 
-// =========================================================
-// MOSQUITO INITIAL SELECTION
-// =========================================================
+// ===================================================
+// MOSQUITO SELECT
+// ===================================================
 
-function selectMosquitoCell(
-    cell
-){
+function selectMosquitoCell(cell){
 
-    // ---------------------------------------------
     // INITIAL HIDING
-    // ---------------------------------------------
-
     if(
         !window.multiplayerMosquitoReady &&
         !mpMosquitoCanMove
     ){
 
-        const oldSelected =
-            mpMosquitoBoard.querySelector(
+        mpMosquitoBoard
+            .querySelectorAll(
                 ".selected"
+            )
+            .forEach(
+                function(old){
+
+                    old.classList.remove(
+                        "selected"
+                    );
+
+                }
             );
-
-
-        if(oldSelected){
-
-            oldSelected.classList.remove(
-                "selected"
-            );
-
-        }
-
 
         cell.classList.add(
             "selected"
         );
 
-
         mpMosquitoSelectedCell =
             cell;
-
 
         if(mpHideBtn){
 
@@ -842,221 +1077,95 @@ function selectMosquitoCell(
 
         }
 
-
-        const position =
-            cell.dataset.position;
-
-
         if(mpMosquitoStatus){
 
             mpMosquitoStatus.innerText =
                 "Selected hiding place: " +
-                position;
+                cell.dataset.position;
 
         }
 
-
-        console.log(
-            "🦟 MOSQUITO SELECTED:",
-            position
-        );
-
-
         return;
 
     }
 
-
-    // ---------------------------------------------
     // MOVEMENT
-    // ---------------------------------------------
 
-    if(
-        mpMosquitoCanMove
-    ){
-
-        selectMosquitoMovementCell(
-            cell
-        );
-
-    }
-
-}
-
-
-// =========================================================
-// SELECT MOVEMENT CELL
-// =========================================================
-
-function selectMosquitoMovementCell(
-    cell
-){
-
-    if(
-        !mpMosquitoCanMove
-    ){
-
-        return;
-
-    }
-
-
-    const row =
-        Number(
-            cell.dataset.row
-        );
-
-
-    const col =
-        Number(
-            cell.dataset.col
-        );
-
-
-    // ---------------------------------------------
-    // BITE
-    // ANYWHERE IS VALID
-    // ---------------------------------------------
-
-    if(
-        mpMosquitoMoveReason ===
-        "bite"
-    ){
-
-        selectMovementCellVisual(
-            cell
-        );
-
-
-        return;
-
-    }
-
-
-    // ---------------------------------------------
-    // MISS
-    // ORTHOGONAL ONLY
-    // ---------------------------------------------
-
-    if(
-        mpMosquitoMoveReason ===
-        "miss"
-    ){
-
-        const distance =
-            Math.abs(
-                row -
-                mpMosquitoCurrentRow
-            ) +
-            Math.abs(
-                col -
-                mpMosquitoCurrentCol
-            );
-
+    if(mpMosquitoCanMove){
 
         if(
-            distance !==
-            1
+            !cell.classList.contains(
+                "mpMosquitoMoveAllowed"
+            )
         ){
 
-            if(
-                mpMosquitoMovementStatus
-            ){
+            if(mpMosquitoMovementStatus){
 
                 mpMosquitoMovementStatus.innerText =
-                    "❌ After a miss, you can only move one square up, down, left or right.";
+                    "❌ That square is not a legal move.";
 
             }
-
 
             return;
 
         }
 
+        mpMosquitoBoard
+            .querySelectorAll(
+                ".movementSelected"
+            )
+            .forEach(
+                function(old){
 
-        selectMovementCellVisual(
-            cell
-        );
+                    old.classList.remove(
+                        "movementSelected"
+                    );
 
-    }
+                }
+            );
 
-}
-
-
-// =========================================================
-// MOVEMENT VISUAL
-// =========================================================
-
-function selectMovementCellVisual(
-    cell
-){
-
-    const oldSelected =
-        mpMosquitoBoard.querySelector(
-            ".movementSelected"
-        );
-
-
-    if(oldSelected){
-
-        oldSelected.classList.remove(
+        cell.classList.add(
             "movementSelected"
         );
 
-    }
+        mpMosquitoSelectedCell =
+            cell;
 
+        if(mpMoveBtn){
 
-    cell.classList.add(
-        "movementSelected"
-    );
+            mpMoveBtn.disabled =
+                false;
 
+        }
 
-    mpMosquitoSelectedCell =
-        cell;
+        if(mpMosquitoMovementStatus){
 
+            mpMosquitoMovementStatus.innerText =
+                "Selected " +
+                cell.dataset.position +
+                ". Press Move.";
 
-    if(mpMoveBtn){
-
-        mpMoveBtn.disabled =
-            false;
-
-    }
-
-
-    if(mpMosquitoMovementStatus){
-
-        mpMosquitoMovementStatus.innerText =
-            "Selected " +
-            cell.dataset.position +
-            ". Press Move.";
+        }
 
     }
-
-
-    console.log(
-        "🦟 MOSQUITO MOVE SELECTED:",
-        cell.dataset.position
-    );
 
 }
 
 
-// =========================================================
+// ===================================================
 // ACTIVATE MAN
-// =========================================================
+// ===================================================
 
 function activateManBoard(){
 
     window.multiplayerManReady =
         true;
 
-
     mpManCanAttack =
         true;
 
     mpWaitingForAttackResult =
         false;
-
 
     if(mpManBoard){
 
@@ -1068,7 +1177,6 @@ function activateManBoard(){
 
     }
 
-
     if(mpManStatus){
 
         mpManStatus.innerText =
@@ -1076,72 +1184,51 @@ function activateManBoard(){
 
     }
 
-
-    console.log(
-        "🧍 MAN BOARD ACTIVATED"
-    );
-
 }
 
 
-// =========================================================
-// CREATE MOVEMENT CONTROLS
-// =========================================================
+// ===================================================
+// MOVEMENT CONTROLS
+// ===================================================
 
 function createMosquitoMovementControls(){
 
-    if(
-        mpMosquitoControls
-    ){
+    if(mpMosquitoControls){
 
         return;
 
     }
-
 
     mpMosquitoControls =
         document.createElement(
             "div"
         );
 
-
     mpMosquitoControls.id =
         "multiplayerMosquitoControls";
-
-
-    mpMosquitoControls.style.margin =
-        "20px auto";
-
 
     mpMosquitoControls.style.display =
         "flex";
 
-
     mpMosquitoControls.style.justifyContent =
         "center";
-
 
     mpMosquitoControls.style.gap =
         "12px";
 
-
-    // ---------------------------------------------
-    // STAY
-    // ---------------------------------------------
+    mpMosquitoControls.style.margin =
+        "20px auto";
 
     mpStayBtn =
         document.createElement(
             "button"
         );
 
-
     mpStayBtn.innerText =
         "🦟 Stay";
 
-
     mpStayBtn.disabled =
         true;
-
 
     mpStayBtn.onclick =
         function(){
@@ -1150,24 +1237,16 @@ function createMosquitoMovementControls(){
 
         };
 
-
-    // ---------------------------------------------
-    // MOVE
-    // ---------------------------------------------
-
     mpMoveBtn =
         document.createElement(
             "button"
         );
 
-
     mpMoveBtn.innerText =
         "🦟 Move Here";
 
-
     mpMoveBtn.disabled =
         true;
-
 
     mpMoveBtn.onclick =
         function(){
@@ -1176,21 +1255,15 @@ function createMosquitoMovementControls(){
 
         };
 
-
     mpMosquitoControls.appendChild(
         mpStayBtn
     );
-
 
     mpMosquitoControls.appendChild(
         mpMoveBtn
     );
 
-
-    if(
-        mpMosquitoBoard &&
-        mpMosquitoBoard.parentNode
-    ){
+    if(mpMosquitoBoard){
 
         mpMosquitoBoard.parentNode.insertBefore(
             mpMosquitoControls,
@@ -1202,69 +1275,39 @@ function createMosquitoMovementControls(){
 }
 
 
-// =========================================================
+// ===================================================
 // ENABLE MOSQUITO MOVEMENT
-// =========================================================
+// ===================================================
 
-function enableMosquitoMovement(
-    data
-){
+function enableMosquitoMovement(data){
 
     mpMosquitoCanMove =
         true;
 
-
     mpMosquitoMoveReason =
         data.reason;
-
 
     mpMosquitoCurrentRow =
         Number(
             data.currentPosition.row
         );
 
-
     mpMosquitoCurrentCol =
         Number(
             data.currentPosition.col
         );
 
-
     mpMosquitoSelectedCell =
         null;
 
-
     createMosquitoMovementControls();
 
+    if(mpMosquitoControls){
 
-    // ---------------------------------------------
-    // CLEAR OLD SELECTION
-    // ---------------------------------------------
+        mpMosquitoControls.style.display =
+            "flex";
 
-    const oldSelected =
-        mpMosquitoBoard.querySelectorAll(
-            ".selected, .movementSelected"
-        );
-
-
-    oldSelected.forEach(
-        function(cell){
-
-            cell.classList.remove(
-                "selected"
-            );
-
-            cell.classList.remove(
-                "movementSelected"
-            );
-
-        }
-    );
-
-
-    // ---------------------------------------------
-    // ENABLE BOARD
-    // ---------------------------------------------
+    }
 
     if(mpMosquitoBoard){
 
@@ -1276,10 +1319,11 @@ function enableMosquitoMovement(
 
     }
 
+    showMultiplayerMosquitoPosition();
 
-    // ---------------------------------------------
-    // STAY
-    // ---------------------------------------------
+    highlightMultiplayerMosquitoMoves(
+        data.reason
+    );
 
     if(mpStayBtn){
 
@@ -1288,7 +1332,6 @@ function enableMosquitoMovement(
 
     }
 
-
     if(mpMoveBtn){
 
         mpMoveBtn.disabled =
@@ -1296,83 +1339,31 @@ function enableMosquitoMovement(
 
     }
 
+    if(mpMosquitoMovementStatus){
 
-    // ---------------------------------------------
-    // STATUS
-    // ---------------------------------------------
-
-    if(
-        mpMosquitoStatus
-    ){
-
-        if(
-            data.reason ===
-            "bite"
-        ){
-
-            mpMosquitoStatus.innerText =
-                "🩸 You were detected! You may STAY or FLY anywhere.";
-
-        }
-
-        else{
-
-            mpMosquitoStatus.innerText =
-                "❌ Man missed. You may STAY or move one square orthogonally.";
-
-        }
+        mpMosquitoMovementStatus.innerText =
+            data.reason === "bite"
+                ? "🩸 BITE! Stay or fly anywhere."
+                : "❌ MISS! Stay or move orthogonally.";
 
     }
-
-
-    if(
-        mpMosquitoMovementStatus
-    ){
-
-        if(
-            data.reason ===
-            "bite"
-        ){
-
-            mpMosquitoMovementStatus.innerText =
-                "Select ANY square, or press Stay.";
-
-        }
-
-        else{
-
-            mpMosquitoMovementStatus.innerText =
-                "Select an adjacent square, or press Stay.";
-
-        }
-
-    }
-
-
-    console.log(
-        "🦟 MOSQUITO MOVEMENT ENABLED:",
-        data.reason
-    );
 
 }
 
 
-// =========================================================
+// ===================================================
 // SEND STAY
-// =========================================================
+// ===================================================
 
 function sendMosquitoStay(){
 
-    if(
-        !mpMosquitoCanMove
-    ){
+    if(!mpMosquitoCanMove){
 
         return;
 
     }
 
-
-    const sent =
+    if(
         mpSend({
 
             type:
@@ -1384,67 +1375,45 @@ function sendMosquitoStay(){
             action:
                 "stay"
 
-        });
+        })
+    ){
 
-
-    if(!sent){
-
-        return;
+        lockMosquitoMovement();
 
     }
-
-
-    lockMosquitoMovement();
 
 }
 
 
-// =========================================================
+// ===================================================
 // SEND MOVE
-// =========================================================
+// ===================================================
 
 function sendMosquitoMove(){
 
-    if(
-        !mpMosquitoCanMove
-    ){
+    if(!mpMosquitoCanMove){
 
         return;
 
     }
 
-
-    if(
-        !mpMosquitoSelectedCell
-    ){
-
-        if(
-            mpMosquitoMovementStatus
-        ){
-
-            mpMosquitoMovementStatus.innerText =
-                "Select a square first.";
-
-        }
+    if(!mpMosquitoSelectedCell){
 
         return;
 
     }
-
 
     const row =
         Number(
             mpMosquitoSelectedCell.dataset.row
         );
 
-
     const col =
         Number(
             mpMosquitoSelectedCell.dataset.col
         );
 
-
-    const sent =
+    if(
         mpSend({
 
             type:
@@ -1462,30 +1431,24 @@ function sendMosquitoMove(){
             col:
                 col
 
-        });
+        })
+    ){
 
-
-    if(!sent){
-
-        return;
+        lockMosquitoMovement();
 
     }
-
-
-    lockMosquitoMovement();
 
 }
 
 
-// =========================================================
-// LOCK MOSQUITO MOVEMENT
-// =========================================================
+// ===================================================
+// LOCK MOSQUITO
+// ===================================================
 
 function lockMosquitoMovement(){
 
     mpMosquitoCanMove =
         false;
-
 
     if(mpStayBtn){
 
@@ -1494,7 +1457,6 @@ function lockMosquitoMovement(){
 
     }
 
-
     if(mpMoveBtn){
 
         mpMoveBtn.disabled =
@@ -1502,97 +1464,82 @@ function lockMosquitoMovement(){
 
     }
 
-
     if(mpMosquitoBoard){
 
         mpMosquitoBoard.style.pointerEvents =
             "none";
 
         mpMosquitoBoard.style.opacity =
-            "0.55";
+            "0.65";
 
     }
 
+    mpMosquitoBoard
+        ?.querySelectorAll(
+            ".mpMosquitoMoveAllowed"
+        )
+        .forEach(
+            function(cell){
 
-    if(mpMosquitoStatus){
+                cell.style.outline =
+                    "";
 
-        mpMosquitoStatus.innerText =
-            "🦟 Waiting for the Man...";
+                cell.classList.remove(
+                    "mpMosquitoMoveAllowed"
+                );
 
-    }
-
-
-    if(mpMosquitoMovementStatus){
-
-        mpMosquitoMovementStatus.innerText =
-            "Your move is complete.";
-
-    }
+            }
+        );
 
 }
 
 
-// =========================================================
+// ===================================================
 // OPEN MAN
-// =========================================================
+// ===================================================
 
 function openMultiplayerMan(){
 
     hideNormalGameScreens();
-
     hideAllMultiplayerScreens();
 
-
     if(!mpManScreen){
-
-        console.error(
-            "❌ multiplayerManScreen not found."
-        );
 
         return;
 
     }
 
-
     mpManScreen.classList.remove(
         "hidden"
     );
 
-
     window.currentGameMode =
         "multiplayer-man";
-
-
-    window.multiplayerManReady =
-        false;
-
-
-    window.multiplayerMosquitoReady =
-        false;
-
 
     mpManCanAttack =
         false;
 
-
     mpWaitingForAttackResult =
         false;
-
 
     mpManSanity =
         100;
 
-
     mpManTurn =
         1;
-
 
     mpBiteFreeTurns =
         0;
 
+    mpMultiplayerLastAttackCell =
+        null;
+
+    mpMultiplayerLastAttackResult =
+        null;
 
     updateManHUD();
 
+    createMultiplayerManBoard();
 
     if(mpManStatus){
 
@@ -1601,96 +1548,63 @@ function openMultiplayerMan(){
 
     }
 
-
-    createMultiplayerManBoard();
-
-
-    console.log(
-        "🧍 OPENING MULTIPLAYER MAN"
-    );
-
 }
 
 
-// =========================================================
+// ===================================================
 // OPEN MOSQUITO
-// =========================================================
+// ===================================================
 
 function openMultiplayerMosquito(){
 
     hideNormalGameScreens();
-
     hideAllMultiplayerScreens();
 
-
     if(!mpMosquitoScreen){
-
-        console.error(
-            "❌ multiplayerMosquitoScreen not found."
-        );
 
         return;
 
     }
 
-
     mpMosquitoScreen.classList.remove(
         "hidden"
     );
 
-
     window.currentGameMode =
         "multiplayer-mosquito";
-
-
-    window.multiplayerMosquitoReady =
-        false;
-
-
-    window.multiplayerManReady =
-        false;
-
 
     mpMosquitoCanMove =
         false;
 
-
     mpMosquitoMoveReason =
         null;
 
+    mpMosquitoCurrentRow =
+        null;
+
+    mpMosquitoCurrentCol =
+        null;
+
+    mpMosquitoSelectedCell =
+        null;
 
     mpManSanity =
         100;
 
-
     mpManTurn =
         1;
 
+    mpMultiplayerLastAttackCell =
+        null;
+
+    mpMultiplayerLastAttackResult =
+        null;
 
     updateMosquitoHUD();
 
-
-    if(mpMosquitoStatus){
-
-        mpMosquitoStatus.innerText =
-            "Choose your hiding place.";
-
-    }
-
-
-    if(mpMosquitoMovementStatus){
-
-        mpMosquitoMovementStatus.innerText =
-            "";
-
-    }
-
-
     createMultiplayerMosquitoBoard();
 
-
     createMosquitoMovementControls();
-
 
     if(mpMosquitoControls){
 
@@ -1699,17 +1613,19 @@ function openMultiplayerMosquito(){
 
     }
 
+    if(mpMosquitoStatus){
 
-    console.log(
-        "🦟 OPENING MULTIPLAYER MOSQUITO"
-    );
+        mpMosquitoStatus.innerText =
+            "Choose your hiding place.";
+
+    }
 
 }
 
 
-// =========================================================
+// ===================================================
 // MAN HUD
-// =========================================================
+// ===================================================
 
 function updateManHUD(){
 
@@ -1723,15 +1639,12 @@ function updateManHUD(){
             "mpManTurn"
         );
 
-
     if(sanity){
 
         sanity.innerText =
-            mpManSanity +
-            "%";
+            mpManSanity + "%";
 
     }
-
 
     if(turn){
 
@@ -1743,9 +1656,9 @@ function updateManHUD(){
 }
 
 
-// =========================================================
+// ===================================================
 // MOSQUITO HUD
-// =========================================================
+// ===================================================
 
 function updateMosquitoHUD(){
 
@@ -1759,15 +1672,12 @@ function updateMosquitoHUD(){
             "mpMosquitoTurn"
         );
 
-
     if(sanity){
 
         sanity.innerText =
-            mpManSanity +
-            "%";
+            mpManSanity + "%";
 
     }
-
 
     if(turn){
 
@@ -1779,23 +1689,268 @@ function updateMosquitoHUD(){
 }
 
 
-// =========================================================
-// INITIAL HIDE BUTTON
-// =========================================================
+// ===================================================
+// CREATE VICTORY SCREEN
+// ===================================================
+
+function createMultiplayerVictoryScreen(
+    winner
+){
+
+    let screen =
+        document.getElementById(
+            "mpVictoryScreen"
+        );
+
+    if(!screen){
+
+        screen =
+            document.createElement(
+                "div"
+            );
+
+        screen.id =
+            "mpVictoryScreen";
+
+        screen.style.position =
+            "fixed";
+
+        screen.style.inset =
+            "0";
+
+        screen.style.zIndex =
+            "99999";
+
+        screen.style.background =
+            "rgba(0,0,0,0.92)";
+
+        screen.style.display =
+            "flex";
+
+        screen.style.flexDirection =
+            "column";
+
+        screen.style.alignItems =
+            "center";
+
+        screen.style.justifyContent =
+            "center";
+
+        screen.style.textAlign =
+            "center";
+
+        screen.style.padding =
+            "20px";
+
+        document.body.appendChild(
+            screen
+        );
+
+    }
+
+    screen.innerHTML =
+        "";
+
+    const title =
+        document.createElement(
+            "h1"
+        );
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+    const message =
+        document.createElement(
+            "p"
+        );
+
+    const restart =
+        document.createElement(
+            "button"
+        );
+
+    const leave =
+        document.createElement(
+            "button"
+        );
+
+    if(winner === "man"){
+
+        title.innerText =
+            "🎯 MAN WINS!";
+
+        image.src =
+            "images/manwin.png";
+
+        image.alt =
+            "Man wins";
+
+        message.innerText =
+            "The Man caught Mosquito-chan!";
+
+    }
+
+    else{
+
+        title.innerText =
+            "🦟 MOSQUITO WINS!";
+
+        image.src =
+            "images/mosquitowin.png";
+
+        image.alt =
+            "Mosquito wins";
+
+        message.innerText =
+            "The Man's sanity has reached zero!";
+
+    }
+
+    image.style.maxWidth =
+        "350px";
+
+    image.style.maxHeight =
+        "350px";
+
+    image.style.objectFit =
+        "contain";
+
+    restart.innerText =
+        "🔄 Restart";
+
+    leave.innerText =
+        "🚪 Leave Room";
+
+    restart.style.margin =
+        "10px";
+
+    leave.style.margin =
+        "10px";
+
+    restart.onclick =
+        function(){
+
+            requestMultiplayerRestart(
+                restart
+            );
+
+        };
+
+    leave.onclick =
+        function(){
+
+            leaveMultiplayerRoom();
+
+        };
+
+    screen.appendChild(
+        title
+    );
+
+    screen.appendChild(
+        image
+    );
+
+    screen.appendChild(
+        message
+    );
+
+    screen.appendChild(
+        restart
+    );
+
+    screen.appendChild(
+        leave
+    );
+
+}
+
+
+// ===================================================
+// RESTART
+// ===================================================
+
+function requestMultiplayerRestart(
+    button
+){
+
+    if(mpRestartWaiting){
+
+        return;
+
+    }
+
+    mpRestartWaiting =
+        true;
+
+    button.disabled =
+        true;
+
+    button.innerText =
+        "⏳ Waiting for opponent...";
+
+    mpSend({
+
+        type:
+            "restartGame",
+
+        roomCode:
+            window.multiplayerRoomCode
+
+    });
+
+}
+
+
+// ===================================================
+// LEAVE ROOM
+// ===================================================
+
+function leaveMultiplayerRoom(){
+
+    mpSend({
+
+        type:
+            "leaveRoom",
+
+        roomCode:
+            window.multiplayerRoomCode
+
+    });
+
+}
+
+
+// ===================================================
+// CLOSE VICTORY SCREEN
+// ===================================================
+
+function closeMultiplayerVictoryScreen(){
+
+    const screen =
+        document.getElementById(
+            "mpVictoryScreen"
+        );
+
+    if(screen){
+
+        screen.remove();
+
+    }
+
+}
+
+
+// ===================================================
+// INITIAL HIDE
+// ===================================================
 
 if(mpHideBtn){
 
     mpHideBtn.onclick =
         function(){
-
-            if(
-                window.multiplayerMosquitoReady
-            ){
-
-                return;
-
-            }
-
 
             if(
                 !mpMosquitoSelectedCell
@@ -1812,25 +1967,18 @@ if(mpHideBtn){
 
             }
 
-
             const row =
                 Number(
                     mpMosquitoSelectedCell.dataset.row
                 );
-
 
             const col =
                 Number(
                     mpMosquitoSelectedCell.dataset.col
                 );
 
-
-            const position =
-                mpMosquitoSelectedCell.dataset.position;
-
-
-            const sent =
-                mpSend({
+            if(
+                !mpSend({
 
                     type:
                         "mosquitoPosition",
@@ -1844,19 +1992,15 @@ if(mpHideBtn){
                     col:
                         col
 
-                });
-
-
-            if(!sent){
+                })
+            ){
 
                 return;
 
             }
 
-
             window.multiplayerMosquitoReady =
                 true;
-
 
             if(mpHideBtn){
 
@@ -1865,54 +2009,33 @@ if(mpHideBtn){
 
             }
 
+            mpMosquitoBoard.style.pointerEvents =
+                "none";
 
-            if(mpMosquitoBoard){
-
-                mpMosquitoBoard.style.pointerEvents =
-                    "none";
-
-                mpMosquitoBoard.style.opacity =
-                    "0.55";
-
-            }
-
+            mpMosquitoBoard.style.opacity =
+                "0.55";
 
             if(mpMosquitoStatus){
 
                 mpMosquitoStatus.innerText =
-                    "🦟 Hidden! The hunt has started.";
+                    "🦟 Hidden! Waiting for the Man.";
 
             }
-
-
-            if(mpMosquitoMovementStatus){
-
-                mpMosquitoMovementStatus.innerText =
-                    "The Man is hunting...";
-
-            }
-
-
-            console.log(
-                "📤 MOSQUITO POSITION SENT:",
-                position
-            );
 
         };
 
 }
 
 
-// =========================================================
+// ===================================================
 // SOCKET OPEN
-// =========================================================
+// ===================================================
 
 mpSocket.onopen =
 function(){
 
     window.multiplayerConnected =
         true;
-
 
     console.log(
         "🌐 Connected to multiplayer server!"
@@ -1921,15 +2044,14 @@ function(){
 };
 
 
-// =========================================================
+// ===================================================
 // SOCKET MESSAGE
-// =========================================================
+// ===================================================
 
 mpSocket.onmessage =
 function(event){
 
     let data;
-
 
     try{
 
@@ -1943,7 +2065,7 @@ function(event){
     catch(error){
 
         console.error(
-            "❌ Invalid server message:",
+            "Invalid server message:",
             event.data
         );
 
@@ -1951,29 +2073,23 @@ function(event){
 
     }
 
-
     console.log(
         "📨 Server:",
         data
     );
 
 
-    // =====================================================
+    // =================================================
     // ROOM CREATED
-    // =====================================================
+    // =================================================
 
-    if(
-        data.type ===
-        "roomCreated"
-    ){
+    if(data.type === "roomCreated"){
 
         window.multiplayerRole =
-            data.role || "man";
-
+            data.role;
 
         window.multiplayerRoomCode =
             data.roomCode;
-
 
         if(mpRoomCode){
 
@@ -1981,7 +2097,6 @@ function(event){
                 data.roomCode;
 
         }
-
 
         if(mpCreateGamePanel){
 
@@ -1991,7 +2106,6 @@ function(event){
 
         }
 
-
         if(mpJoinGamePanel){
 
             mpJoinGamePanel.classList.add(
@@ -1999,7 +2113,6 @@ function(event){
             );
 
         }
-
 
         if(mpLobbyStatus){
 
@@ -2011,42 +2124,32 @@ function(event){
     }
 
 
-    // =====================================================
+    // =================================================
     // PLAYER JOINED
-    // =====================================================
+    // =================================================
 
-    else if(
-        data.type ===
-        "playerJoined"
-    ){
+    else if(data.type === "playerJoined"){
 
         if(mpLobbyStatus){
 
             mpLobbyStatus.innerText =
                 "✅ Opponent connected!";
-
         }
 
     }
 
 
-    // =====================================================
-    // JOINED ROOM
-    // =====================================================
+    // =================================================
+    // JOINED
+    // =================================================
 
-    else if(
-        data.type ===
-        "joinedRoom"
-    ){
+    else if(data.type === "joinedRoom"){
 
         window.multiplayerRole =
-            data.role ||
-            "mosquito";
-
+            data.role;
 
         window.multiplayerRoomCode =
             data.roomCode;
-
 
         if(mpJoinStatus){
 
@@ -2058,36 +2161,25 @@ function(event){
     }
 
 
-    // =====================================================
+    // =================================================
     // GAME START
-    // =====================================================
+    // =================================================
 
-    else if(
-        data.type ===
-        "gameStart"
-    ){
+    else if(data.type === "gameStart"){
 
         window.multiplayerRole =
             data.role;
 
-
         window.multiplayerRoomCode =
             data.roomCode;
 
-
-        if(
-            data.role ===
-            "man"
-        ){
+        if(data.role === "man"){
 
             openMultiplayerMan();
 
         }
 
-        else if(
-            data.role ===
-            "mosquito"
-        ){
+        else{
 
             openMultiplayerMosquito();
 
@@ -2096,50 +2188,78 @@ function(event){
     }
 
 
-    // =====================================================
-    // MOSQUITO READY
-    // =====================================================
+    // =================================================
+    // NEW ROUND
+    // =================================================
 
-    else if(
-        data.type ===
-        "mosquitoReady"
-    ){
+    else if(data.type === "newRound"){
 
-        if(
-            window.multiplayerRole !==
-            "man"
-        ){
+        closeMultiplayerVictoryScreen();
 
-            return;
+        mpRestartWaiting =
+            false;
+
+        mpManSanity =
+            100;
+
+        mpManTurn =
+            1;
+
+        mpBiteFreeTurns =
+            0;
+
+        mpMultiplayerLastAttackCell =
+            null;
+
+        mpMultiplayerLastAttackResult =
+            null;
+
+        if(data.role === "man"){
+
+            openMultiplayerMan();
 
         }
 
+        else{
 
-        window.multiplayerManReady =
-            true;
+            openMultiplayerMosquito();
+
+        }
+
+    }
 
 
-        window.multiplayerMosquitoReady =
-            true;
+    // =================================================
+    // MOSQUITO READY
+    // =================================================
 
+    else if(data.type === "mosquitoReady"){
+
+        mpManSanity =
+            typeof data.sanity === "number"
+                ? data.sanity
+                : mpManSanity;
+
+        mpManTurn =
+            typeof data.turn === "number"
+                ? data.turn + 1
+                : mpManTurn;
+
+        updateManHUD();
+        updateMosquitoHUD();
 
         activateManBoard();
 
     }
 
 
-    // =====================================================
-    // MOSQUITO HIDDEN CONFIRMATION
-    // =====================================================
+    // =================================================
+    // MOSQUITO HIDDEN
+    // =================================================
 
-    else if(
-        data.type ===
-        "mosquitoHidden"
-    ){
+    else if(data.type === "mosquitoHidden"){
 
-        if(
-            mpMosquitoStatus
-        ){
+        if(mpMosquitoStatus){
 
             mpMosquitoStatus.innerText =
                 "🦟 Hidden! Waiting for the Man.";
@@ -2149,18 +2269,14 @@ function(event){
     }
 
 
-    // =====================================================
+    // =================================================
     // ATTACK RESULT
-    // =====================================================
+    // =================================================
 
-    else if(
-        data.type ===
-        "attackResult"
-    ){
+    else if(data.type === "attackResult"){
 
         mpWaitingForAttackResult =
             false;
-
 
         if(
             typeof data.sanity ===
@@ -2172,7 +2288,6 @@ function(event){
 
         }
 
-
         if(
             typeof data.turn ===
             "number"
@@ -2182,7 +2297,6 @@ function(event){
                 data.turn + 1;
 
         }
-
 
         if(
             typeof data.biteFreeTurns ===
@@ -2194,122 +2308,81 @@ function(event){
 
         }
 
-
         updateManHUD();
+        updateMosquitoHUD();
 
+        if(
+            typeof data.attackRow ===
+            "number" &&
+            typeof data.attackCol ===
+            "number"
+        ){
 
-        // ---------------------------------------------
+            applyMultiplayerAttackVisual(
+                data.attackRow,
+                data.attackCol,
+                data.result
+            );
+
+        }
+
         // HIT
-        // ---------------------------------------------
 
-        if(
-            data.result ===
-            "hit"
-        ){
+        if(data.result === "hit"){
 
             mpManCanAttack =
                 false;
 
-
-            if(mpManBoard){
-
-                mpManBoard.style.pointerEvents =
-                    "none";
-
-            }
-
-
-            if(mpManStatus){
-
-                mpManStatus.innerText =
-                    "🎯 HIT! You caught the Mosquito!";
-
-            }
-
+            createMultiplayerVictoryScreen(
+                "man"
+            );
 
             return;
 
         }
 
-
-        // ---------------------------------------------
         // BITE
-        // ---------------------------------------------
 
-        if(
-            data.result ===
-            "bite"
-        ){
+        if(data.result === "bite"){
 
             mpManCanAttack =
                 false;
 
-
-            if(mpManBoard){
-
-                mpManBoard.style.pointerEvents =
-                    "none";
-
-            }
-
-
             if(mpManStatus){
 
                 mpManStatus.innerText =
-                    "🩸 BITE! -10 Sanity. Mosquito's turn.";
+                    "🩸 BITE! -10 Sanity.";
 
             }
-
 
             return;
 
         }
 
-
-        // ---------------------------------------------
         // MISS
-        // ---------------------------------------------
 
-        if(
-            data.result ===
-            "miss"
-        ){
+        if(data.result === "miss"){
 
             mpManCanAttack =
                 false;
 
-
-            if(mpManBoard){
-
-                mpManBoard.style.pointerEvents =
-                    "none";
-
-            }
-
-
             if(mpManStatus){
 
                 mpManStatus.innerText =
-                    "❌ MISS! -1 Sanity. Mosquito's turn.";
+                    "❌ MISS! -1 Sanity.";
 
             }
-
-
-            return;
 
         }
 
     }
 
 
-    // =====================================================
+    // =================================================
     // MOSQUITO TURN
-    // =====================================================
+    // =================================================
 
-    else if(
-        data.type ===
-        "mosquitoTurn"
-    ){
+    else if(data.type === "mosquitoTurn"){
 
         if(
             window.multiplayerRole !==
@@ -2320,60 +2393,28 @@ function(event){
 
         }
 
-
-        // ---------------------------------------------
-        // STORE SECRET POSITION LOCALLY
-        // ---------------------------------------------
-
         mpMosquitoCurrentRow =
             Number(
                 data.currentPosition.row
             );
-
 
         mpMosquitoCurrentCol =
             Number(
                 data.currentPosition.col
             );
 
-
-        // ---------------------------------------------
-        // SHOW MOVEMENT CONTROLS
-        // ---------------------------------------------
-
-        if(mpMosquitoControls){
-
-            mpMosquitoControls.style.display =
-                "flex";
-
-        }
-
-
         enableMosquitoMovement(
             data
-        );
-
-
-        console.log(
-            "🦟 MOSQUITO TURN:",
-            data.reason
         );
 
     }
 
 
-    // =====================================================
+    // =================================================
     // MOSQUITO MOVE RESULT
-    // =====================================================
+    // =================================================
 
-    else if(
-        data.type ===
-        "mosquitoMoveResult"
-    ){
-
-        mpMosquitoCanMove =
-            false;
-
+    else if(data.type === "mosquitoMoveResult"){
 
         if(
             typeof data.row ===
@@ -2385,7 +2426,6 @@ function(event){
 
         }
 
-
         if(
             typeof data.col ===
             "number"
@@ -2396,25 +2436,9 @@ function(event){
 
         }
 
+        showMultiplayerMosquitoPosition();
 
-        if(mpMosquitoControls){
-
-            mpMosquitoControls.style.display =
-                "none";
-
-        }
-
-
-        if(mpMosquitoBoard){
-
-            mpMosquitoBoard.style.pointerEvents =
-                "none";
-
-            mpMosquitoBoard.style.opacity =
-                "0.55";
-
-        }
-
+        lockMosquitoMovement();
 
         if(mpMosquitoStatus){
 
@@ -2423,34 +2447,20 @@ function(event){
 
         }
 
-
-        if(mpMosquitoMovementStatus){
-
-            mpMosquitoMovementStatus.innerText =
-                data.message ||
-                "The Man's turn.";
-
-        }
-
     }
 
 
-    // =====================================================
-    // MOSQUITO MOVED — MAN SIDE
-    // =====================================================
+    // =================================================
+    // MOSQUITO MOVED
+    // =================================================
 
-    else if(
-        data.type ===
-        "mosquitoMoved"
-    ){
+    else if(data.type === "mosquitoMoved"){
 
         mpManCanAttack =
             true;
 
-
         mpWaitingForAttackResult =
             false;
-
 
         if(mpManBoard){
 
@@ -2462,147 +2472,76 @@ function(event){
 
         }
 
-
         if(mpManStatus){
 
             mpManStatus.innerText =
-                data.message ||
                 "🦟 The Mosquito moved. Attack!";
 
         }
 
-
-        console.log(
-            "🧍 MAN TURN RESTORED"
-        );
-
     }
 
 
-    // =====================================================
+    // =================================================
     // GAME OVER
-    // =====================================================
+    // =================================================
 
-    else if(
-        data.type ===
-        "gameOver"
-    ){
+    else if(data.type === "gameOver"){
 
-        if(
-            data.winner ===
-            "man"
-        ){
+        mpManSanity =
+            typeof data.sanity === "number"
+                ? data.sanity
+                : mpManSanity;
 
-            if(
-                window.multiplayerRole ===
-                "man"
-            ){
+        updateManHUD();
+        updateMosquitoHUD();
 
-                if(mpManStatus){
-
-                    mpManStatus.innerText =
-                        "🎯 YOU WIN! You caught the Mosquito!";
-
-                }
-
-            }
-
-            else{
-
-                if(mpMosquitoStatus){
-
-                    mpMosquitoStatus.innerText =
-                        "💀 You were caught!";
-
-                }
-
-            }
-
-        }
-
-    }
-
-
-    // =====================================================
-    // ERROR
-    // =====================================================
-
-    else if(
-        data.type ===
-        "error"
-    ){
-
-        console.error(
-            "❌ SERVER ERROR:",
-            data.message
-        );
-
-
-        mpWaitingForAttackResult =
+        mpManCanAttack =
             false;
 
+        mpMosquitoCanMove =
+            false;
 
-        if(
-            window.multiplayerRole ===
-            "man"
-        ){
+        if(mpManBoard){
 
-            mpManCanAttack =
-                true;
-
-
-            if(mpManBoard){
-
-                mpManBoard.style.pointerEvents =
-                    "auto";
-
-            }
+            mpManBoard.style.pointerEvents =
+                "none";
 
         }
 
+        if(mpMosquitoBoard){
 
-        if(mpJoinStatus){
-
-            mpJoinStatus.innerText =
-                "❌ " +
-                data.message;
+            mpMosquitoBoard.style.pointerEvents =
+                "none";
 
         }
 
-
-        if(mpManStatus){
-
-            mpManStatus.innerText =
-                "❌ " +
-                data.message;
-
-        }
-
-
-        if(mpMosquitoStatus){
-
-            mpMosquitoStatus.innerText =
-                "❌ " +
-                data.message;
-
-        }
+        createMultiplayerVictoryScreen(
+            data.winner
+        );
 
     }
 
 
-    // =====================================================
-    // OPPONENT DISCONNECTED
-    // =====================================================
+    // =================================================
+    // RESTART WAITING
+    // =================================================
 
-    else if(
-        data.type ===
-        "opponentDisconnected"
-    ){
+    else if(data.type === "restartWaiting"){
 
-        alert(
-            "Your opponent disconnected."
-        );
+        mpRestartWaiting =
+            true;
 
+    }
+
+
+    // =================================================
+    // LEFT ROOM
+    // =================================================
+
+    else if(data.type === "leftRoom"){
+
+        closeMultiplayerVictoryScreen();
 
         window.multiplayerRole =
             null;
@@ -2615,6 +2554,122 @@ function(event){
 
         window.multiplayerMosquitoReady =
             false;
+
+        hideAllMultiplayerScreens();
+        hideNormalGameScreens();
+
+        const mainMenu =
+            document.getElementById(
+                "mainMenu"
+            );
+
+        if(mainMenu){
+
+            mainMenu.classList.remove(
+                "hidden"
+            );
+
+        }
+
+    }
+
+
+    // =================================================
+    // OPPONENT LEFT
+    // =================================================
+
+    else if(data.type === "opponentLeftRoom"){
+
+        alert(
+            "Your opponent left the room."
+        );
+
+        closeMultiplayerVictoryScreen();
+
+        window.multiplayerRole =
+            null;
+
+        window.multiplayerRoomCode =
+            null;
+
+    }
+
+
+    // =================================================
+    // ERROR
+    // =================================================
+
+    else if(data.type === "error"){
+
+        console.error(
+            "❌ Multiplayer server error:",
+            data.message
+        );
+
+        mpWaitingForAttackResult =
+            false;
+
+        if(
+            window.multiplayerRole ===
+            "man"
+        ){
+
+            mpManCanAttack =
+                true;
+
+            if(mpManBoard){
+
+                mpManBoard.style.pointerEvents =
+                    "auto";
+
+            }
+
+        }
+
+        if(mpJoinStatus){
+
+            mpJoinStatus.innerText =
+                "❌ " +
+                data.message;
+
+        }
+
+        if(mpManStatus){
+
+            mpManStatus.innerText =
+                "❌ " +
+                data.message;
+
+        }
+
+        if(mpMosquitoStatus){
+
+            mpMosquitoStatus.innerText =
+                "❌ " +
+                data.message;
+
+        }
+
+    }
+
+
+    // =================================================
+    // OPPONENT DISCONNECTED
+    // =================================================
+
+    else if(data.type === "opponentDisconnected"){
+
+        alert(
+            "Your opponent disconnected."
+        );
+
+        closeMultiplayerVictoryScreen();
+
+        window.multiplayerRole =
+            null;
+
+        window.multiplayerRoomCode =
+            null;
 
         mpManCanAttack =
             false;
@@ -2630,201 +2685,168 @@ function(event){
 };
 
 
-// =========================================================
+// ===================================================
 // CREATE GAME
-// =========================================================
+// ===================================================
 
 if(mpCreateGameBtn){
 
     mpCreateGameBtn.onclick =
-    function(){
+        function(){
 
-        if(
-            mpSocket.readyState !==
-            WebSocket.OPEN
-        ){
+            if(
+                mpSocket.readyState !==
+                WebSocket.OPEN
+            ){
+
+                if(mpLobbyStatus){
+
+                    mpLobbyStatus.innerText =
+                        "❌ Not connected to server.";
+
+                }
+
+                return;
+
+            }
+
+            if(mpCreateGamePanel){
+
+                mpCreateGamePanel.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+            if(mpJoinGamePanel){
+
+                mpJoinGamePanel.classList.add(
+                    "hidden"
+                );
+
+            }
 
             if(mpLobbyStatus){
 
                 mpLobbyStatus.innerText =
-                    "❌ Not connected to server.";
+                    "Creating game...";
 
             }
 
-            return;
+            mpSend({
 
-        }
+                type:
+                    "createRoom"
 
+            });
 
-        if(mpCreateGamePanel){
-
-            mpCreateGamePanel.classList.remove(
-                "hidden"
-            );
-
-        }
-
-
-        if(mpJoinGamePanel){
-
-            mpJoinGamePanel.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        if(mpLobbyStatus){
-
-            mpLobbyStatus.innerText =
-                "Creating game...";
-
-        }
-
-
-        mpSend({
-
-            type:
-                "createRoom"
-
-        });
-
-    };
+        };
 
 }
 
 
-// =========================================================
+// ===================================================
 // JOIN GAME
-// =========================================================
+// ===================================================
 
 if(mpJoinGameBtn){
 
     mpJoinGameBtn.onclick =
-    function(){
+        function(){
 
-        if(mpJoinGamePanel){
+            if(mpJoinGamePanel){
 
-            mpJoinGamePanel.classList.remove(
-                "hidden"
-            );
+                mpJoinGamePanel.classList.remove(
+                    "hidden"
+                );
 
-        }
+            }
 
+            if(mpCreateGamePanel){
 
-        if(mpCreateGamePanel){
+                mpCreateGamePanel.classList.add(
+                    "hidden"
+                );
 
-            mpCreateGamePanel.classList.add(
-                "hidden"
-            );
+            }
 
-        }
+            if(mpJoinStatus){
 
+                mpJoinStatus.innerText =
+                    "";
 
-        if(mpJoinStatus){
+            }
 
-            mpJoinStatus.innerText =
-                "";
+            if(mpRoomCodeInput){
 
-        }
+                mpRoomCodeInput.value =
+                    "";
 
+                mpRoomCodeInput.focus();
 
-        if(mpRoomCodeInput){
+            }
 
-            mpRoomCodeInput.value =
-                "";
-
-            mpRoomCodeInput.focus();
-
-        }
-
-    };
+        };
 
 }
 
 
-// =========================================================
+// ===================================================
 // JOIN ROOM
-// =========================================================
+// ===================================================
 
 if(mpJoinRoomBtn){
 
     mpJoinRoomBtn.onclick =
-    function(){
+        function(){
 
-        if(!mpRoomCodeInput){
+            const code =
+                mpRoomCodeInput.value
+                    .trim()
+                    .toUpperCase();
 
-            return;
-
-        }
-
-
-        const code =
-            mpRoomCodeInput.value
-                .trim()
-                .toUpperCase();
-
-
-        if(
-            code.length !==
-            6
-        ){
-
-            if(mpJoinStatus){
+            if(code.length !== 6){
 
                 mpJoinStatus.innerText =
                     "Enter a 6-character game code.";
 
+                return;
+
             }
 
-            return;
-
-        }
-
-
-        if(
-            mpSocket.readyState !==
-            WebSocket.OPEN
-        ){
-
-            if(mpJoinStatus){
+            if(
+                mpSocket.readyState !==
+                WebSocket.OPEN
+            ){
 
                 mpJoinStatus.innerText =
                     "❌ Not connected to server.";
 
+                return;
+
             }
-
-            return;
-
-        }
-
-
-        if(mpJoinStatus){
 
             mpJoinStatus.innerText =
                 "Joining game...";
 
-        }
+            mpSend({
 
+                type:
+                    "joinRoom",
 
-        mpSend({
+                roomCode:
+                    code
 
-            type:
-                "joinRoom",
+            });
 
-            roomCode:
-                code
-
-        });
-
-    };
+        };
 
 }
 
 
-// =========================================================
+// ===================================================
 // ENTER KEY
-// =========================================================
+// ===================================================
 
 if(mpRoomCodeInput){
 
@@ -2837,11 +2859,7 @@ if(mpRoomCodeInput){
                 "Enter"
             ){
 
-                if(mpJoinRoomBtn){
-
-                    mpJoinRoomBtn.click();
-
-                }
+                mpJoinRoomBtn.click();
 
             }
 
@@ -2851,45 +2869,45 @@ if(mpRoomCodeInput){
 }
 
 
-// =========================================================
+// ===================================================
 // BACK
-// =========================================================
+// ===================================================
 
 if(mpPlayerBackBtn){
 
     mpPlayerBackBtn.onclick =
+        function(){
+
+            hideAllMultiplayerScreens();
+            hideNormalGameScreens();
+            closeMultiplayerVictoryScreen();
+
+            const mainMenu =
+                document.getElementById(
+                    "mainMenu"
+                );
+
+            if(mainMenu){
+
+                mainMenu.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        };
+
+}
+
+
+// ===================================================
+// SOCKET CLOSE
+// ===================================================
+
+mpSocket.onclose =
     function(){
 
-        hideAllMultiplayerScreens();
-
-        hideNormalGameScreens();
-
-
-        const mainMenu =
-            document.getElementById(
-                "mainMenu"
-            );
-
-
-        if(mainMenu){
-
-            mainMenu.classList.remove(
-                "hidden"
-            );
-
-        }
-
-
-        window.multiplayerRole =
-            null;
-
-        window.multiplayerRoomCode =
-            null;
-
-        window.multiplayerManReady =
-            false;
-
-        window.multiplayerMosquitoReady =
+        window.multiplayerConnected =
             false;
 
         mpManCanAttack =
@@ -2901,48 +2919,23 @@ if(mpPlayerBackBtn){
         mpMosquitoCanMove =
             false;
 
+        console.log(
+            "❌ Disconnected from multiplayer server."
+        );
+
     };
 
-}
 
-
-// =========================================================
-// SOCKET CLOSE
-// =========================================================
-
-mpSocket.onclose =
-function(){
-
-    window.multiplayerConnected =
-        false;
-
-    mpManCanAttack =
-        false;
-
-    mpWaitingForAttackResult =
-        false;
-
-    mpMosquitoCanMove =
-        false;
-
-
-    console.log(
-        "❌ Disconnected from multiplayer server."
-    );
-
-};
-
-
-// =========================================================
+// ===================================================
 // SOCKET ERROR
-// =========================================================
+// ===================================================
 
 mpSocket.onerror =
-function(error){
+    function(error){
 
-    console.error(
-        "❌ Multiplayer WebSocket error:",
-        error
-    );
+        console.error(
+            "❌ Multiplayer WebSocket error:",
+            error
+        );
 
-};
+    };
