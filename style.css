@@ -548,7 +548,162 @@ button {
 }
 
 /* ================================================= */
-/* MULTIPLAYER BOARDS */
+/* MULTIPLAYER SCREENS */
+/* ================================================= */
+
+#multiplayerManScreen,
+#multiplayerMosquitoScreen {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+
+    height: 100vh;
+
+    z-index: 99999;
+
+    background: #202124;
+
+    overflow-y: auto;
+
+    box-sizing: border-box;
+
+    text-align: center;
+
+}
+
+
+/* ================================================= */
+/* MULTIPLAYER HUD */
+/* ================================================= */
+
+#multiplayerManHud,
+#multiplayerMosquitoHud {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 30px;
+
+    margin: 20px auto;
+
+}
+
+
+/* ================================================= */
+/* MULTIPLAYER BOARD WRAPPER */
+/* ================================================= */
+
+.multiplayerBoardWrapper {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 30px auto;
+
+}
+
+
+/* ================================================= */
+/* COLUMN LABELS */
+/* ================================================= */
+
+.multiplayerColumnLabels {
+
+    display: grid;
+
+    grid-template-columns:
+        35px repeat(5, 70px);
+
+    gap: 5px;
+
+    width: max-content;
+
+    margin-bottom: 5px;
+
+}
+
+
+.multiplayerColumnLabels span {
+
+    width: 70px;
+
+    height: 25px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+/* ================================================= */
+/* BOARD + ROW LABELS */
+/* ================================================= */
+
+.multiplayerBoardWithRows {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+}
+
+
+/* ================================================= */
+/* ROW LABELS */
+/* ================================================= */
+
+.multiplayerRowLabels {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+}
+
+
+.multiplayerRowLabels span {
+
+    width: 35px;
+
+    height: 70px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+/* ================================================= */
+/* 5 × 5 BOARD */
 /* ================================================= */
 
 .multiplayerBoard {
@@ -561,17 +716,17 @@ button {
     grid-template-rows:
         repeat(5, 70px);
 
-    gap: 6px;
+    gap: 5px;
 
-    justify-content: center;
+    width: max-content;
 
-    margin: 30px auto;
+    height: max-content;
 
 }
 
 
 /* ================================================= */
-/* MULTIPLAYER SQUARE */
+/* MULTIPLAYER CELL */
 /* ================================================= */
 
 .multiplayerCell {
@@ -580,35 +735,212 @@ button {
 
     height: 70px;
 
+    box-sizing: border-box;
+
     background: #444;
 
     border: 2px solid #777;
 
-    box-sizing: border-box;
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    color: #ddd;
+
+    font-size: 16px;
+
+    font-weight: bold;
 
     cursor: pointer;
 
+    user-select: none;
+
     transition:
-        transform 0.1s,
-        background 0.1s;
+        background 0.15s,
+        border 0.15s,
+        transform 0.1s;
 
 }
 
+
+/* ================================================= */
+/* HOVER */
+/* ================================================= */
 
 .multiplayerCell:hover {
 
-    transform: scale(1.05);
-
     background: #555;
+
+    transform: scale(1.03);
 
 }
 
 
+/* ================================================= */
+/* SELECTED CELL */
+/* ================================================= */
+
 .multiplayerCell.selected {
 
-    background: #777;
+    background: #666;
 
-    border:
-        3px solid white;
+    border: 3px solid white;
+
+    color: white;
+
+}
+
+
+/* ================================================= */
+/* MOSQUITO HIDE BUTTON */
+/* ================================================= */
+
+#multiplayerHideBtn {
+
+    display: block;
+
+    margin: 20px auto;
+
+    padding: 12px 30px;
+
+    background: #16803c;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+}
+
+
+#multiplayerHideBtn:hover {
+
+    background: #20a050;
+
+}
+
+
+#multiplayerHideBtn:disabled {
+
+    background: #555;
+
+    color: #999;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ================================================= */
+/* MULTIPLAYER STATUS */
+/* ================================================= */
+
+#mpManStatus,
+#mpMosquitoStatus,
+#multiplayerMosquitoMovementStatus {
+
+    min-height: 25px;
+
+    font-size: 18px;
+
+}
+
+
+/* ================================================= */
+/* OPTIONAL: MAN'S SELECTED CELL */
+/* ================================================= */
+
+#multiplayerManBoard
+.multiplayerCell.selected {
+
+    background: #666;
+
+    border: 3px solid #ffffff;
+
+}
+
+
+/* ================================================= */
+/* OPTIONAL: MOSQUITO'S HIDING CELL */
+/* ================================================= */
+
+#multiplayerMosquitoBoard
+.multiplayerCell.selected {
+
+    background: #16803c;
+
+    border: 3px solid white;
+
+}
+
+
+/* ================================================= */
+/* MOBILE */
+/* ================================================= */
+
+@media (max-width: 600px) {
+
+    .multiplayerBoard {
+
+        grid-template-columns:
+            repeat(5, 55px);
+
+        grid-template-rows:
+            repeat(5, 55px);
+
+        gap: 4px;
+
+    }
+
+
+    .multiplayerCell {
+
+        width: 55px;
+
+        height: 55px;
+
+        font-size: 13px;
+
+    }
+
+
+    .multiplayerColumnLabels {
+
+        grid-template-columns:
+            30px repeat(5, 55px);
+
+        gap: 4px;
+
+    }
+
+
+    .multiplayerColumnLabels span {
+
+        width: 55px;
+
+    }
+
+
+    .multiplayerRowLabels {
+
+        gap: 4px;
+
+    }
+
+
+    .multiplayerRowLabels span {
+
+        width: 30px;
+
+        height: 55px;
+
+    }
 
 }
