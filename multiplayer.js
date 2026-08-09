@@ -9,7 +9,20 @@
 // ===================================================
 
 const socket =
-    new WebSocket("wss://man-vs-mosquito.onrender.com");
+    new WebSocket(
+        "wss://man-vs-mosquito.onrender.com"
+    );
+
+
+// ===================================================
+// MULTIPLAYER STATE
+// ===================================================
+
+window.multiplayerRole = null;
+
+window.multiplayerRoomCode = null;
+
+window.multiplayerConnected = false;
 
 
 // ===================================================
@@ -53,6 +66,9 @@ const playerBackBtn =
 
 socket.onopen = function(){
 
+    window.multiplayerConnected =
+        true;
+
     console.log(
         "🌐 Connected to multiplayer server!"
     );
@@ -82,8 +98,16 @@ socket.onmessage = function(event){
 
     if(data.type === "roomCreated"){
 
+        window.multiplayerRoomCode =
+            data.roomCode;
+
+        window.multiplayerRole =
+            data.role;
+
+
         roomCode.innerText =
             data.roomCode;
+
 
         createGamePanel.classList.remove(
             "hidden"
@@ -93,8 +117,14 @@ socket.onmessage = function(event){
             "hidden"
         );
 
+
         lobbyStatus.innerText =
             "Waiting for opponent...";
+
+
+        console.log(
+            "🧍 Your multiplayer role: MAN"
+        );
 
     }
 
@@ -108,8 +138,9 @@ socket.onmessage = function(event){
         lobbyStatus.innerText =
             "✅ Opponent connected!";
 
+
         console.log(
-            "Opponent joined room."
+            "👥 Opponent joined."
         );
 
     }
@@ -121,14 +152,107 @@ socket.onmessage = function(event){
 
     if(data.type === "joinedRoom"){
 
+        window.multiplayerRoomCode =
+            data.roomCode;
+
+        window.multiplayerRole =
+            data.role;
+
+
         joinStatus.innerText =
             "✅ Joined game!";
+
 
         console.log(
             "Successfully joined room:",
             data.roomCode
         );
 
+
+        console.log(
+            "🦟 Your multiplayer role: MOSQUITO"
+        );
+
+    }
+
+
+    // =========================================
+    // GAME START
+    // =========================================
+
+    if(data.type === "gameStart"){
+
+        window.multiplayerRole =
+            data.role;
+
+        window.multiplayerRoomCode =
+            data.roomCode;
+
+
+        console.log(
+            "================================="
+        );
+
+        console.log(
+            "🎮 MULTIPLAYER GAME START"
+        );
+
+        console.log(
+            "Room:",
+            data.roomCode
+        );
+
+        console.log(
+            "Role:",
+            data.role
+        );
+
+        console.log(
+            "================================="
+        );
+
+
+        // -----------------------------------------
+        // MAN
+        // -----------------------------------------
+
+        if(data.role === "man"){
+
+            lobbyStatus.innerText =
+                "🧍 You are the MAN!";
+
+
+            joinStatus.innerText =
+                "🧍 You are the MAN!";
+
+        }
+
+
+        // -----------------------------------------
+        // MOSQUITO
+        // -----------------------------------------
+
+        if(data.role === "mosquito"){
+
+            lobbyStatus.innerText =
+                "🦟 You are the MOSQUITO!";
+
+
+            joinStatus.innerText =
+                "🦟 You are the MOSQUITO!";
+
+        }
+
+
+        /*
+         * IMPORTANT:
+         *
+         * We are NOT starting the actual
+         * game screens yet.
+         *
+         * First we are confirming that the
+         * server correctly assigns roles.
+         */
     }
 
 
@@ -141,6 +265,13 @@ socket.onmessage = function(event){
         alert(
             "Your opponent disconnected."
         );
+
+
+        window.multiplayerRole =
+            null;
+
+        window.multiplayerRoomCode =
+            null;
 
     }
 
@@ -181,10 +312,21 @@ if(createGameBtn){
             "Creating game...";
 
 
+        if(socket.readyState !== WebSocket.OPEN){
+
+            lobbyStatus.innerText =
+                "❌ Not connected to server.";
+
+            return;
+
+        }
+
+
         socket.send(
             JSON.stringify({
 
-                type: "createRoom"
+                type:
+                    "createRoom"
 
             })
         );
@@ -212,10 +354,12 @@ if(joinGameBtn){
         );
 
 
-        joinStatus.innerText = "";
+        joinStatus.innerText =
+            "";
 
 
-        roomCodeInput.value = "";
+        roomCodeInput.value =
+            "";
 
 
         roomCodeInput.focus();
@@ -250,6 +394,16 @@ if(joinRoomBtn){
         }
 
 
+        if(socket.readyState !== WebSocket.OPEN){
+
+            joinStatus.innerText =
+                "❌ Not connected to server.";
+
+            return;
+
+        }
+
+
         joinStatus.innerText =
             "Joining game...";
 
@@ -257,9 +411,11 @@ if(joinRoomBtn){
         socket.send(
             JSON.stringify({
 
-                type: "joinRoom",
+                type:
+                    "joinRoom",
 
-                roomCode: code
+                roomCode:
+                    code
 
             })
         );
@@ -300,7 +456,7 @@ if(playerBackBtn){
     playerBackBtn.onclick =
     function(){
 
-        if(playerModeMenu){
+        if(typeof playerModeMenu !== "undefined"){
 
             playerModeMenu.classList.add(
                 "hidden"
@@ -309,7 +465,7 @@ if(playerBackBtn){
         }
 
 
-        if(mainMenu){
+        if(typeof mainMenu !== "undefined"){
 
             mainMenu.classList.remove(
                 "hidden"
@@ -327,6 +483,10 @@ if(playerBackBtn){
 // ===================================================
 
 socket.onclose = function(){
+
+    window.multiplayerConnected =
+        false;
+
 
     console.log(
         "❌ Disconnected from server."
