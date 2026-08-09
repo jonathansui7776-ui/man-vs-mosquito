@@ -19,7 +19,7 @@ const mpSocket =
 
 
 // ============================================================
-// GLOBAL MULTIPLAYER STATE
+// MULTIPLAYER IDENTITY
 // ============================================================
 
 window.multiplayerRole = null;
@@ -31,14 +31,15 @@ window.multiplayerConnected = false;
 // ROUND STATE
 // ============================================================
 
-let mpRoundId = 0;
-
 let mpManSanity = 100;
 let mpManTurn = 1;
-let mpBiteFreeTurns = 0;
+
+let mpGambles = 3;
+
+let mpMissStreak = 0;
 
 let mpManCanAttack = false;
-let mpWaitingForAttackResult = false;
+let mpWaitingForResult = false;
 
 let mpMosquitoReady = false;
 let mpMosquitoCanMove = false;
@@ -51,46 +52,68 @@ let mpMosquitoCol = null;
 let mpSelectedManCell = null;
 let mpSelectedMosquitoCell = null;
 
-let mpLastAttackRow = null;
-let mpLastAttackCol = null;
-let mpLastAttackResult = null;
+let mpGambleMode = false;
 
 let mpRestartRequested = false;
 
 
 // ============================================================
-// LOBBY ELEMENTS
+// DOM HELPERS
+// ============================================================
+
+function mpGet(...ids) {
+
+    for (const id of ids) {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+
+            return element;
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+// ============================================================
+// LOBBY
 // ============================================================
 
 const mpCreateGameBtn =
-    document.getElementById("createGameBtn");
+    mpGet("createGameBtn");
 
 const mpJoinGameBtn =
-    document.getElementById("joinGameBtn");
+    mpGet("joinGameBtn");
 
 const mpCreateGamePanel =
-    document.getElementById("createGamePanel");
+    mpGet("createGamePanel");
 
 const mpJoinGamePanel =
-    document.getElementById("joinGamePanel");
+    mpGet("joinGamePanel");
 
 const mpRoomCode =
-    document.getElementById("roomCode");
+    mpGet("roomCode");
 
 const mpRoomCodeInput =
-    document.getElementById("roomCodeInput");
+    mpGet("roomCodeInput");
 
 const mpJoinRoomBtn =
-    document.getElementById("joinRoomBtn");
+    mpGet("joinRoomBtn");
 
 const mpLobbyStatus =
-    document.getElementById("lobbyStatus");
+    mpGet("lobbyStatus");
 
 const mpJoinStatus =
-    document.getElementById("joinStatus");
+    mpGet("joinStatus");
 
 const mpPlayerBackBtn =
-    document.getElementById("playerBackBtn");
+    mpGet("playerBackBtn");
 
 
 // ============================================================
@@ -98,15 +121,15 @@ const mpPlayerBackBtn =
 // ============================================================
 
 const mpLobbyScreen =
-    document.getElementById("playerModeMenu");
+    mpGet("playerModeMenu");
 
 const mpManScreen =
-    document.getElementById(
+    mpGet(
         "multiplayerManScreen"
     );
 
 const mpMosquitoScreen =
-    document.getElementById(
+    mpGet(
         "multiplayerMosquitoScreen"
     );
 
@@ -116,58 +139,109 @@ const mpMosquitoScreen =
 // ============================================================
 
 const mpManBoard =
-    document.getElementById(
+    mpGet(
         "multiplayerManBoard"
     );
 
 const mpMosquitoBoard =
-    document.getElementById(
+    mpGet(
         "multiplayerMosquitoBoard"
     );
 
 
 // ============================================================
-// BUTTONS / STATUS
+// MAN HUD
 // ============================================================
 
-const mpHideBtn =
-    document.getElementById(
-        "multiplayerHideBtn"
+const mpManSanity =
+    mpGet(
+        "multiplayerManSanity",
+        "mpManSanity"
+    );
+
+const mpManGamble =
+    mpGet(
+        "multiplayerManGamble",
+        "mpManGamble"
+    );
+
+const mpManTurn =
+    mpGet(
+        "multiplayerManTurn",
+        "mpManTurn"
+    );
+
+const mpGambleBtn =
+    mpGet(
+        "multiplayerGambleBtn"
     );
 
 const mpManStatus =
-    document.getElementById(
+    mpGet(
+        "multiplayerStatus",
         "mpManStatus"
     );
 
+
+// ============================================================
+// MOSQUITO HUD
+// ============================================================
+
+const mpMosquitoSanity =
+    mpGet(
+        "multiplayerMosquitoManSanity",
+        "mpMosquitoManSanity"
+    );
+
+const mpMosquitoTurn =
+    mpGet(
+        "multiplayerMosquitoTurn",
+        "mpMosquitoTurn"
+    );
+
 const mpMosquitoStatus =
-    document.getElementById(
+    mpGet(
+        "multiplayerMosquitoStatus",
         "mpMosquitoStatus"
     );
 
 const mpMosquitoMovementStatus =
-    document.getElementById(
+    mpGet(
         "multiplayerMosquitoMovementStatus"
     );
 
 
 // ============================================================
-// DYNAMIC MOVEMENT CONTROLS
+// MOSQUITO HIDE
 // ============================================================
 
-let mpMosquitoControls = null;
+const mpHideBtn =
+    mpGet(
+        "confirmMultiplayerMosquitoBtn",
+        "multiplayerHideBtn",
+        "confirmMosquitoBtn"
+    );
+
+
+// ============================================================
+// MOVEMENT CONTROLS
+// ============================================================
+
+let mpMovementControls = null;
 let mpStayBtn = null;
 let mpMoveBtn = null;
 
 
 // ============================================================
-// POSITION
+// POSITION NAME
 // ============================================================
 
 function mpPosition(row, col) {
 
     return (
-        String.fromCharCode(65 + row) +
+        String.fromCharCode(
+            65 + row
+        ) +
         (col + 1)
     );
 
@@ -224,78 +298,70 @@ function mpSend(data) {
 
 
 // ============================================================
-// HIDE ALL MULTIPLAYER SCREENS
+// HIDE SCREENS
 // ============================================================
 
-function hideMultiplayerScreens() {
+function mpHideScreens() {
 
-    if (mpLobbyScreen) {
+    [
+        mpLobbyScreen,
+        mpManScreen,
+        mpMosquitoScreen
+    ]
+    .forEach(
+        function(screen) {
 
-        mpLobbyScreen.classList.add(
-            "hidden"
-        );
+            if (screen) {
 
-    }
+                screen.classList.add(
+                    "hidden"
+                );
 
-    if (mpManScreen) {
+            }
 
-        mpManScreen.classList.add(
-            "hidden"
-        );
-
-    }
-
-    if (mpMosquitoScreen) {
-
-        mpMosquitoScreen.classList.add(
-            "hidden"
-        );
-
-    }
+        }
+    );
 
 }
 
 
 // ============================================================
-// HIDE NORMAL GAME SCREENS
+// NORMAL SCREENS
 // ============================================================
 
-function hideNormalGameScreens() {
+function mpHideNormalScreens() {
 
-    const gameScreen =
+    [
         document.getElementById(
             "gameScreen"
-        );
+        ),
 
-    const mosquitoGameScreen =
         document.getElementById(
             "mosquitoGameScreen"
-        );
+        )
+    ]
+    .forEach(
+        function(screen) {
 
-    if (gameScreen) {
+            if (screen) {
 
-        gameScreen.classList.add(
-            "hidden"
-        );
+                screen.classList.add(
+                    "hidden"
+                );
 
-    }
+            }
 
-    if (mosquitoGameScreen) {
-
-        mosquitoGameScreen.classList.add(
-            "hidden"
-        );
-
-    }
+        }
+    );
 
 }
 
 
 // ============================================================
-// CLOSE VICTORY
+// VICTORY SCREEN
 // ============================================================
 
-function closeMultiplayerVictoryScreen() {
+function mpRemoveVictory() {
 
     const screen =
         document.getElementById(
@@ -312,122 +378,16 @@ function closeMultiplayerVictoryScreen() {
 
 
 // ============================================================
-// COMPLETE ROUND RESET
-// ============================================================
-//
-// THIS IS THE ONLY FUNCTION THAT RESETS
-// MULTIPLAYER ROUND STATE.
-//
-// ============================================================
-
-function resetMultiplayerRound() {
-
-    console.log(
-        "🔄 COMPLETE MULTIPLAYER ROUND RESET"
-    );
-
-
-    mpRoundId++;
-
-
-    mpManSanity = 100;
-
-    mpManTurn = 1;
-
-    mpBiteFreeTurns = 0;
-
-
-    mpManCanAttack = false;
-
-    mpWaitingForAttackResult = false;
-
-
-    mpMosquitoReady = false;
-
-    mpMosquitoCanMove = false;
-
-    mpMosquitoMoveReason = null;
-
-
-    mpMosquitoRow = null;
-
-    mpMosquitoCol = null;
-
-
-    mpSelectedManCell = null;
-
-    mpSelectedMosquitoCell = null;
-
-
-    mpLastAttackRow = null;
-
-    mpLastAttackCol = null;
-
-    mpLastAttackResult = null;
-
-
-    mpRestartRequested = false;
-
-
-    window.multiplayerMosquitoReady =
-        false;
-
-    window.multiplayerManReady =
-        false;
-
-
-    clearMosquitoMovement();
-
-    clearAttackHighlights();
-
-    removeMosquitoControls();
-
-
-    if (mpHideBtn) {
-
-        mpHideBtn.disabled = true;
-
-    }
-
-
-    updateManHUD();
-
-    updateMosquitoHUD();
-
-}
-
-
-// ============================================================
-// REMOVE MOVEMENT CONTROLS
-// ============================================================
-
-function removeMosquitoControls() {
-
-    if (mpMosquitoControls) {
-
-        mpMosquitoControls.remove();
-
-    }
-
-    mpMosquitoControls = null;
-    mpStayBtn = null;
-    mpMoveBtn = null;
-
-}
-
-
-// ============================================================
 // CLEAR MOVEMENT
 // ============================================================
 
-function clearMosquitoMovement() {
+function mpClearMovement() {
 
-    const boards = [
-        mpMosquitoBoard,
-        mpManBoard
-    ];
-
-    boards.forEach(
+    [
+        mpManBoard,
+        mpMosquitoBoard
+    ]
+    .forEach(
         function(board) {
 
             if (!board) {
@@ -447,10 +407,10 @@ function clearMosquitoMovement() {
                             "mpMosquitoMoveAllowed"
                         );
 
-                        cell.style.outline =
+                        cell.style.background =
                             "";
 
-                        cell.style.background =
+                        cell.style.outline =
                             "";
 
                     }
@@ -463,17 +423,16 @@ function clearMosquitoMovement() {
 
 
 // ============================================================
-// CLEAR ATTACKS
+// CLEAR ATTACK HIGHLIGHTS
 // ============================================================
 
-function clearAttackHighlights() {
+function mpClearAttackHighlights() {
 
-    const boards = [
+    [
         mpManBoard,
         mpMosquitoBoard
-    ];
-
-    boards.forEach(
+    ]
+    .forEach(
         function(board) {
 
             if (!board) {
@@ -490,15 +449,15 @@ function clearAttackHighlights() {
                     function(cell) {
 
                         cell.classList.remove(
-                            "mpMultiplayerAttackMiss"
+                            "mpAttackRed"
                         );
 
                         cell.classList.remove(
-                            "mpMultiplayerAttackBite"
+                            "mpAttackOrange"
                         );
 
                         cell.classList.remove(
-                            "mpMultiplayerAttackHit"
+                            "mpAttackBlue"
                         );
 
                         cell.style.background =
@@ -514,10 +473,136 @@ function clearAttackHighlights() {
 
 
 // ============================================================
+// REMOVE MOVEMENT BUTTONS
+// ============================================================
+
+function mpRemoveMovementControls() {
+
+    if (mpMovementControls) {
+
+        mpMovementControls.remove();
+
+    }
+
+    mpMovementControls = null;
+    mpStayBtn = null;
+    mpMoveBtn = null;
+
+}
+
+
+// ============================================================
+// FULL LOCAL ROUND RESET
+// ============================================================
+
+function mpResetLocalRound() {
+
+    mpManSanity = 100;
+
+    mpManTurn = 1;
+
+    mpGambles = 3;
+
+    mpMissStreak = 0;
+
+    mpManCanAttack = false;
+
+    mpWaitingForResult = false;
+
+    mpMosquitoReady = false;
+
+    mpMosquitoCanMove = false;
+
+    mpMosquitoMoveReason = null;
+
+    mpMosquitoRow = null;
+
+    mpMosquitoCol = null;
+
+    mpSelectedManCell = null;
+
+    mpSelectedMosquitoCell = null;
+
+    mpGambleMode = false;
+
+    mpRestartRequested = false;
+
+
+    mpClearMovement();
+
+    mpClearAttackHighlights();
+
+    mpRemoveMovementControls();
+
+
+    mpUpdateHUD();
+
+}
+
+
+// ============================================================
+// HUD
+// ============================================================
+
+function mpUpdateHUD() {
+
+    if (mpManSanity) {
+
+        mpManSanity.innerText =
+            mpManSanityValue();
+
+    }
+
+    if (mpManGamble) {
+
+        mpManGamble.innerText =
+            mpGambles;
+
+    }
+
+    if (mpManTurn) {
+
+        mpManTurn.innerText =
+            mpManTurnValue();
+
+    }
+
+    if (mpMosquitoSanity) {
+
+        mpMosquitoSanity.innerText =
+            mpManSanityValue();
+
+    }
+
+    if (mpMosquitoTurn) {
+
+        mpMosquitoTurn.innerText =
+            mpManTurnValue();
+
+    }
+
+}
+
+
+function mpManSanityValue() {
+
+    return mpManSanity + "%";
+
+}
+
+
+function mpManTurnValue() {
+
+    return mpManTurn;
+
+}
+
+
+// ============================================================
 // BOARD STYLE
 // ============================================================
 
-function setupBoard(board) {
+function mpSetupBoard(board) {
 
     if (!board) {
 
@@ -569,7 +654,7 @@ function setupBoard(board) {
 
     board.style.setProperty(
         "margin",
-        "0 auto",
+        "20px auto",
         "important"
     );
 
@@ -577,14 +662,14 @@ function setupBoard(board) {
 
 
 // ============================================================
-// CELL
+// CREATE CELL
 // ============================================================
 
-function createCell(row, col) {
+function mpCreateCell(row, col) {
 
     const cell =
         document.createElement(
-            "div"
+            "button"
         );
 
     cell.className =
@@ -627,14 +712,11 @@ function createCell(row, col) {
     cell.style.position =
         "relative";
 
-    cell.style.cursor =
-        "pointer";
-
-    cell.style.userSelect =
-        "none";
-
     cell.style.fontWeight =
         "bold";
+
+    cell.style.cursor =
+        "pointer";
 
 
     return cell;
@@ -643,39 +725,10 @@ function createCell(row, col) {
 
 
 // ============================================================
-// RESTORE CELL LABEL
+// MAN BOARD
 // ============================================================
 
-function restoreCell(cell) {
-
-    if (!cell) {
-
-        return;
-
-    }
-
-    const image =
-        cell.querySelector(
-            ".mpMosquitoImage"
-        );
-
-    if (image) {
-
-        image.remove();
-
-    }
-
-    cell.innerText =
-        cell.dataset.position;
-
-}
-
-
-// ============================================================
-// CREATE MAN BOARD
-// ============================================================
-
-function createManBoard() {
+function mpCreateManBoard() {
 
     if (!mpManBoard) {
 
@@ -683,31 +736,29 @@ function createManBoard() {
 
     }
 
+
     mpManBoard.innerHTML =
         "";
 
-    mpSelectedManCell =
-        null;
-
-    setupBoard(
+    mpSetupBoard(
         mpManBoard
     );
 
 
     for (
         let row = 0;
-        row < MP_ROWS;
+        row < 6;
         row++
     ) {
 
         for (
             let col = 0;
-            col < MP_COLS;
+            col < 6;
             col++
         ) {
 
             const cell =
-                createCell(
+                mpCreateCell(
                     row,
                     col
                 );
@@ -717,7 +768,7 @@ function createManBoard() {
                 "click",
                 function() {
 
-                    manAttackCell(
+                    mpManCellClicked(
                         cell
                     );
 
@@ -744,10 +795,10 @@ function createManBoard() {
 
 
 // ============================================================
-// CREATE MOSQUITO BOARD
+// MOSQUITO BOARD
 // ============================================================
 
-function createMosquitoBoard() {
+function mpCreateMosquitoBoard() {
 
     if (!mpMosquitoBoard) {
 
@@ -755,31 +806,29 @@ function createMosquitoBoard() {
 
     }
 
+
     mpMosquitoBoard.innerHTML =
         "";
 
-    mpSelectedMosquitoCell =
-        null;
-
-    setupBoard(
+    mpSetupBoard(
         mpMosquitoBoard
     );
 
 
     for (
         let row = 0;
-        row < MP_ROWS;
+        row < 6;
         row++
     ) {
 
         for (
             let col = 0;
-            col < MP_COLS;
+            col < 6;
             col++
         ) {
 
             const cell =
-                createCell(
+                mpCreateCell(
                     row,
                     col
                 );
@@ -789,7 +838,7 @@ function createMosquitoBoard() {
                 "click",
                 function() {
 
-                    mosquitoCellClicked(
+                    mpMosquitoCellClicked(
                         cell
                     );
 
@@ -809,10 +858,33 @@ function createMosquitoBoard() {
 
 
 // ============================================================
-// SHOW MOSQUITO
+// GET CELL
 // ============================================================
 
-function showMosquito() {
+function mpGetCell(
+    board,
+    row,
+    col
+) {
+
+    if (!board) {
+
+        return null;
+
+    }
+
+    return board.querySelector(
+        `[data-row="${row}"][data-col="${col}"]`
+    );
+
+}
+
+
+// ============================================================
+// MOSQUITO IMAGE
+// ============================================================
+
+function mpShowMosquito() {
 
     if (
         mpMosquitoRow === null ||
@@ -822,6 +894,7 @@ function showMosquito() {
         return;
 
     }
+
 
     if (!mpMosquitoBoard) {
 
@@ -837,21 +910,29 @@ function showMosquito() {
         .forEach(
             function(cell) {
 
-                cell.classList.remove(
-                    "mpMosquitoCurrent"
-                );
+                const image =
+                    cell.querySelector(
+                        ".mpMosquitoImage"
+                    );
 
-                restoreCell(
-                    cell
-                );
+                if (image) {
+
+                    image.remove();
+
+                }
+
+                cell.innerText =
+                    cell.dataset.position;
 
             }
         );
 
 
     const cell =
-        mpMosquitoBoard.querySelector(
-            `[data-row="${mpMosquitoRow}"][data-col="${mpMosquitoCol}"]`
+        mpGetCell(
+            mpMosquitoBoard,
+            mpMosquitoRow,
+            mpMosquitoCol
         );
 
 
@@ -862,9 +943,8 @@ function showMosquito() {
     }
 
 
-    cell.classList.add(
-        "mpMosquitoCurrent"
-    );
+    cell.innerText =
+        "";
 
 
     const image =
@@ -875,11 +955,12 @@ function showMosquito() {
     image.src =
         "images/mosquitochan.png";
 
+    image.className =
+        "mpMosquitoImage";
+
     image.alt =
         "Mosquito-chan";
 
-    image.className =
-        "mpMosquitoImage";
 
     image.style.width =
         "52px";
@@ -902,21 +983,23 @@ function showMosquito() {
 
 
 // ============================================================
-// MOSQUITO CELL CLICK
+// MOSQUITO CELL
 // ============================================================
 
-function mosquitoCellClicked(cell) {
+function mpMosquitoCellClicked(cell) {
 
-    // --------------------------------------------------------
-    // HIDING
-    // --------------------------------------------------------
+    // ------------------------------------------
+    // INITIAL HIDING
+    // ------------------------------------------
 
     if (
         !mpMosquitoReady &&
         !mpMosquitoCanMove
     ) {
 
-        if (mpSelectedMosquitoCell) {
+        if (
+            mpSelectedMosquitoCell
+        ) {
 
             mpSelectedMosquitoCell.classList.remove(
                 "selected"
@@ -945,7 +1028,7 @@ function mosquitoCellClicked(cell) {
         if (mpMosquitoStatus) {
 
             mpMosquitoStatus.innerText =
-                "Selected hiding place: " +
+                "Selected: " +
                 cell.dataset.position;
 
         }
@@ -956,9 +1039,9 @@ function mosquitoCellClicked(cell) {
     }
 
 
-    // --------------------------------------------------------
+    // ------------------------------------------
     // MOVEMENT
-    // --------------------------------------------------------
+    // ------------------------------------------
 
     if (
         mpMosquitoCanMove
@@ -975,22 +1058,8 @@ function mosquitoCellClicked(cell) {
         }
 
 
-        if (mpSelectedMosquitoCell) {
-
-            mpSelectedMosquitoCell.classList.remove(
-                "movementSelected"
-            );
-
-        }
-
-
         mpSelectedMosquitoCell =
             cell;
-
-
-        cell.classList.add(
-            "movementSelected"
-        );
 
 
         if (mpMoveBtn) {
@@ -1027,6 +1096,13 @@ if (mpHideBtn) {
                 !mpSelectedMosquitoCell
             ) {
 
+                if (mpMosquitoStatus) {
+
+                    mpMosquitoStatus.innerText =
+                        "Select a square first.";
+
+                }
+
                 return;
 
             }
@@ -1043,8 +1119,8 @@ if (mpHideBtn) {
                 );
 
 
-            const sent =
-                mpSend({
+            if (
+                !mpSend({
 
                     type:
                         "mosquitoPosition",
@@ -1058,10 +1134,8 @@ if (mpHideBtn) {
                     col:
                         col
 
-                });
-
-
-            if (!sent) {
+                })
+            ) {
 
                 return;
 
@@ -1072,18 +1146,11 @@ if (mpHideBtn) {
                 true;
 
 
-            window.multiplayerMosquitoReady =
-                true;
-
-
             mpMosquitoRow =
                 row;
 
             mpMosquitoCol =
                 col;
-
-
-            showMosquito();
 
 
             mpHideBtn.disabled =
@@ -1093,9 +1160,11 @@ if (mpHideBtn) {
             mpMosquitoBoard.style.pointerEvents =
                 "none";
 
-
             mpMosquitoBoard.style.opacity =
                 "0.55";
+
+
+            mpShowMosquito();
 
 
             if (mpMosquitoStatus) {
@@ -1114,7 +1183,7 @@ if (mpHideBtn) {
 // MAN ATTACK
 // ============================================================
 
-function manAttackCell(cell) {
+function mpManCellClicked(cell) {
 
     if (!mpManCanAttack) {
 
@@ -1122,7 +1191,7 @@ function manAttackCell(cell) {
 
     }
 
-    if (mpWaitingForAttackResult) {
+    if (mpWaitingForResult) {
 
         return;
 
@@ -1140,11 +1209,23 @@ function manAttackCell(cell) {
         );
 
 
-    mpSelectedManCell =
-        cell;
+    // ------------------------------------------
+    // GAMBLE
+    // ------------------------------------------
+
+    if (mpGambleMode) {
+
+        mpPerformGamble(
+            row,
+            col
+        );
+
+        return;
+
+    }
 
 
-    mpWaitingForAttackResult =
+    mpWaitingForResult =
         true;
 
     mpManCanAttack =
@@ -1169,36 +1250,179 @@ function manAttackCell(cell) {
     }
 
 
-    const sent =
-        mpSend({
+    mpSend({
 
-            type:
-                "manAttack",
+        type:
+            "manAttack",
 
-            roomCode:
-                window.multiplayerRoomCode,
+        roomCode:
+            window.multiplayerRoomCode,
 
-            row:
-                row,
+        row:
+            row,
 
-            col:
-                col
+        col:
+            col
 
-        });
+    });
+
+}
 
 
-    if (!sent) {
+// ============================================================
+// GAMBLE BUTTON
+// ============================================================
 
-        mpWaitingForAttackResult =
-            false;
+if (mpGambleBtn) {
 
-        mpManCanAttack =
-            true;
+    mpGambleBtn.onclick =
+        function() {
 
-        mpManBoard.style.pointerEvents =
-            "auto";
+            if (
+                !mpManCanAttack
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                mpGambles <= 0
+            ) {
+
+                alert(
+                    "No Gambles Remaining!"
+                );
+
+                return;
+
+            }
+
+
+            mpGambleMode =
+                true;
+
+
+            if (mpManStatus) {
+
+                mpManStatus.innerText =
+                    "🎲 Gamble ready! Click the TOP-LEFT square of a 2×2 area. Use A1–E5.";
+
+            }
+
+        };
+
+}
+
+
+// ============================================================
+// GAMBLE
+// ============================================================
+
+function mpPerformGamble(
+    row,
+    col
+) {
+
+    // ------------------------------------------
+    // Only A1-E5 can be top-left
+    // ------------------------------------------
+
+    if (
+        row > 4 ||
+        col > 4
+    ) {
+
+        if (mpManStatus) {
+
+            mpManStatus.innerText =
+                "Choose a top-left square from A1 to E5.";
+
+        }
+
+        return;
 
     }
+
+
+    mpGambleMode =
+        false;
+
+
+    mpGambles--;
+
+
+    mpUpdateHUD();
+
+
+    mpWaitingForResult =
+        true;
+
+    mpManCanAttack =
+        false;
+
+
+    if (mpManBoard) {
+
+        mpManBoard.style.pointerEvents =
+            "none";
+
+    }
+
+
+    // Blue 2×2 flash immediately
+
+    const area = [
+
+        [row, col],
+        [row, col + 1],
+        [row + 1, col],
+        [row + 1, col + 1]
+
+    ];
+
+
+    area.forEach(
+        function(position) {
+
+            const cell =
+                mpGetCell(
+                    mpManBoard,
+                    position[0],
+                    position[1]
+                );
+
+            if (cell) {
+
+                cell.classList.add(
+                    "mpAttackBlue"
+                );
+
+                cell.style.background =
+                    "dodgerblue";
+
+            }
+
+        }
+    );
+
+
+    mpSend({
+
+        type:
+            "manGamble",
+
+        roomCode:
+            window.multiplayerRoomCode,
+
+        row:
+            row,
+
+        col:
+            col
+
+    });
 
 }
 
@@ -1207,16 +1431,13 @@ function manAttackCell(cell) {
 // ACTIVATE MAN
 // ============================================================
 
-function activateMan() {
+function mpActivateMan() {
 
     mpManCanAttack =
         true;
 
-    mpWaitingForAttackResult =
+    mpWaitingForResult =
         false;
-
-    window.multiplayerManReady =
-        true;
 
 
     if (mpManBoard) {
@@ -1241,109 +1462,31 @@ function activateMan() {
 
 
 // ============================================================
-// UPDATE MAN HUD
-// ============================================================
-
-function updateManHUD() {
-
-    const sanity =
-        document.getElementById(
-            "mpManSanity"
-        );
-
-    const turn =
-        document.getElementById(
-            "mpManTurn"
-        );
-
-
-    if (sanity) {
-
-        sanity.innerText =
-            mpManSanity + "%";
-
-    }
-
-
-    if (turn) {
-
-        turn.innerText =
-            mpManTurn;
-
-    }
-
-}
-
-
-// ============================================================
-// UPDATE MOSQUITO HUD
-// ============================================================
-
-function updateMosquitoHUD() {
-
-    const sanity =
-        document.getElementById(
-            "mpMosquitoSanity"
-        );
-
-    const turn =
-        document.getElementById(
-            "mpMosquitoTurn"
-        );
-
-
-    if (sanity) {
-
-        sanity.innerText =
-            mpManSanity + "%";
-
-    }
-
-
-    if (turn) {
-
-        turn.innerText =
-            mpManTurn;
-
-    }
-
-}
-
-
-// ============================================================
 // ATTACK VISUAL
 // ============================================================
 
-function showAttack(
+function mpShowAttack(
     row,
     col,
     result
 ) {
 
-    clearAttackHighlights();
+    mpClearAttackHighlights();
 
 
-    const boards = [
+    [
         mpManBoard,
         mpMosquitoBoard
-    ];
-
-
-    boards.forEach(
+    ]
+    .forEach(
         function(board) {
 
-            if (!board) {
-
-                return;
-
-            }
-
-
             const cell =
-                board.querySelector(
-                    `[data-row="${row}"][data-col="${col}"]`
+                mpGetCell(
+                    board,
+                    row,
+                    col
                 );
-
 
             if (!cell) {
 
@@ -1358,7 +1501,7 @@ function showAttack(
             ) {
 
                 cell.classList.add(
-                    "mpMultiplayerAttackBite"
+                    "mpAttackOrange"
                 );
 
                 cell.style.background =
@@ -1369,10 +1512,7 @@ function showAttack(
             else {
 
                 cell.classList.add(
-                    result ===
-                    "hit"
-                        ? "mpMultiplayerAttackHit"
-                        : "mpMultiplayerAttackMiss"
+                    "mpAttackRed"
                 );
 
                 cell.style.background =
@@ -1383,16 +1523,6 @@ function showAttack(
         }
     );
 
-
-    mpLastAttackRow =
-        row;
-
-    mpLastAttackCol =
-        col;
-
-    mpLastAttackResult =
-        result;
-
 }
 
 
@@ -1400,27 +1530,27 @@ function showAttack(
 // MOVEMENT CONTROLS
 // ============================================================
 
-function createMovementControls() {
+function mpCreateMovementControls() {
 
-    removeMosquitoControls();
+    mpRemoveMovementControls();
 
 
-    mpMosquitoControls =
+    mpMovementControls =
         document.createElement(
             "div"
         );
 
 
-    mpMosquitoControls.style.display =
+    mpMovementControls.style.display =
         "flex";
 
-    mpMosquitoControls.style.gap =
-        "12px";
-
-    mpMosquitoControls.style.justifyContent =
+    mpMovementControls.style.justifyContent =
         "center";
 
-    mpMosquitoControls.style.margin =
+    mpMovementControls.style.gap =
+        "12px";
+
+    mpMovementControls.style.margin =
         "15px auto";
 
 
@@ -1448,7 +1578,7 @@ function createMovementControls() {
     mpStayBtn.onclick =
         function() {
 
-            mosquitoStay();
+            mpMosquitoStay();
 
         };
 
@@ -1456,16 +1586,16 @@ function createMovementControls() {
     mpMoveBtn.onclick =
         function() {
 
-            mosquitoMove();
+            mpMosquitoMove();
 
         };
 
 
-    mpMosquitoControls.appendChild(
+    mpMovementControls.appendChild(
         mpStayBtn
     );
 
-    mpMosquitoControls.appendChild(
+    mpMovementControls.appendChild(
         mpMoveBtn
     );
 
@@ -1473,7 +1603,7 @@ function createMovementControls() {
     if (mpMosquitoBoard) {
 
         mpMosquitoBoard.parentNode.insertBefore(
-            mpMosquitoControls,
+            mpMovementControls,
             mpMosquitoBoard.nextSibling
         );
 
@@ -1486,22 +1616,18 @@ function createMovementControls() {
 // HIGHLIGHT MOVEMENT
 // ============================================================
 
-function highlightMosquitoMovement(
-    reason
+function mpHighlightMovement(
+    reason,
+    currentRow,
+    currentCol
 ) {
 
-    clearMosquitoMovement();
+    mpClearMovement();
 
 
-    if (
-        mpMosquitoRow === null ||
-        mpMosquitoCol === null
-    ) {
-
-        return;
-
-    }
-
+    // ------------------------------------------
+    // BITE = FLY ANYWHERE
+    // ------------------------------------------
 
     if (
         reason ===
@@ -1510,19 +1636,19 @@ function highlightMosquitoMovement(
 
         for (
             let row = 0;
-            row < MP_ROWS;
+            row < 6;
             row++
         ) {
 
             for (
                 let col = 0;
-                col < MP_COLS;
+                col < 6;
                 col++
             ) {
 
                 if (
-                    row === mpMosquitoRow &&
-                    col === mpMosquitoCol
+                    row === currentRow &&
+                    col === currentCol
                 ) {
 
                     continue;
@@ -1531,8 +1657,10 @@ function highlightMosquitoMovement(
 
 
                 const cell =
-                    mpMosquitoBoard.querySelector(
-                        `[data-row="${row}"][data-col="${col}"]`
+                    mpGetCell(
+                        mpMosquitoBoard,
+                        row,
+                        col
                     );
 
 
@@ -1543,7 +1671,7 @@ function highlightMosquitoMovement(
                     );
 
                     cell.style.background =
-                        "rgba(0,110,255,.45)";
+                        "rgba(0,120,255,.45)";
 
                     cell.style.outline =
                         "3px solid blue";
@@ -1560,7 +1688,11 @@ function highlightMosquitoMovement(
     }
 
 
-    const dirs = [
+    // ------------------------------------------
+    // MISS = ORTHOGONAL ONLY
+    // ------------------------------------------
+
+    const directions = [
 
         [-1, 0],
         [1, 0],
@@ -1570,16 +1702,16 @@ function highlightMosquitoMovement(
     ];
 
 
-    dirs.forEach(
-        function(dir) {
+    directions.forEach(
+        function(direction) {
 
             const row =
-                mpMosquitoRow +
-                dir[0];
+                currentRow +
+                direction[0];
 
             const col =
-                mpMosquitoCol +
-                dir[1];
+                currentCol +
+                direction[1];
 
 
             if (
@@ -1595,8 +1727,10 @@ function highlightMosquitoMovement(
 
 
             const cell =
-                mpMosquitoBoard.querySelector(
-                    `[data-row="${row}"][data-col="${col}"]`
+                mpGetCell(
+                    mpMosquitoBoard,
+                    row,
+                    col
                 );
 
 
@@ -1607,7 +1741,7 @@ function highlightMosquitoMovement(
                 );
 
                 cell.style.background =
-                    "rgba(0,110,255,.45)";
+                    "rgba(0,120,255,.45)";
 
                 cell.style.outline =
                     "3px solid blue";
@@ -1621,10 +1755,10 @@ function highlightMosquitoMovement(
 
 
 // ============================================================
-// ENABLE MOSQUITO MOVEMENT
+// ENABLE MOVEMENT
 // ============================================================
 
-function enableMosquitoMovement(
+function mpEnableMosquitoMovement(
     data
 ) {
 
@@ -1656,41 +1790,24 @@ function enableMosquitoMovement(
         null;
 
 
-    createMovementControls();
+    mpCreateMovementControls();
 
 
-    if (mpMosquitoBoard) {
+    mpMosquitoBoard.style.pointerEvents =
+        "auto";
 
-        mpMosquitoBoard.style.pointerEvents =
-            "auto";
-
-        mpMosquitoBoard.style.opacity =
-            "1";
-
-    }
+    mpMosquitoBoard.style.opacity =
+        "1";
 
 
-    showMosquito();
+    mpShowMosquito();
 
 
-    highlightMosquitoMovement(
-        data.reason
+    mpHighlightMovement(
+        data.reason,
+        mpMosquitoRow,
+        mpMosquitoCol
     );
-
-
-    if (mpStayBtn) {
-
-        mpStayBtn.disabled =
-            false;
-
-    }
-
-    if (mpMoveBtn) {
-
-        mpMoveBtn.disabled =
-            true;
-
-    }
 
 
     if (
@@ -1699,8 +1816,8 @@ function enableMosquitoMovement(
 
         mpMosquitoMovementStatus.innerText =
             data.reason === "bite"
-                ? "🩸 Bite! Stay or fly anywhere."
-                : "❌ Miss! Stay or move orthogonally.";
+                ? "🩸 BITE! Stay or fly anywhere."
+                : "❌ MISS! Stay or move one square orthogonally.";
 
     }
 
@@ -1711,7 +1828,7 @@ function enableMosquitoMovement(
 // LOCK MOSQUITO
 // ============================================================
 
-function lockMosquito() {
+function mpLockMosquito() {
 
     mpMosquitoCanMove =
         false;
@@ -1723,22 +1840,9 @@ function lockMosquito() {
         null;
 
 
-    clearMosquitoMovement();
+    mpClearMovement();
 
-
-    if (mpStayBtn) {
-
-        mpStayBtn.disabled =
-            true;
-
-    }
-
-    if (mpMoveBtn) {
-
-        mpMoveBtn.disabled =
-            true;
-
-    }
+    mpRemoveMovementControls();
 
 
     if (mpMosquitoBoard) {
@@ -1755,10 +1859,10 @@ function lockMosquito() {
 
 
 // ============================================================
-// STAY
+// MOSQUITO STAY
 // ============================================================
 
-function mosquitoStay() {
+function mpMosquitoStay() {
 
     if (
         !mpMosquitoCanMove
@@ -1769,33 +1873,27 @@ function mosquitoStay() {
     }
 
 
-    if (
-        mpSend({
+    mpSend({
 
-            type:
-                "mosquitoMove",
+        type:
+            "mosquitoMove",
 
-            roomCode:
-                window.multiplayerRoomCode,
+        roomCode:
+            window.multiplayerRoomCode,
 
-            action:
-                "stay"
+        action:
+            "stay"
 
-        })
-    ) {
-
-        lockMosquito();
-
-    }
+    });
 
 }
 
 
 // ============================================================
-// MOVE
+// MOSQUITO MOVE
 // ============================================================
 
-function mosquitoMove() {
+function mpMosquitoMove() {
 
     if (
         !mpMosquitoCanMove
@@ -1826,30 +1924,24 @@ function mosquitoMove() {
         );
 
 
-    if (
-        mpSend({
+    mpSend({
 
-            type:
-                "mosquitoMove",
+        type:
+            "mosquitoMove",
 
-            roomCode:
-                window.multiplayerRoomCode,
+        roomCode:
+            window.multiplayerRoomCode,
 
-            action:
-                "move",
+        action:
+            "move",
 
-            row:
-                row,
+        row:
+            row,
 
-            col:
-                col
+        col:
+            col
 
-        })
-    ) {
-
-        lockMosquito();
-
-    }
+    });
 
 }
 
@@ -1858,26 +1950,16 @@ function mosquitoMove() {
 // OPEN MAN
 // ============================================================
 
-function openMultiplayerMan() {
+function mpOpenMan() {
 
-    console.log(
-        "🧍 OPENING FRESH MULTIPLAYER MAN SCREEN"
-    );
+    mpRemoveVictory();
 
+    mpHideNormalScreens();
 
-    closeMultiplayerVictoryScreen();
-
-
-    hideNormalGameScreens();
-
-    hideMultiplayerScreens();
+    mpHideScreens();
 
 
     if (!mpManScreen) {
-
-        console.error(
-            "❌ multiplayerManScreen missing."
-        );
 
         return;
 
@@ -1889,25 +1971,20 @@ function openMultiplayerMan() {
     );
 
 
-    window.currentGameMode =
-        "multiplayer-man";
-
-
-    // IMPORTANT:
-    // DO NOT reset room/game state here.
-    // Only the dedicated round reset does that.
-
     mpManCanAttack =
         false;
 
-    mpWaitingForAttackResult =
+    mpWaitingForResult =
+        false;
+
+    mpGambleMode =
         false;
 
 
-    updateManHUD();
+    mpCreateManBoard();
 
 
-    createManBoard();
+    mpUpdateHUD();
 
 
     if (mpManStatus) {
@@ -1924,26 +2001,16 @@ function openMultiplayerMan() {
 // OPEN MOSQUITO
 // ============================================================
 
-function openMultiplayerMosquito() {
+function mpOpenMosquito() {
 
-    console.log(
-        "🦟 OPENING FRESH MULTIPLAYER MOSQUITO SCREEN"
-    );
+    mpRemoveVictory();
 
+    mpHideNormalScreens();
 
-    closeMultiplayerVictoryScreen();
-
-
-    hideNormalGameScreens();
-
-    hideMultiplayerScreens();
+    mpHideScreens();
 
 
     if (!mpMosquitoScreen) {
-
-        console.error(
-            "❌ multiplayerMosquitoScreen missing."
-        );
 
         return;
 
@@ -1955,37 +2022,7 @@ function openMultiplayerMosquito() {
     );
 
 
-    window.currentGameMode =
-        "multiplayer-mosquito";
-
-
-    // --------------------------------------------------------
-    // FRESH ROUND CLIENT STATE
-    // --------------------------------------------------------
-
-    mpMosquitoReady =
-        false;
-
-    mpMosquitoCanMove =
-        false;
-
-    mpMosquitoMoveReason =
-        null;
-
-    mpMosquitoRow =
-        null;
-
-    mpMosquitoCol =
-        null;
-
-    mpSelectedMosquitoCell =
-        null;
-
-
-    updateMosquitoHUD();
-
-
-    createMosquitoBoard();
+    mpCreateMosquitoBoard();
 
 
     if (mpHideBtn) {
@@ -2017,21 +2054,32 @@ function openMultiplayerMosquito() {
 
 
 // ============================================================
-// VICTORY SCREEN
+// VICTORY
 // ============================================================
 
-function showVictory(
+function mpShowVictory(
     winner
 ) {
 
-    closeMultiplayerVictoryScreen();
+    mpRemoveVictory();
+
+
+    mpManCanAttack =
+        false;
+
+    mpMosquitoCanMove =
+        false;
+
+
+    mpClearMovement();
+
+    mpRemoveMovementControls();
 
 
     const screen =
         document.createElement(
             "div"
         );
-
 
     screen.id =
         "mpVictoryScreen";
@@ -2047,7 +2095,7 @@ function showVictory(
         "99999";
 
     screen.style.background =
-        "rgba(0,0,0,.94)";
+        "rgba(0,0,0,.96)";
 
     screen.style.display =
         "flex";
@@ -2070,18 +2118,15 @@ function showVictory(
             "h1"
         );
 
-
     const image =
         document.createElement(
             "img"
         );
 
-
     const restart =
         document.createElement(
             "button"
         );
-
 
     const leave =
         document.createElement(
@@ -2214,6 +2259,75 @@ function showVictory(
 
 
 // ============================================================
+// AUTOMATIC REJOIN AFTER RELOAD
+// ============================================================
+
+function mpCheckRejoin() {
+
+    const room =
+        sessionStorage.getItem(
+            "mpRestartRoom"
+        );
+
+    const role =
+        sessionStorage.getItem(
+            "mpRestartRole"
+        );
+
+
+    if (
+        !room ||
+        !role
+    ) {
+
+        return false;
+
+    }
+
+
+    window.multiplayerRoomCode =
+        room;
+
+    window.multiplayerRole =
+        role;
+
+
+    sessionStorage.removeItem(
+        "mpRestartRoom"
+    );
+
+    sessionStorage.removeItem(
+        "mpRestartRole"
+    );
+
+
+    console.log(
+        "🔁 Rejoining room after restart:",
+        room,
+        role
+    );
+
+
+    mpSend({
+
+        type:
+            "rejoinRoom",
+
+        roomCode:
+            room,
+
+        role:
+            role
+
+    });
+
+
+    return true;
+
+}
+
+
+// ============================================================
 // SOCKET OPEN
 // ============================================================
 
@@ -2223,9 +2337,18 @@ mpSocket.onopen =
         window.multiplayerConnected =
             true;
 
+
         console.log(
-            "🌐 Connected to multiplayer server."
+            "🌐 Multiplayer connected."
         );
+
+
+        // ------------------------------------------
+        // IMPORTANT:
+        // REJOIN ONLY AFTER SOCKET IS OPEN
+        // ------------------------------------------
+
+        mpCheckRejoin();
 
     };
 
@@ -2252,7 +2375,7 @@ mpSocket.onmessage =
         catch(error) {
 
             console.error(
-                "❌ Invalid server message:",
+                "❌ Bad server message:",
                 event.data
             );
 
@@ -2277,7 +2400,7 @@ mpSocket.onmessage =
         ) {
 
             window.multiplayerRole =
-                data.role;
+                "man";
 
             window.multiplayerRoomCode =
                 data.roomCode;
@@ -2298,6 +2421,7 @@ mpSocket.onmessage =
                 );
 
             }
+
 
             if (mpJoinGamePanel) {
 
@@ -2366,6 +2490,7 @@ mpSocket.onmessage =
 
             }
 
+
             return;
 
         }
@@ -2387,7 +2512,7 @@ mpSocket.onmessage =
                 data.roomCode;
 
 
-            resetMultiplayerRound();
+            mpResetLocalRound();
 
 
             if (
@@ -2395,13 +2520,13 @@ mpSocket.onmessage =
                 "man"
             ) {
 
-                openMultiplayerMan();
+                mpOpenMan();
 
             }
 
             else {
 
-                openMultiplayerMosquito();
+                mpOpenMosquito();
 
             }
 
@@ -2412,19 +2537,33 @@ mpSocket.onmessage =
 
 
         // ==================================================
-        // NEW ROUND
+        // REJOIN ACCEPTED
         // ==================================================
-        //
-        // THIS IS THE IMPORTANT RESTART FIX.
-        //
-        // We do NOT merely change a few variables.
-        //
-        // We completely destroy the old client round,
-        // remove the victory screen,
-        // remove movement controls,
-        // rebuild the correct board,
-        // and restore the role-specific starting state.
-        //
+
+        if (
+            data.type ===
+            "rejoinAccepted"
+        ) {
+
+            window.multiplayerRole =
+                data.role;
+
+            window.multiplayerRoomCode =
+                data.roomCode;
+
+
+            console.log(
+                "✅ Rejoin accepted."
+            );
+
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // NEW ROUND
         // ==================================================
 
         if (
@@ -2433,8 +2572,7 @@ mpSocket.onmessage =
         ) {
 
             console.log(
-                "🔄 NEW ROUND RECEIVED:",
-                data
+                "🆕 Fresh round received."
             );
 
 
@@ -2442,56 +2580,83 @@ mpSocket.onmessage =
                 data.role;
 
             window.multiplayerRoomCode =
-                data.roomCode ||
-                window.multiplayerRoomCode;
+                data.roomCode;
 
 
-            // ----------------------------------------------
-            // Destroy old round completely
-            // ----------------------------------------------
+            mpRemoveVictory();
 
-            closeMultiplayerVictoryScreen();
+            mpResetLocalRound();
 
-            clearMosquitoMovement();
-
-            clearAttackHighlights();
-
-            removeMosquitoControls();
-
-
-            // ----------------------------------------------
-            // Reset ALL local state
-            // ----------------------------------------------
-
-            resetMultiplayerRound();
-
-
-            // ----------------------------------------------
-            // Open a genuinely fresh screen
-            // ----------------------------------------------
 
             if (
                 data.role ===
                 "man"
             ) {
 
-                openMultiplayerMan();
+                mpOpenMan();
 
             }
 
-            else if (
-                data.role ===
-                "mosquito"
-            ) {
+            else {
 
-                openMultiplayerMosquito();
+                mpOpenMosquito();
 
             }
 
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // RESTART NOW
+        // ==================================================
+
+        if (
+            data.type ===
+            "restartNow"
+        ) {
 
             console.log(
-                "✅ FRESH ROUND READY"
+                "🔄 SERVER APPROVED RESTART."
             );
+
+
+            sessionStorage.setItem(
+                "mpRestartRoom",
+                window.multiplayerRoomCode
+            );
+
+            sessionStorage.setItem(
+                "mpRestartRole",
+                window.multiplayerRole
+            );
+
+
+            // ------------------------------------------
+            // THE ACTUAL HARD RESET
+            // ------------------------------------------
+
+            window.location.reload();
+
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // RESTART WAITING
+        // ==================================================
+
+        if (
+            data.type ===
+            "restartWaiting"
+        ) {
+
+            mpRestartRequested =
+                true;
 
 
             return;
@@ -2508,43 +2673,27 @@ mpSocket.onmessage =
             "mosquitoReady"
         ) {
 
-            if (
-                window.multiplayerRole !==
-                "man"
-            ) {
-
-                return;
-
-            }
+            mpManSanity =
+                Number(
+                    data.sanity ??
+                    100
+                );
 
 
-            if (
-                typeof data.sanity ===
-                "number"
-            ) {
-
-                mpManSanity =
-                    data.sanity;
-
-            }
+            mpManTurn =
+                Number(
+                    data.turn ??
+                    0
+                ) + 1;
 
 
-            if (
-                typeof data.turn ===
-                "number"
-            ) {
-
-                mpManTurn =
-                    data.turn + 1;
-
-            }
+            mpMissStreak =
+                0;
 
 
-            updateManHUD();
+            mpUpdateHUD();
 
-            updateMosquitoHUD();
-
-            activateMan();
+            mpActivateMan();
 
 
             return;
@@ -2564,7 +2713,7 @@ mpSocket.onmessage =
             if (mpMosquitoStatus) {
 
                 mpMosquitoStatus.innerText =
-                    "🦟 Hidden! Waiting for the Man.";
+                    "🦟 Hidden! The Man has started hunting.";
 
             }
 
@@ -2583,7 +2732,7 @@ mpSocket.onmessage =
             "attackResult"
         ) {
 
-            mpWaitingForAttackResult =
+            mpWaitingForResult =
                 false;
 
 
@@ -2604,7 +2753,7 @@ mpSocket.onmessage =
             ) {
 
                 mpManTurn =
-                    data.turn + 1;
+                    data.turn;
 
             }
 
@@ -2614,15 +2763,13 @@ mpSocket.onmessage =
                 "number"
             ) {
 
-                mpBiteFreeTurns =
+                mpMissStreak =
                     data.biteFreeTurns;
 
             }
 
 
-            updateManHUD();
-
-            updateMosquitoHUD();
+            mpUpdateHUD();
 
 
             if (
@@ -2632,7 +2779,7 @@ mpSocket.onmessage =
                 "number"
             ) {
 
-                showAttack(
+                mpShowAttack(
                     data.attackRow,
                     data.attackCol,
                     data.result
@@ -2641,15 +2788,16 @@ mpSocket.onmessage =
             }
 
 
+            // ------------------------------------------
+            // HIT
+            // ------------------------------------------
+
             if (
                 data.result ===
                 "hit"
             ) {
 
-                mpManCanAttack =
-                    false;
-
-                showVictory(
+                mpShowVictory(
                     "man"
                 );
 
@@ -2657,6 +2805,10 @@ mpSocket.onmessage =
 
             }
 
+
+            // ------------------------------------------
+            // BITE
+            // ------------------------------------------
 
             if (
                 data.result ===
@@ -2670,14 +2822,19 @@ mpSocket.onmessage =
                 if (mpManStatus) {
 
                     mpManStatus.innerText =
-                        "🩸 BITE! -10 Sanity.";
+                        "🩸 BITE! -10 Sanity. Mosquito can fly anywhere.";
 
                 }
+
 
                 return;
 
             }
 
+
+            // ------------------------------------------
+            // MISS
+            // ------------------------------------------
 
             if (
                 data.result ===
@@ -2695,9 +2852,80 @@ mpSocket.onmessage =
 
                 }
 
+
                 return;
 
             }
+
+
+            // ------------------------------------------
+            // GAMBLE HIT
+            // ------------------------------------------
+
+            if (
+                data.result ===
+                "gambleHit"
+            ) {
+
+                mpShowVictory(
+                    "man"
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // GAMBLE MISS
+            // ------------------------------------------
+
+            if (
+                data.result ===
+                "gambleMiss"
+            ) {
+
+                mpManCanAttack =
+                    false;
+
+
+                if (mpManStatus) {
+
+                    mpManStatus.innerText =
+                        "💀 MAD MAN'S GAMBLE FAILED! -20 Sanity.";
+
+                }
+
+
+                return;
+
+            }
+
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // HINT
+        // ==================================================
+
+        if (
+            data.type ===
+            "hint"
+        ) {
+
+            if (mpManStatus) {
+
+                mpManStatus.innerText =
+                    data.message;
+
+            }
+
+
+            mpMissStreak =
+                0;
 
 
             return;
@@ -2714,17 +2942,7 @@ mpSocket.onmessage =
             "mosquitoTurn"
         ) {
 
-            if (
-                window.multiplayerRole !==
-                "mosquito"
-            ) {
-
-                return;
-
-            }
-
-
-            enableMosquitoMovement(
+            mpEnableMosquitoMovement(
                 data
             );
 
@@ -2743,39 +2961,20 @@ mpSocket.onmessage =
             "mosquitoMoveResult"
         ) {
 
-            if (
-                typeof data.row ===
-                "number"
-            ) {
+            mpMosquitoRow =
+                Number(
+                    data.row
+                );
 
-                mpMosquitoRow =
-                    data.row;
-
-            }
-
-
-            if (
-                typeof data.col ===
-                "number"
-            ) {
-
-                mpMosquitoCol =
-                    data.col;
-
-            }
+            mpMosquitoCol =
+                Number(
+                    data.col
+                );
 
 
-            // ----------------------------------------------
-            // Clear blue FIRST
-            // ----------------------------------------------
+            mpLockMosquito();
 
-            clearMosquitoMovement();
-
-
-            lockMosquito();
-
-
-            showMosquito();
+            mpShowMosquito();
 
 
             if (mpMosquitoStatus) {
@@ -2800,13 +2999,13 @@ mpSocket.onmessage =
             "mosquitoMoved"
         ) {
 
-            clearMosquitoMovement();
+            mpClearMovement();
 
 
             mpManCanAttack =
                 true;
 
-            mpWaitingForAttackResult =
+            mpWaitingForResult =
                 false;
 
 
@@ -2854,9 +3053,7 @@ mpSocket.onmessage =
             }
 
 
-            updateManHUD();
-
-            updateMosquitoHUD();
+            mpUpdateHUD();
 
 
             mpManCanAttack =
@@ -2866,46 +3063,12 @@ mpSocket.onmessage =
                 false;
 
 
-            clearMosquitoMovement();
+            mpClearMovement();
 
 
-            if (mpManBoard) {
-
-                mpManBoard.style.pointerEvents =
-                    "none";
-
-            }
-
-
-            if (mpMosquitoBoard) {
-
-                mpMosquitoBoard.style.pointerEvents =
-                    "none";
-
-            }
-
-
-            showVictory(
+            mpShowVictory(
                 data.winner
             );
-
-
-            return;
-
-        }
-
-
-        // ==================================================
-        // RESTART WAITING
-        // ==================================================
-
-        if (
-            data.type ===
-            "restartWaiting"
-        ) {
-
-            mpRestartRequested =
-                true;
 
 
             return;
@@ -2922,18 +3085,18 @@ mpSocket.onmessage =
             "leftRoom"
         ) {
 
-            closeMultiplayerVictoryScreen();
+            sessionStorage.removeItem(
+                "mpRestartRoom"
+            );
 
-            resetMultiplayerRound();
-
-            window.multiplayerRole =
-                null;
-
-            window.multiplayerRoomCode =
-                null;
+            sessionStorage.removeItem(
+                "mpRestartRole"
+            );
 
 
-            hideMultiplayerScreens();
+            mpRemoveVictory();
+
+            mpHideScreens();
 
 
             const mainMenu =
@@ -2965,21 +3128,11 @@ mpSocket.onmessage =
             "opponentLeftRoom"
         ) {
 
-            closeMultiplayerVictoryScreen();
+            mpRemoveVictory();
 
             alert(
                 "Your opponent left the room."
             );
-
-
-            resetMultiplayerRound();
-
-
-            window.multiplayerRole =
-                null;
-
-            window.multiplayerRoomCode =
-                null;
 
 
             return;
@@ -2996,19 +3149,24 @@ mpSocket.onmessage =
             "opponentDisconnected"
         ) {
 
-            alert(
-                "Your opponent disconnected."
+            console.warn(
+                "⚠️ Opponent disconnected."
             );
 
 
-            resetMultiplayerRound();
+            if (mpManStatus) {
 
+                mpManStatus.innerText =
+                    "⚠️ Opponent disconnected.";
 
-            window.multiplayerRole =
-                null;
+            }
 
-            window.multiplayerRoomCode =
-                null;
+            if (mpMosquitoStatus) {
+
+                mpMosquitoStatus.innerText =
+                    "⚠️ Opponent disconnected.";
+
+            }
 
 
             return;
@@ -3031,24 +3189,11 @@ mpSocket.onmessage =
             );
 
 
-            mpWaitingForAttackResult =
+            mpWaitingForResult =
                 false;
 
 
-            if (
-                mpJoinStatus
-            ) {
-
-                mpJoinStatus.innerText =
-                    "❌ " +
-                    data.message;
-
-            }
-
-
-            if (
-                mpManStatus
-            ) {
+            if (mpManStatus) {
 
                 mpManStatus.innerText =
                     "❌ " +
@@ -3057,11 +3202,18 @@ mpSocket.onmessage =
             }
 
 
-            if (
-                mpMosquitoStatus
-            ) {
+            if (mpMosquitoStatus) {
 
                 mpMosquitoStatus.innerText =
+                    "❌ " +
+                    data.message;
+
+            }
+
+
+            if (mpJoinStatus) {
+
+                mpJoinStatus.innerText =
                     "❌ " +
                     data.message;
 
@@ -3076,7 +3228,7 @@ mpSocket.onmessage =
 
 
 // ============================================================
-// CREATE GAME
+// CREATE ROOM
 // ============================================================
 
 if (mpCreateGameBtn) {
@@ -3092,7 +3244,7 @@ if (mpCreateGameBtn) {
                 if (mpLobbyStatus) {
 
                     mpLobbyStatus.innerText =
-                        "❌ Not connected to server.";
+                        "❌ Server not connected.";
 
                 }
 
@@ -3101,22 +3253,13 @@ if (mpCreateGameBtn) {
             }
 
 
-            if (mpCreateGamePanel) {
+            mpCreateGamePanel?.classList.remove(
+                "hidden"
+            );
 
-                mpCreateGamePanel.classList.remove(
-                    "hidden"
-                );
-
-            }
-
-
-            if (mpJoinGamePanel) {
-
-                mpJoinGamePanel.classList.add(
-                    "hidden"
-                );
-
-            }
+            mpJoinGamePanel?.classList.add(
+                "hidden"
+            );
 
 
             mpSend({
@@ -3132,7 +3275,7 @@ if (mpCreateGameBtn) {
 
 
 // ============================================================
-// JOIN GAME
+// JOIN ROOM BUTTON
 // ============================================================
 
 if (mpJoinGameBtn) {
@@ -3140,29 +3283,13 @@ if (mpJoinGameBtn) {
     mpJoinGameBtn.onclick =
         function() {
 
-            if (mpJoinGamePanel) {
+            mpJoinGamePanel?.classList.remove(
+                "hidden"
+            );
 
-                mpJoinGamePanel.classList.remove(
-                    "hidden"
-                );
-
-            }
-
-            if (mpCreateGamePanel) {
-
-                mpCreateGamePanel.classList.add(
-                    "hidden"
-                );
-
-            }
-
-
-            if (mpJoinStatus) {
-
-                mpJoinStatus.innerText =
-                    "";
-
-            }
+            mpCreateGamePanel?.classList.add(
+                "hidden"
+            );
 
 
             if (mpRoomCodeInput) {
@@ -3189,14 +3316,15 @@ if (mpJoinRoomBtn) {
         function() {
 
             const code =
-                mpRoomCodeInput.value
+                mpRoomCodeInput
+                    ?.value
                     .trim()
                     .toUpperCase();
 
 
             if (
-                code.length !==
-                6
+                !code ||
+                code.length !== 6
             ) {
 
                 if (mpJoinStatus) {
@@ -3207,31 +3335,6 @@ if (mpJoinRoomBtn) {
                 }
 
                 return;
-
-            }
-
-
-            if (
-                mpSocket.readyState !==
-                WebSocket.OPEN
-            ) {
-
-                if (mpJoinStatus) {
-
-                    mpJoinStatus.innerText =
-                        "❌ Not connected to server.";
-
-                }
-
-                return;
-
-            }
-
-
-            if (mpJoinStatus) {
-
-                mpJoinStatus.innerText =
-                    "Joining game...";
 
             }
 
@@ -3252,7 +3355,7 @@ if (mpJoinRoomBtn) {
 
 
 // ============================================================
-// ENTER KEY
+// ENTER TO JOIN
 // ============================================================
 
 if (mpRoomCodeInput) {
@@ -3266,7 +3369,7 @@ if (mpRoomCodeInput) {
                 "Enter"
             ) {
 
-                mpJoinRoomBtn.click();
+                mpJoinRoomBtn?.click();
 
             }
 
@@ -3285,16 +3388,18 @@ if (mpPlayerBackBtn) {
     mpPlayerBackBtn.onclick =
         function() {
 
-            hideMultiplayerScreens();
+            mpHideScreens();
 
-            hideNormalGameScreens();
+            mpHideNormalScreens();
 
-            closeMultiplayerVictoryScreen();
+            mpRemoveVictory();
+
 
             const mainMenu =
                 document.getElementById(
                     "mainMenu"
                 );
+
 
             if (mainMenu) {
 
@@ -3328,7 +3433,7 @@ mpSocket.onclose =
 
 
         console.log(
-            "❌ Disconnected from multiplayer server."
+            "❌ Multiplayer disconnected."
         );
 
     };
