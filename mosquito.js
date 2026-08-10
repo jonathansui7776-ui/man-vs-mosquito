@@ -1093,6 +1093,10 @@ function computerMadManGamble(){
         mosquitoManSanity.innerText =
             mosquitoManSanityValue +
             "%";
+        
+        updateSanityMusic(
+    mosquitoManSanityValue
+);
 
 
         updateManExpression();
@@ -1332,6 +1336,10 @@ if(lastManGambleSquares.length > 0){
             mosquitoManSanityValue +
             "%";
 
+        updateSanityMusic(
+    mosquitoManSanityValue
+);
+
 
         updateManExpression();
 
@@ -1391,6 +1399,10 @@ if(lastManGambleSquares.length > 0){
     mosquitoManSanity.innerText =
         mosquitoManSanityValue +
         "%";
+
+    updateSanityMusic(
+    mosquitoManSanityValue
+);
 
 
     updateManExpression();
@@ -1812,6 +1824,8 @@ function showMosquitoEndScreen(
 ){
 
     mosquitoGameStarted = false;
+
+        playVictoryMusic();
 
     mosquitoCanMove = false;
 
