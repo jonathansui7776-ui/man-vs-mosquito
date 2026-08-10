@@ -1,4 +1,4 @@
-// ===========================================================
+// ============================================================
 // MAN VS MOSQUITO
 // MULTIPLAYER.JS
 // ============================================================
@@ -582,6 +582,8 @@ function mpResetLocalRound() {
 
     mpManSanity =
         100;
+    
+        updateSanityMusic(100);
 
     mpManTurn =
         1;
@@ -3168,6 +3170,8 @@ mpSocket.onmessage =
 
             mpUpdateHUD();
 
+            updateSanityMusic(mpManSanity);
+
 
             // ------------------------------------------
             // Normal attack visual
@@ -3482,6 +3486,8 @@ mpSocket.onmessage =
 
 
             mpUpdateHUD();
+
+            updateSanityMusic(mpManSanity);
 
 
             mpManCanAttack =
