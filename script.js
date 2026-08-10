@@ -78,8 +78,226 @@ document.getElementById("turnValue");
 const playerModeMenu =
     document.getElementById("playerModeMenu");
 
+    
 
 // ===================================================
+// MUSIC SYSTEM
+// ===================================================
+
+const MUSIC_PATH = "music/";
+
+const gameMusic = {
+
+    lounge:
+        new Audio(MUSIC_PATH + "lounge.mp3"),
+
+    phase1:
+        new Audio(MUSIC_PATH + "phase1.mp3"),
+
+    phase2:
+        new Audio(MUSIC_PATH + "phase2.mp3"),
+
+    phase3:
+        new Audio(MUSIC_PATH + "phase3.mp3")
+
+};
+
+
+let currentMusicName = null;
+
+let currentMusic = null;
+
+
+// Configure music
+
+Object.values(gameMusic).forEach(
+    function(audio){
+
+        audio.loop = true;
+
+        audio.volume = 0.45;
+
+        audio.preload = "auto";
+
+    }
+);
+
+
+// ===================================================
+// PLAY MUSIC
+// ===================================================
+
+function playGameMusic(name){
+
+    const nextMusic =
+        gameMusic[name];
+
+
+    if(!nextMusic)
+        return;
+
+
+    // Already playing
+
+    if(
+        currentMusic === nextMusic &&
+        !nextMusic.paused
+    ){
+
+        return;
+
+    }
+
+
+    // Stop previous music
+
+    if(
+        currentMusic &&
+        currentMusic !== nextMusic
+    ){
+
+        currentMusic.pause();
+
+        currentMusic.currentTime = 0;
+
+    }
+
+
+    currentMusicName =
+        name;
+
+    currentMusic =
+        nextMusic;
+
+
+    nextMusic.currentTime =
+        0;
+
+
+    nextMusic.play().catch(
+        function(){
+
+            // Browser autoplay protection.
+            // Music will resume after user interaction.
+
+        }
+    );
+
+}
+
+
+// ===================================================
+// MAIN MENU MUSIC
+// ===================================================
+
+function playMainMenuMusic(){
+
+    playGameMusic("lounge");
+
+}
+
+
+// ===================================================
+// VICTORY MUSIC
+// ===================================================
+
+function playVictoryMusic(){
+
+    playGameMusic("lounge");
+
+}
+
+
+// ===================================================
+// SANITY MUSIC
+// ===================================================
+
+function updateSanityMusic(value){
+
+    value =
+        Number(value);
+
+
+    if(
+        !Number.isFinite(value)
+    ){
+
+        return;
+
+    }
+
+
+    // ABOVE 50
+
+    if(
+        value > 50
+    ){
+
+        playGameMusic(
+            "phase1"
+        );
+
+    }
+
+
+    // 31–50
+
+    else if(
+        value > 30
+    ){
+
+        playGameMusic(
+            "phase2"
+        );
+
+    }
+
+
+    // 0–30
+
+    else{
+
+        playGameMusic(
+            "phase3"
+        );
+
+    }
+
+}
+
+
+// ===================================================
+// AUTOPLAY FIX
+// ===================================================
+
+document.addEventListener(
+    "pointerdown",
+    function(){
+
+        if(
+            currentMusic &&
+            currentMusic.paused
+        ){
+
+            currentMusic.play().catch(
+                function(){}
+            );
+
+        }
+
+    },
+    {
+        passive: true
+    }
+);
+
+
+// ===================================================
+// START MENU MUSIC
+// ===================================================
+
+playMainMenuMusic();
+    // ===================================================
 // GAME VARIABLES
 // ===================================================
 
@@ -140,6 +358,10 @@ function updateHUD(){
 
     turnValue.innerText =
         turn;
+
+    updateSanityMusic(
+        sanity
+    );
 
 }
 
@@ -272,6 +494,8 @@ function clearHighlights(){
 function showEndScreen(playerWon){
 
     gameStarted = false;
+
+    playVictoryMusic();
 
     show(
         document.getElementById("endScreen")
