@@ -1,7 +1,7 @@
 // ===================================================
 // MAN VS MOSQUITO
 // SCRIPT.JS
-// MAN MODE — VS COMPUTER
+// NORMAL GAME + MUSIC SYSTEM
 // ===================================================
 
 
@@ -11,7 +11,7 @@
 
 const dialogues = {
 
-    miss:[
+    miss: [
         "BWAHAHA! Too slow!",
         "You'll never catch me!",
         "Skill issue.",
@@ -19,20 +19,20 @@ const dialogues = {
         "Hehehe~"
     ],
 
-    near:[
+    near: [
         "W-Whoa!",
         "That was close!",
         "Lucky guess!",
         "H-Hey!"
     ],
 
-    bite:[
+    bite: [
         "Gotcha~",
         "Thanks for the blood.",
         "BWAHAHA!"
     ],
 
-    caught:[
+    caught: [
         "N-No...",
         "Impossible...",
         "You actually got me..."
@@ -46,39 +46,52 @@ const dialogues = {
 // ===================================================
 
 const mainMenu =
-document.getElementById("mainMenu");
+    document.getElementById("mainMenu");
 
 const modeMenu =
-document.getElementById("modeMenu");
+    document.getElementById("modeMenu");
 
 const gameScreen =
-document.getElementById("gameScreen");
+    document.getElementById("gameScreen");
 
 const board =
-document.getElementById("gameBoard");
+    document.getElementById("gameBoard");
 
 const status =
-document.getElementById("status");
+    document.getElementById("status");
 
 const portrait =
-document.getElementById("mosquitoPortrait");
+    document.getElementById("mosquitoPortrait");
 
 const gambleBtn =
-document.getElementById("gambleBtn");
+    document.getElementById("gambleBtn");
 
 const sanityValue =
-document.getElementById("sanityValue");
+    document.getElementById("sanityValue");
 
 const gambleValue =
-document.getElementById("gambleValue");
+    document.getElementById("gambleValue");
 
 const turnValue =
-document.getElementById("turnValue");
+    document.getElementById("turnValue");
 
 const playerModeMenu =
     document.getElementById("playerModeMenu");
 
-    
+
+// ===================================================
+// HARDCORE AUDIO STATE
+// ===================================================
+//
+// hardcore.js sets this to true while Hardcore
+// is running.
+//
+// This prevents the normal music system from
+// accidentally restarting lounge.mp3.
+// ===================================================
+
+window.hardcoreActive = false;
+
 
 // ===================================================
 // MUSIC SYSTEM
@@ -89,16 +102,24 @@ const MUSIC_PATH = "music/";
 const gameMusic = {
 
     lounge:
-        new Audio(MUSIC_PATH + "lounge.mp3"),
+        new Audio(
+            MUSIC_PATH + "lounge.mp3"
+        ),
 
     phase1:
-        new Audio(MUSIC_PATH + "phase1.mp3"),
+        new Audio(
+            MUSIC_PATH + "phase1.mp3"
+        ),
 
     phase2:
-        new Audio(MUSIC_PATH + "phase2.mp3"),
+        new Audio(
+            MUSIC_PATH + "phase2.mp3"
+        ),
 
     phase3:
-        new Audio(MUSIC_PATH + "phase3.mp3")
+        new Audio(
+            MUSIC_PATH + "phase3.mp3"
+        )
 
 };
 
@@ -108,10 +129,12 @@ let currentMusicName = null;
 let currentMusic = null;
 
 
-// Configure music
+// ===================================================
+// CONFIGURE MUSIC
+// ===================================================
 
 Object.values(gameMusic).forEach(
-    function(audio){
+    function(audio) {
 
         audio.loop = true;
 
@@ -123,38 +146,93 @@ Object.values(gameMusic).forEach(
 );
 
 
+// Make the music system accessible to Hardcore.
+window.gameMusic = gameMusic;
+
+
+// ===================================================
+// STOP ALL NORMAL MUSIC
+// ===================================================
+
+function stopGameMusic() {
+
+    Object.values(gameMusic).forEach(
+        function(audio) {
+
+            audio.pause();
+
+            audio.currentTime = 0;
+
+        }
+    );
+
+
+    currentMusic =
+        null;
+
+    currentMusicName =
+        null;
+
+}
+
+
+window.stopGameMusic =
+    stopGameMusic;
+
+
 // ===================================================
 // PLAY MUSIC
 // ===================================================
 
-function playGameMusic(name){
+function playGameMusic(name) {
 
-    const nextMusic =
-        gameMusic[name];
+    /*
+       NEVER allow normal music to start while
+       Hardcore mode is active.
+    */
 
-
-    if(!nextMusic)
-        return;
-
-
-    // Already playing
-
-    if(
-        currentMusic === nextMusic &&
-        !nextMusic.paused
-    ){
+    if (
+        window.hardcoreActive
+    ) {
 
         return;
 
     }
 
 
-    // Stop previous music
+    const nextMusic =
+        gameMusic[name];
 
-    if(
+
+    if (!nextMusic) {
+
+        return;
+
+    }
+
+
+    /*
+       Already playing.
+    */
+
+    if (
+        currentMusic === nextMusic &&
+        !nextMusic.paused
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Stop previous music.
+    */
+
+    if (
         currentMusic &&
         currentMusic !== nextMusic
-    ){
+    ) {
 
         currentMusic.pause();
 
@@ -175,10 +253,13 @@ function playGameMusic(name){
 
 
     nextMusic.play().catch(
-        function(){
+        function() {
 
-            // Browser autoplay protection.
-            // Music will resume after user interaction.
+            /*
+               Browser autoplay protection.
+               Pointer interaction below will
+               retry playback.
+            */
 
         }
     );
@@ -190,18 +271,42 @@ function playGameMusic(name){
 // MAIN MENU MUSIC
 // ===================================================
 
-function playMainMenuMusic(){
+function playMainMenuMusic() {
+
+    /*
+       Hardcore is no longer active when
+       returning to the normal menu.
+    */
+
+    window.hardcoreActive =
+        false;
 
     playGameMusic("lounge");
 
 }
 
 
+window.playMainMenuMusic =
+    playMainMenuMusic;
+
+
 // ===================================================
 // VICTORY MUSIC
 // ===================================================
 
-function playVictoryMusic(){
+function playVictoryMusic() {
+
+    /*
+       Normal game victory screen.
+    */
+
+    if (
+        window.hardcoreActive
+    ) {
+
+        return;
+
+    }
 
     playGameMusic("lounge");
 
@@ -212,54 +317,67 @@ function playVictoryMusic(){
 // SANITY MUSIC
 // ===================================================
 
-function updateSanityMusic(value){
+function updateSanityMusic(value) {
 
-    value =
-        Number(value);
+    /*
+       Never interfere with Hardcore music.
+    */
 
-
-    if(
-        !Number.isFinite(value)
-    ){
+    if (
+        window.hardcoreActive
+    ) {
 
         return;
 
     }
 
 
-    // ABOVE 50
+    value =
+        Number(value);
 
-    if(
+
+    if (
+        !Number.isFinite(value)
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       ABOVE 50
+    */
+
+    if (
         value > 50
-    ){
+    ) {
 
-        playGameMusic(
-            "phase1"
-        );
+        playGameMusic("phase1");
 
     }
 
 
-    // 31–50
+    /*
+       31–50
+    */
 
-    else if(
+    else if (
         value > 30
-    ){
+    ) {
 
-        playGameMusic(
-            "phase2"
-        );
+        playGameMusic("phase2");
 
     }
 
 
-    // 0–30
+    /*
+       0–30
+    */
 
-    else{
+    else {
 
-        playGameMusic(
-            "phase3"
-        );
+        playGameMusic("phase3");
 
     }
 
@@ -272,15 +390,30 @@ function updateSanityMusic(value){
 
 document.addEventListener(
     "pointerdown",
-    function(){
+    function() {
 
-        if(
+        /*
+           IMPORTANT:
+           Do NOT restart lounge/phase music
+           during Hardcore.
+        */
+
+        if (
+            window.hardcoreActive
+        ) {
+
+            return;
+
+        }
+
+
+        if (
             currentMusic &&
             currentMusic.paused
-        ){
+        ) {
 
             currentMusic.play().catch(
-                function(){}
+                function() {}
             );
 
         }
@@ -297,33 +430,41 @@ document.addEventListener(
 // ===================================================
 
 playMainMenuMusic();
-    // ===================================================
+
+
+// ===================================================
 // GAME VARIABLES
 // ===================================================
 
-const letters = "ABCDEF";
+const letters =
+    "ABCDEF";
 
-let sanity = 100;
+let sanity =
+    100;
 
-let gamble = 3;
+let gamble =
+    3;
 
-let turn = 1;
+let turn =
+    1;
 
-let missStreak = 0;
+let missStreak =
+    0;
 
-let gameStarted = false;
+let gameStarted =
+    false;
 
-let gambleMode = false;
+let gambleMode =
+    false;
 
-let boardCreated = false;
+let boardCreated =
+    false;
 
-let lastHighlighted = [];
+let lastHighlighted =
+    [];
 
-
-// Current game mode
-// Used by Play Again
-
-let currentGameMode = null;
+let currentGameMode =
+    null;
 
 
 // ===================================================
@@ -339,7 +480,9 @@ let mosquito = {
 };
 
 
-// Stores every button
+// ===================================================
+// BOARD SQUARES
+// ===================================================
 
 let squares = [];
 
@@ -348,16 +491,31 @@ let squares = [];
 // HUD
 // ===================================================
 
-function updateHUD(){
+function updateHUD() {
 
-    sanityValue.innerText =
-        sanity + "%";
+    if (sanityValue) {
 
-    gambleValue.innerText =
-        gamble;
+        sanityValue.innerText =
+            sanity + "%";
 
-    turnValue.innerText =
-        turn;
+    }
+
+
+    if (gambleValue) {
+
+        gambleValue.innerText =
+            gamble;
+
+    }
+
+
+    if (turnValue) {
+
+        turnValue.innerText =
+            turn;
+
+    }
+
 
     updateSanityMusic(
         sanity
@@ -370,10 +528,19 @@ function updateHUD(){
 // PORTRAIT
 // ===================================================
 
-function setExpression(name){
+function setExpression(name) {
+
+    if (!portrait) {
+
+        return;
+
+    }
+
 
     portrait.src =
-        "images/" + name + ".png";
+        "images/" +
+        name +
+        ".png";
 
 }
 
@@ -382,17 +549,16 @@ function setExpression(name){
 // MOSQUITO TAUNT SYSTEM
 // ===================================================
 
-function showMosquitoTaunt(type){
+function showMosquitoTaunt(type) {
 
-    if(!gameStarted)
+    if (!gameStarted) {
+
         return;
 
+    }
 
-    // =========================================
-    // NORMAL MISS
-    // =========================================
 
-    if(type === "miss"){
+    if (type === "miss") {
 
         setExpression("smug");
 
@@ -409,11 +575,7 @@ function showMosquitoTaunt(type){
     }
 
 
-    // =========================================
-    // NEAR MISS
-    // =========================================
-
-    if(type === "near"){
+    if (type === "near") {
 
         setExpression("scared");
 
@@ -430,11 +592,7 @@ function showMosquitoTaunt(type){
     }
 
 
-    // =========================================
-    // BITE
-    // =========================================
-
-    if(type === "bite"){
+    if (type === "bite") {
 
         status.innerText =
             dialogues.bite[
@@ -449,11 +607,7 @@ function showMosquitoTaunt(type){
     }
 
 
-    // =========================================
-    // CAUGHT
-    // =========================================
-
-    if(type === "caught"){
+    if (type === "caught") {
 
         setExpression("dead");
 
@@ -474,13 +628,18 @@ function showMosquitoTaunt(type){
 // CLEAR HIGHLIGHTS
 // ===================================================
 
-function clearHighlights(){
+function clearHighlights() {
 
-    for(const square of lastHighlighted){
+    for (
+        const square
+        of lastHighlighted
+    ) {
 
-        square.style.background = "";
+        square.style.background =
+            "";
 
     }
+
 
     lastHighlighted = [];
 
@@ -491,28 +650,44 @@ function clearHighlights(){
 // END SCREEN
 // ===================================================
 
-function showEndScreen(playerWon){
+function showEndScreen(playerWon) {
 
-    gameStarted = false;
+    gameStarted =
+        false;
 
     playVictoryMusic();
 
-    show(
-        document.getElementById("endScreen")
-    );
+
+    const endScreen =
+        document.getElementById(
+            "endScreen"
+        );
+
+
+    if (endScreen) {
+
+        show(endScreen);
+
+    }
 
 
     const title =
-        document.getElementById("endTitle");
+        document.getElementById(
+            "endTitle"
+        );
 
     const image =
-        document.getElementById("endImage");
+        document.getElementById(
+            "endImage"
+        );
 
     const message =
-        document.getElementById("endMessage");
+        document.getElementById(
+            "endMessage"
+        );
 
 
-    if(playerWon){
+    if (playerWon) {
 
         title.innerText =
             "🏆 YOU WIN";
@@ -526,7 +701,7 @@ function showEndScreen(playerWon){
 
     }
 
-    else{
+    else {
 
         title.innerText =
             "💀 YOU LOST";
@@ -547,114 +722,50 @@ function showEndScreen(playerWon){
 // SCREEN SWITCHING
 // ===================================================
 
-function show(screen){
+function show(screen) {
 
-    console.log("SHOW CALLED:", screen);
+    const screens = [
 
+        document.getElementById("mainMenu"),
 
-    // =========================================
-    // MAIN MENU
-    // =========================================
+        document.getElementById("modeMenu"),
 
-    const mainMenu =
-        document.getElementById("mainMenu");
+        document.getElementById("playerModeMenu"),
 
+        document.getElementById("gameScreen"),
 
-    if(mainMenu){
+        document.getElementById("mosquitoGameScreen"),
 
-        mainMenu.classList.add("hidden");
+        document.getElementById("multiplayerManScreen"),
 
-    }
+        document.getElementById("multiplayerMosquitoScreen"),
 
+        document.getElementById("hardcoreScreen"),
 
-    // =========================================
-    // VS COMPUTER SIDE MENU
-    // =========================================
+        document.getElementById("endScreen")
 
-    const modeMenu =
-        document.getElementById("modeMenu");
+    ];
 
 
-    if(modeMenu){
+    screens.forEach(
+        function(currentScreen) {
 
-        modeMenu.classList.add("hidden");
+            if (currentScreen) {
 
-    }
+                currentScreen.classList.add(
+                    "hidden"
+                );
 
+            }
 
-    // =========================================
-    // VS COMPUTER — MAN
-    // =========================================
-
-    const gameScreen =
-        document.getElementById("gameScreen");
-
-
-    if(gameScreen){
-
-        gameScreen.classList.add("hidden");
-
-    }
+        }
+    );
 
 
-    // =========================================
-    // VS COMPUTER — MOSQUITO
-    // =========================================
-
-    const mosquitoScreen =
-        document.getElementById(
-            "mosquitoGameScreen"
-        );
-
-
-    if(mosquitoScreen){
-
-        mosquitoScreen.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    // =========================================
-    // END SCREEN
-    // =========================================
-
-    const endScreen =
-        document.getElementById(
-            "endScreen"
-        );
-
-
-    if(endScreen){
-
-        endScreen.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    // =========================================
-    // SHOW REQUESTED SCREEN
-    // =========================================
-
-    if(screen){
+    if (screen) {
 
         screen.classList.remove(
             "hidden"
-        );
-
-        console.log(
-            "✅ Screen shown:",
-            screen.id
-        );
-
-    }
-    else{
-
-        console.error(
-            "❌ show() received a NULL screen!"
         );
 
     }
@@ -663,23 +774,33 @@ function show(screen){
 
 
 // ===================================================
-// START GAME
+// START NORMAL MAN GAME
 // ===================================================
 
-function startGame(){
+function startGame() {
 
-    currentGameMode = "man";
+    currentGameMode =
+        "man";
 
 
-    sanity = 100;
+    window.hardcoreActive =
+        false;
 
-    gamble = 3;
 
-    turn = 1;
+    sanity =
+        100;
 
-    missStreak = 0;
+    gamble =
+        3;
 
-    gambleMode = false;
+    turn =
+        1;
+
+    missStreak =
+        0;
+
+    gambleMode =
+        false;
 
 
     mosquito.row =
@@ -693,7 +814,8 @@ function startGame(){
         );
 
 
-    gameStarted = true;
+    gameStarted =
+        true;
 
 
     setExpression("smug");
@@ -718,9 +840,11 @@ function startGame(){
 // MOSQUITO MOVEMENT
 // ===================================================
 
-function moveMosquito(){
+function moveMosquito() {
 
-    if(Math.random() < 0.5){
+    if (
+        Math.random() < 0.5
+    ) {
 
         status.innerText =
             "🦟 " +
@@ -737,37 +861,42 @@ function moveMosquito(){
     }
 
 
-    let moves = [
+    const moves = [
 
-        [-1,0],
+        [-1, 0],
 
-        [1,0],
+        [1, 0],
 
-        [0,-1],
+        [0, -1],
 
-        [0,1]
+        [0, 1]
 
     ];
 
 
-    let legal = [];
+    const legal = [];
 
 
-    for(let m of moves){
+    for (
+        const move
+        of moves
+    ) {
 
-        let nr =
-            mosquito.row + m[0];
+        const nr =
+            mosquito.row +
+            move[0];
 
-        let nc =
-            mosquito.col + m[1];
+        const nc =
+            mosquito.col +
+            move[1];
 
 
-        if(
+        if (
             nr >= 0 &&
             nr < 6 &&
             nc >= 0 &&
             nc < 6
-        ){
+        ) {
 
             legal.push([
                 nr,
@@ -779,7 +908,16 @@ function moveMosquito(){
     }
 
 
-    let choice =
+    if (
+        legal.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const choice =
         legal[
             Math.floor(
                 Math.random() *
@@ -812,16 +950,16 @@ function moveMosquito(){
 // TELEPORT
 // ===================================================
 
-function teleportMosquito(){
+function teleportMosquito() {
 
-    let oldRow =
+    const oldRow =
         mosquito.row;
 
-    let oldCol =
+    const oldCol =
         mosquito.col;
 
 
-    do{
+    do {
 
         mosquito.row =
             Math.floor(
@@ -835,12 +973,9 @@ function teleportMosquito(){
 
     }
 
-    while(
-
-        mosquito.row == oldRow &&
-
-        mosquito.col == oldCol
-
+    while (
+        mosquito.row === oldRow &&
+        mosquito.col === oldCol
     );
 
 }
@@ -850,16 +985,12 @@ function teleportMosquito(){
 // REVEAL SYSTEM
 // ===================================================
 
-function revealHint(){
+function revealHint() {
 
-    let truths = [];
+    const truths = [];
 
-    let lies = [];
+    const lies = [];
 
-
-    // =========================================
-    // TRUTHS
-    // =========================================
 
     truths.push(
         "Row " +
@@ -873,18 +1004,19 @@ function revealHint(){
     );
 
 
-    // =========================================
-    // LIES
-    // =========================================
+    for (
+        let i = 1;
+        i <= 6;
+        i++
+    ) {
 
-    for(let i = 1; i <= 6; i++){
-
-        if(
-            i != mosquito.row + 1
-        ){
+        if (
+            i !== mosquito.row + 1
+        ) {
 
             lies.push(
-                "Row " + i
+                "Row " +
+                i
             );
 
         }
@@ -892,11 +1024,15 @@ function revealHint(){
     }
 
 
-    for(let i = 0; i < 6; i++){
+    for (
+        let i = 0;
+        i < 6;
+        i++
+    ) {
 
-        if(
-            i != mosquito.col
-        ){
+        if (
+            i !== mosquito.col
+        ) {
 
             lies.push(
                 "Column " +
@@ -908,11 +1044,9 @@ function revealHint(){
     }
 
 
-    // =========================================
-    // ABOVE 50 SANITY
-    // =========================================
-
-    if(sanity >= 50){
+    if (
+        sanity >= 50
+    ) {
 
         status.innerText =
             "🦟 Fine...\n" +
@@ -924,19 +1058,24 @@ function revealHint(){
             ];
 
 
-        missStreak = 0;
+        missStreak =
+            0;
 
 
-        // Return to normal dialogue
-        setTimeout(function(){
+        setTimeout(
+            function() {
 
-            if(gameStarted){
+                if (gameStarted) {
 
-                showMosquitoTaunt("miss");
+                    showMosquitoTaunt(
+                        "miss"
+                    );
 
-            }
+                }
 
-        }, 1800);
+            },
+            1800
+        );
 
 
         return;
@@ -944,20 +1083,14 @@ function revealHint(){
     }
 
 
-    // =========================================
-    // BELOW 50 SANITY
-    // =========================================
-
-    let lieCount =
+    const lieCount =
         Math.floor(
             (49 - sanity) / 10
         ) + 1;
 
 
-    let clues = [];
+    const clues = [];
 
-
-    // One truth
 
     clues.push(
         truths[
@@ -969,20 +1102,18 @@ function revealHint(){
     );
 
 
-    // Shuffle lies
-
     lies.sort(
-        () => Math.random() - 0.5
+        () =>
+            Math.random() -
+            0.5
     );
 
 
-    // Add lies
-
-    for(
+    for (
         let i = 0;
         i < lieCount;
         i++
-    ){
+    ) {
 
         clues.push(
             lies[i]
@@ -991,10 +1122,10 @@ function revealHint(){
     }
 
 
-    // Shuffle everything
-
     clues.sort(
-        () => Math.random() - 0.5
+        () =>
+            Math.random() -
+            0.5
     );
 
 
@@ -1003,20 +1134,24 @@ function revealHint(){
         clues.join("\n");
 
 
-    missStreak = 0;
+    missStreak =
+        0;
 
 
-    // Return to normal dialogue
+    setTimeout(
+        function() {
 
-    setTimeout(function(){
+            if (gameStarted) {
 
-        if(gameStarted){
+                showMosquitoTaunt(
+                    "miss"
+                );
 
-            showMosquitoTaunt("miss");
+            }
 
-        }
-
-    }, 2500);
+        },
+        2500
+    );
 
 }
 
@@ -1025,40 +1160,42 @@ function revealHint(){
 // CREATE BOARD
 // ===================================================
 
-function createBoard(){
+function createBoard() {
 
-    if(boardCreated)
+    if (boardCreated) {
+
         return;
 
+    }
 
-    boardCreated = true;
 
+    boardCreated =
+        true;
 
-    // =========================================
-    // EMPTY CORNER
-    // =========================================
 
     const corner =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     corner.className =
         "label";
 
-    board.appendChild(corner);
+    board.appendChild(
+        corner
+    );
 
 
-    // =========================================
-    // LETTERS
-    // =========================================
-
-    for(
+    for (
         let c = 0;
         c < 6;
         c++
-    ){
+    ) {
 
         const label =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         label.className =
             "label";
@@ -1066,23 +1203,23 @@ function createBoard(){
         label.innerText =
             letters[c];
 
-        board.appendChild(label);
+        board.appendChild(
+            label
+        );
 
     }
 
 
-    // =========================================
-    // GRID
-    // =========================================
-
-    for(
+    for (
         let r = 0;
         r < 6;
         r++
-    ){
+    ) {
 
         const rowLabel =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         rowLabel.className =
             "label";
@@ -1095,11 +1232,18 @@ function createBoard(){
         );
 
 
-        for(
+        if (!squares[r]) {
+
+            squares[r] = [];
+
+        }
+
+
+        for (
             let c = 0;
             c < 6;
             c++
-        ){
+        ) {
 
             const square =
                 document.createElement(
@@ -1111,207 +1255,189 @@ function createBoard(){
                 "square";
 
 
-            if(!squares[r])
-                squares[r] = [];
-
-
             squares[r][c] =
                 square;
 
 
-            // =================================
-            // CLICK
-            // =================================
-
             square.onclick =
-            function(){
+                function() {
 
-                // -----------------------------
-                // GAMBLE ATTACK
-                // -----------------------------
+                    if (gambleMode) {
 
-                if(gambleMode){
-
-                    gambleAttack(
-                        r,
-                        c
-                    );
-
-                    return;
-
-                }
-
-
-                // -----------------------------
-                // GAME OVER
-                // -----------------------------
-
-                if(!gameStarted)
-                    return;
-
-
-                // -----------------------------
-                // CLEAR OLD ATTACK
-                // -----------------------------
-
-                clearHighlights();
-
-
-                // =================================
-                // HIT
-                // =================================
-
-                if(
-                    r == mosquito.row &&
-                    c == mosquito.col
-                ){
-
-                    square.style.background =
-                        "#00bb44";
-
-                    lastHighlighted.push(
-                        square
-                    );
-
-
-                    showMosquitoTaunt(
-                        "caught"
-                    );
-
-
-                    missStreak = 0;
-
-                    gameStarted = false;
-
-
-                    showEndScreen(
-                        true
-                    );
-
-
-                    return;
-
-                }
-
-
-                // =================================
-                // NEAR MISS
-                // =================================
-
-                let distance =
-
-                    Math.abs(
-                        r -
-                        mosquito.row
-                    )
-
-                    +
-
-                    Math.abs(
-                        c -
-                        mosquito.col
-                    );
-
-
-                if(distance == 1){
-
-                    square.style.background =
-                        "orange";
-
-
-                    lastHighlighted.push(
-                        square
-                    );
-
-
-                    sanity -= 10;
-
-
-                    showMosquitoTaunt(
-                        "near"
-                    );
-
-
-                    teleportMosquito();
-
-
-                    missStreak = 0;
-
-                }
-
-
-                // =================================
-                // MISS
-                // =================================
-
-                else{
-
-                    square.style.background =
-                        "#993333";
-
-
-                    lastHighlighted.push(
-                        square
-                    );
-
-
-                    sanity--;
-
-                    missStreak++;
-
-
-                    setExpression(
-                        "smug"
-                    );
-
-
-                    if(
-                        missStreak >= 5
-                    ){
-
-                        revealHint();
-
-                    }
-
-                    else{
-
-                        showMosquitoTaunt(
-                            "miss"
+                        gambleAttack(
+                            r,
+                            c
                         );
 
-                        moveMosquito();
+                        return;
 
                     }
 
-                }
+
+                    if (!gameStarted) {
+
+                        return;
+
+                    }
 
 
-                turn++;
-
-                updateHUD();
+                    clearHighlights();
 
 
-                // =================================
-                // INSANITY / LOSS
-                // =================================
+                    /*
+                       HIT
+                    */
 
-                if(
-                    sanity <= 0
-                ){
+                    if (
+                        r === mosquito.row &&
+                        c === mosquito.col
+                    ) {
 
-                    sanity = 0;
+                        square.style.background =
+                            "#00bb44";
+
+                        lastHighlighted.push(
+                            square
+                        );
+
+
+                        showMosquitoTaunt(
+                            "caught"
+                        );
+
+
+                        missStreak =
+                            0;
+
+                        gameStarted =
+                            false;
+
+
+                        showEndScreen(
+                            true
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /*
+                       NEAR MISS
+                    */
+
+                    const distance =
+                        Math.abs(
+                            r -
+                            mosquito.row
+                        ) +
+                        Math.abs(
+                            c -
+                            mosquito.col
+                        );
+
+
+                    if (
+                        distance === 1
+                    ) {
+
+                        square.style.background =
+                            "orange";
+
+
+                        lastHighlighted.push(
+                            square
+                        );
+
+
+                        sanity -= 10;
+
+
+                        showMosquitoTaunt(
+                            "near"
+                        );
+
+
+                        teleportMosquito();
+
+
+                        missStreak =
+                            0;
+
+                    }
+
+
+                    /*
+                       MISS
+                    */
+
+                    else {
+
+                        square.style.background =
+                            "#993333";
+
+
+                        lastHighlighted.push(
+                            square
+                        );
+
+
+                        sanity--;
+
+                        missStreak++;
+
+
+                        setExpression(
+                            "smug"
+                        );
+
+
+                        if (
+                            missStreak >= 5
+                        ) {
+
+                            revealHint();
+
+                        }
+
+                        else {
+
+                            showMosquitoTaunt(
+                                "miss"
+                            );
+
+                            moveMosquito();
+
+                        }
+
+                    }
+
+
+                    turn++;
 
                     updateHUD();
 
-                    gameStarted = false;
 
-                    showEndScreen(
-                        false
-                    );
+                    if (
+                        sanity <= 0
+                    ) {
 
-                }
+                        sanity =
+                            0;
 
-            };
+                        updateHUD();
+
+                        gameStarted =
+                            false;
+
+                        showEndScreen(
+                            false
+                        );
+
+                    }
+
+                };
 
 
             board.appendChild(
@@ -1332,7 +1458,7 @@ function createBoard(){
 document.getElementById(
     "vsComputerBtn"
 ).onclick =
-function(){
+function() {
 
     show(modeMenu);
 
@@ -1342,9 +1468,11 @@ function(){
 document.getElementById(
     "backBtn"
 ).onclick =
-function(){
+function() {
 
     show(mainMenu);
+
+    playMainMenuMusic();
 
 };
 
@@ -1352,7 +1480,7 @@ function(){
 document.getElementById(
     "manBtn"
 ).onclick =
-function(){
+function() {
 
     show(gameScreen);
 
@@ -1366,10 +1494,11 @@ function(){
 document.getElementById(
     "mosquitoBtn"
 ).onclick =
-function(){
+function() {
 
-    // mosquito.js takes over
-    // this button after loading
+    /*
+       mosquito.js owns this button.
+    */
 
 };
 
@@ -1377,7 +1506,7 @@ function(){
 document.getElementById(
     "vsPlayerBtn"
 ).onclick =
-function(){
+function() {
 
     mainMenu.classList.add(
         "hidden"
@@ -1393,10 +1522,11 @@ function(){
 
 };
 
+
 document.getElementById(
     "playerBackBtn"
 ).onclick =
-function(){
+function() {
 
     playerModeMenu.classList.add(
         "hidden"
@@ -1406,14 +1536,15 @@ function(){
         "hidden"
     );
 
-};
+    playMainMenuMusic();
 
+};
 
 
 document.getElementById(
     "rulesBtn"
 ).onclick =
-function(){
+function() {
 
     alert(`
 
@@ -1439,13 +1570,16 @@ Miss = -20 Sanity.
 // ===================================================
 
 gambleBtn.onclick =
-function(){
+function() {
 
-    if(!gameStarted)
+    if (!gameStarted) {
+
         return;
 
+    }
 
-    if(gamble <= 0){
+
+    if (gamble <= 0) {
 
         alert(
             "No Gambles Remaining!"
@@ -1456,7 +1590,8 @@ function(){
     }
 
 
-    gambleMode = true;
+    gambleMode =
+        true;
 
 
     status.innerText =
@@ -1469,9 +1604,10 @@ function(){
 // GAMBLE ATTACK
 // ===================================================
 
-function gambleAttack(r,c){
+function gambleAttack(r, c) {
 
-    gambleMode = false;
+    gambleMode =
+        false;
 
 
     gamble--;
@@ -1480,14 +1616,10 @@ function gambleAttack(r,c){
     updateHUD();
 
 
-    // =========================================
-    // INVALID 2×2 POSITION
-    // =========================================
-
-    if(
+    if (
         r > 4 ||
         c > 4
-    ){
+    ) {
 
         status.innerText =
             "Choose between A1 and E5.";
@@ -1495,23 +1627,23 @@ function gambleAttack(r,c){
 
         gamble++;
 
-
         updateHUD();
 
 
-        // Restore dialogue
+        setTimeout(
+            function() {
 
-        setTimeout(function(){
+                if (gameStarted) {
 
-            if(gameStarted){
+                    showMosquitoTaunt(
+                        "miss"
+                    );
 
-                showMosquitoTaunt(
-                    "miss"
-                );
+                }
 
-            }
-
-        }, 1000);
+            },
+            1000
+        );
 
 
         return;
@@ -1519,29 +1651,27 @@ function gambleAttack(r,c){
     }
 
 
-    let hit = false;
+    let hit =
+        false;
 
 
     const area = [
 
-        [r,c],
+        [r, c],
 
-        [r,c+1],
+        [r, c + 1],
 
-        [r+1,c],
+        [r + 1, c],
 
-        [r+1,c+1]
+        [r + 1, c + 1]
 
     ];
 
 
-    // =========================================
-    // BLUE FLASH
-    // =========================================
-
-    for(
-        const cell of area
-    ){
+    for (
+        const cell
+        of area
+    ) {
 
         const square =
             squares[
@@ -1560,173 +1690,152 @@ function gambleAttack(r,c){
         );
 
 
-        if(
+        if (
             mosquito.row === cell[0] &&
             mosquito.col === cell[1]
-        ){
+        ) {
 
-            hit = true;
+            hit =
+                true;
 
         }
 
     }
 
 
-    // =========================================
-    // RESULT
-    // =========================================
-
     setTimeout(
-    function(){
+        function() {
 
-        if(hit){
+            if (hit) {
 
-            setExpression(
-                "dead"
-            );
-
-
-            status.innerText =
-                "💥 MAD MAN'S GAMBLE!!";
+                setExpression(
+                    "dead"
+                );
 
 
-            gameStarted =
-                false;
+                status.innerText =
+                    "💥 MAD MAN'S GAMBLE!!";
 
-
-            showEndScreen(
-                true
-            );
-
-
-        }
-
-        else{
-
-            // -----------------------------
-            // RED 2×2 AREA
-            // -----------------------------
-
-            for(
-                const cell of area
-            ){
-
-                squares[
-                    cell[0]
-                ][
-                    cell[1]
-                ].style.background =
-                    "#993333";
-
-            }
-
-
-            sanity -= 20;
-
-
-            if(sanity < 0)
-                sanity = 0;
-
-
-            updateHUD();
-
-
-            setExpression(
-                "smug"
-            );
-
-
-            status.innerText =
-                "💀 Gamble Failed! (-20 Sanity)";
-
-
-            // Move mosquito
-
-            moveMosquito();
-
-
-            turn++;
-
-
-            updateHUD();
-
-
-            // -----------------------------
-            // LOSS
-            // -----------------------------
-
-            if(
-                sanity <= 0
-            ){
 
                 gameStarted =
                     false;
 
 
                 showEndScreen(
-                    false
+                    true
                 );
 
-                return;
 
             }
 
+            else {
 
-            // -----------------------------
-            // RESTORE DIALOGUE
-            // -----------------------------
+                for (
+                    const cell
+                    of area
+                ) {
 
-            setTimeout(function(){
-
-                if(gameStarted){
-
-                    showMosquitoTaunt(
-                        "miss"
-                    );
+                    squares[
+                        cell[0]
+                    ][
+                        cell[1]
+                    ].style.background =
+                        "#993333";
 
                 }
 
-            }, 1200);
 
-        }
+                sanity -= 20;
 
-    }, 300);
+
+                if (sanity < 0) {
+
+                    sanity =
+                        0;
+
+                }
+
+
+                updateHUD();
+
+
+                setExpression(
+                    "smug"
+                );
+
+
+                status.innerText =
+                    "💀 Gamble Failed! (-20 Sanity)";
+
+
+                moveMosquito();
+
+                turn++;
+
+                updateHUD();
+
+
+                if (
+                    sanity <= 0
+                ) {
+
+                    gameStarted =
+                        false;
+
+                    showEndScreen(
+                        false
+                    );
+
+                    return;
+
+                }
+
+
+                setTimeout(
+                    function() {
+
+                        if (gameStarted) {
+
+                            showMosquitoTaunt(
+                                "miss"
+                            );
+
+                        }
+
+                    },
+                    1200
+                );
+
+            }
+
+        },
+        300
+    );
 
 }
 
 
 // ===================================================
-// END SCREEN — PLAY AGAIN
+// PLAY AGAIN
 // ===================================================
 
 document.getElementById(
     "playAgainBtn"
 ).onclick =
-function(){
+function() {
 
-    // =========================================
-    // MOSQUITO MODE
-    // =========================================
-
-    if(
+    if (
         currentGameMode === "mosquito"
-    ){
-
-        // mosquito.js owns this case
+    ) {
 
         return;
 
     }
 
 
-    // =========================================
-    // MAN MODE
-    // =========================================
-
     document.getElementById(
         "endScreen"
-    )
-    .classList.add(
+    ).classList.add(
         "hidden"
     );
 
@@ -1737,18 +1846,13 @@ function(){
 
     squares = [];
 
-
     boardCreated =
         false;
 
 
-    show(
-        gameScreen
-    );
-
+    show(gameScreen);
 
     createBoard();
-
 
     startGame();
 
@@ -1756,20 +1860,17 @@ function(){
 
 
 // ===================================================
-// END SCREEN — MAIN MENU
+// MAIN MENU
 // ===================================================
 
 document.getElementById(
     "menuBtn"
 ).onclick =
-function(){
+function() {
 
-    // Mosquito mode handles its own
-    // menu button behavior
-
-    if(
+    if (
         currentGameMode === "mosquito"
-    ){
+    ) {
 
         return;
 
@@ -1778,8 +1879,7 @@ function(){
 
     document.getElementById(
         "endScreen"
-    )
-    .classList.add(
+    ).classList.add(
         "hidden"
     );
 
@@ -1790,13 +1890,12 @@ function(){
 
     squares = [];
 
-
     boardCreated =
         false;
 
 
-    show(
-        mainMenu
-    );
+    show(mainMenu);
+
+    playMainMenuMusic();
 
 };
