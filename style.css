@@ -26,12 +26,6 @@ body {
     text-align: center;
 }
 
-
-/* =========================================================
-   SCREEN SYSTEM
-   IMPORTANT — USED BY script.js AND multiplayer.js
-   ========================================================= */
-
 .screen {
     width: 100%;
     min-height: 100vh;
@@ -96,36 +90,6 @@ button:disabled {
    MAIN MENU
    ========================================================= */
 
-/* =========================================================
-   MAIN MENU
-   ========================================================= */
-
-#mainMenu {
-    position: relative;
-
-    width: 100%;
-    height: 100vh;
-    min-height: 600px;
-
-    padding: 0;
-    margin: 0;
-
-    overflow: hidden;
-
-    background-image: url("images/mainmenu.png");
-
-    background-size: cover;
-
-    background-position: center center;
-
-    background-repeat: no-repeat;
-}
-
-
-/* =========================================================
-   MAIN MENU BUTTONS
-   ========================================================= */
-
 #mainMenu {
     position: relative;
 
@@ -141,68 +105,28 @@ button:disabled {
     background-image: url("images/mainmenu.png");
 
     background-size: contain;
-
     background-position: center top;
-
     background-repeat: no-repeat;
 
     background-color: #111;
 }
+
 
 #mainMenu .mainMenuButtons {
     position: absolute;
 
     left: 0;
     right: 0;
-
     bottom: 28px;
 
     display: flex;
-
     flex-direction: row;
-
     justify-content: center;
-
     align-items: center;
 
     gap: 18px;
 
     z-index: 10;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 700px) {
-
-    #mainMenu {
-        min-height: 100vh;
-
-        background-position: center center;
-    }
-
-
-    #mainMenu .mainMenuButtons {
-        bottom: 20px;
-
-        gap: 8px;
-
-        padding: 0 10px;
-    }
-
-
-    #mainMenu .mainMenuButtons button {
-        width: auto;
-
-        flex: 1;
-
-        padding: 12px 8px;
-
-        font-size: 14px;
-    }
-
 }
 
 
@@ -239,7 +163,9 @@ button:disabled {
     margin: 30px auto;
     padding: 25px;
     max-width: 550px;
+
     background: #303134;
+
     border-radius: 15px;
 }
 
@@ -251,11 +177,14 @@ button:disabled {
 #roomCodeInput {
     width: 260px;
     max-width: 90%;
+
     padding: 12px;
     margin: 12px;
+
     font-size: 20px;
     text-align: center;
     text-transform: uppercase;
+
     border: none;
     border-radius: 8px;
 }
@@ -267,20 +196,27 @@ button:disabled {
 
 #hud {
     width: min(850px, 95%);
+
     margin: 20px auto;
+
     display: flex;
     justify-content: center;
     align-items: stretch;
+
     gap: 15px;
     flex-wrap: wrap;
 }
 
 .hudBox {
     background: #333;
+
     border-radius: 10px;
+
     padding: 15px 22px;
+
     font-size: 19px;
     font-weight: bold;
+
     min-width: 145px;
 }
 
@@ -296,8 +232,11 @@ button:disabled {
 
 #gambleBtn {
     margin: 8px 0 0;
+
     padding: 8px 14px;
+
     font-size: 14px;
+
     background: #a91515;
     color: white;
 }
@@ -318,26 +257,35 @@ button:disabled {
 
 #dialogueBox {
     width: min(750px, 95%);
+
     margin: 25px auto;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     gap: 25px;
 }
 
 #mosquitoPortrait {
     width: 160px;
     height: 160px;
+
     object-fit: cover;
+
     border-radius: 15px;
 }
 
 #dialogue {
     width: 380px;
     min-height: 130px;
+
     padding: 20px;
+
     background: #333;
+
     border-radius: 15px;
+
     text-align: left;
 }
 
@@ -353,9 +301,14 @@ button:disabled {
 
 #gameBoard {
     width: max-content;
+
     margin: 30px auto;
+
     display: grid;
-    grid-template-columns: repeat(7, 70px);
+
+    grid-template-columns:
+        repeat(7, 70px);
+
     gap: 5px;
 }
 
@@ -366,10 +319,13 @@ button:disabled {
 
 #mosquitoHud {
     width: min(700px, 95%);
+
     margin: 20px auto;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     gap: 15px;
     flex-wrap: wrap;
 }
@@ -381,26 +337,35 @@ button:disabled {
 
 #manDialogueBox {
     width: min(750px, 95%);
+
     margin: 25px auto;
+
     display: flex;
     justify-content: center;
     align-items: center;
+
     gap: 25px;
 }
 
 #manPortrait {
     width: 160px;
     height: 160px;
+
     object-fit: cover;
+
     border-radius: 15px;
 }
 
 #manDialogue {
     width: 380px;
     min-height: 130px;
+
     padding: 20px;
+
     background: #333;
+
     border-radius: 15px;
+
     text-align: left;
 }
 
@@ -416,6 +381,7 @@ button:disabled {
 
 #mosquitoInstructions {
     width: min(650px, 95%);
+
     margin: 20px auto;
 }
 
@@ -430,9 +396,14 @@ button:disabled {
 
 #mosquitoBoard {
     width: max-content;
+
     margin: 30px auto;
+
     display: grid;
-    grid-template-columns: repeat(7, 70px);
+
+    grid-template-columns:
+        repeat(7, 70px);
+
     gap: 5px;
 }
 
@@ -444,13 +415,20 @@ button:disabled {
 .square {
     width: 70px;
     height: 70px;
+
     background: #555;
+
     color: white;
+
     border: 2px solid #777;
+
     border-radius: 0;
+
     margin: 0;
     padding: 0;
+
     display: flex;
+
     justify-content: center;
     align-items: center;
 }
@@ -467,9 +445,12 @@ button:disabled {
 .label {
     width: 70px;
     height: 70px;
+
     display: flex;
+
     justify-content: center;
     align-items: center;
+
     font-weight: bold;
     font-size: 20px;
 }
@@ -503,7 +484,9 @@ button:disabled {
 
 #mosquitoMovementStatus {
     min-height: 25px;
+
     margin: 15px auto;
+
     font-size: 18px;
 }
 
@@ -514,7 +497,9 @@ button:disabled {
 
 #endScreen {
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
 }
@@ -525,16 +510,22 @@ button:disabled {
 
 #endImage {
     width: 350px;
+
     max-width: 85vw;
     max-height: 55vh;
+
     object-fit: contain;
+
     border-radius: 15px;
+
     margin: 20px;
 }
 
 #endMessage {
     font-size: 21px;
+
     white-space: pre-line;
+
     margin: 15px auto 25px;
 }
 
@@ -546,7 +537,9 @@ button:disabled {
 #multiplayerManScreen,
 #multiplayerMosquitoScreen {
     width: 100%;
+
     min-height: 100vh;
+
     padding: 25px 15px;
 }
 
@@ -558,11 +551,16 @@ button:disabled {
 #multiplayerManHud,
 #multiplayerMosquitoHud {
     width: min(900px, 95%);
+
     margin: 20px auto;
+
     display: flex;
+
     justify-content: center;
     align-items: stretch;
+
     gap: 15px;
+
     flex-wrap: wrap;
 }
 
@@ -577,9 +575,12 @@ button:disabled {
 
 #multiplayerGambleBtn {
     padding: 8px 14px;
+
     margin: 8px 0 0;
+
     font-size: 14px;
     font-weight: bold;
+
     background: #a91515;
     color: white;
 }
@@ -602,7 +603,9 @@ button:disabled {
 #mpMosquitoStatus,
 #multiplayerMosquitoMovementStatus {
     min-height: 28px;
+
     margin: 15px auto;
+
     font-size: 18px;
 }
 
@@ -613,26 +616,24 @@ button:disabled {
 
 .multiplayerBoardWrapper {
     width: 100%;
+
     display: flex;
+
     justify-content: center;
     align-items: center;
+
     margin: 25px auto;
 }
 
 
 /* =========================================================
    MULTIPLAYER 6 × 6 BOARD
-   A1 A2 A3 A4 A5 A6
-   B1 B2 B3 B4 B5 B6
-   C1 C2 C3 C4 C5 C6
-   D1 D2 D3 D4 D5 D6
-   E1 E2 E3 E4 E5 E6
-   F1 F2 F3 F4 F5 F6
    ========================================================= */
 
 .multiplayerBoard,
 #multiplayerManBoard,
 #multiplayerMosquitoBoard {
+
     display: grid !important;
 
     grid-template-columns:
@@ -665,6 +666,7 @@ button:disabled {
    ========================================================= */
 
 .multiplayerCell {
+
     width: 70px !important;
     height: 70px !important;
 
@@ -686,6 +688,7 @@ button:disabled {
     color: white;
 
     display: flex !important;
+
     justify-content: center !important;
     align-items: center !important;
 
@@ -706,6 +709,7 @@ button:disabled {
 
 .multiplayerCell:hover {
     background: #555;
+
     transform: scale(1.02);
 }
 
@@ -715,7 +719,9 @@ button:disabled {
    ========================================================= */
 
 .multiplayerCell.selected {
+
     background: #16803c !important;
+
     border: 3px solid white !important;
 }
 
@@ -725,6 +731,7 @@ button:disabled {
    ========================================================= */
 
 .mpMosquitoImage {
+
     width: 52px !important;
     height: 52px !important;
 
@@ -739,52 +746,66 @@ button:disabled {
 
 
 /* =========================================================
-   MOSQUITO LEGAL MOVEMENT
+   MULTIPLAYER MOSQUITO LEGAL MOVEMENT
    BLUE
    ========================================================= */
 
 .mpMosquitoMoveAllowed {
+
     background: #1677ff !important;
+
     border: 3px solid #70b5ff !important;
+
+    color: white !important;
 }
 
 .mpMosquitoMoveAllowed:hover {
+
     background: #3290ff !important;
 }
 
 
 /* =========================================================
-   MAN ATTACK
+   MULTIPLAYER MAN ATTACK
    RED
    ========================================================= */
 
 .mpAttackRed {
+
     background: red !important;
+
     border: 3px solid #ff7777 !important;
+
     color: white !important;
 }
 
 
 /* =========================================================
-   BITE
+   MULTIPLAYER BITE
    ORANGE
    ========================================================= */
 
 .mpAttackOrange {
+
     background: orange !important;
+
     border: 3px solid #ffd27f !important;
+
     color: white !important;
 }
 
 
 /* =========================================================
-   GAMBLE AREA
+   MULTIPLAYER GAMBLE AREA
    BLUE
    ========================================================= */
 
 .mpAttackBlue {
+
     background: #1677ff !important;
+
     border: 3px solid #70b5ff !important;
+
     color: white !important;
 }
 
@@ -794,10 +815,14 @@ button:disabled {
    ========================================================= */
 
 #mpMovementControls {
+
     display: flex;
+
     justify-content: center;
     align-items: center;
+
     gap: 10px;
+
     margin: 15px auto;
 }
 
@@ -820,11 +845,12 @@ button:disabled {
 
 /* =========================================================
    MULTIPLAYER VICTORY SCREEN
-   Created dynamically by multiplayer.js
    ========================================================= */
 
 #mpVictoryScreen {
+
     position: fixed !important;
+
     inset: 0 !important;
 
     width: 100vw !important;
@@ -839,6 +865,7 @@ button:disabled {
     flex-direction: column !important;
 
     justify-content: center !important;
+
     align-items: center !important;
 
     text-align: center;
@@ -849,12 +876,16 @@ button:disabled {
 }
 
 #mpVictoryScreen h1 {
+
     font-size: 42px;
+
     margin: 10px 0 20px;
 }
 
 #mpVictoryScreen img {
+
     width: 360px;
+
     max-width: 80vw;
     max-height: 50vh;
 
@@ -864,23 +895,746 @@ button:disabled {
 }
 
 #mpVictoryScreen p {
+
     font-size: 21px;
+
     margin: 10px 0 20px;
 }
 
 #mpVictoryScreen button {
+
     min-width: 180px;
+
     margin: 8px;
 }
 
 
 /* =========================================================
-   MULTIPLAYER DISCONNECTED / ERROR STATUS
+   VS COMPUTER — MOSQUITO LEGAL MOVEMENT
    ========================================================= */
 
-#mpManStatus,
-#mpMosquitoStatus {
-    white-space: pre-line;
+.mosquito-move-option {
+
+    background: #1677ff !important;
+
+    border: 3px solid #70b5ff !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 0 12px
+        rgba(22, 119, 255, 0.8);
+}
+
+.mosquito-move-option:hover {
+
+    background: #3290ff !important;
+
+    border-color: #9dccff !important;
+}
+
+
+/* =========================================================
+   VS COMPUTER — MAN ATTACK COLORS
+   ========================================================= */
+
+#mosquitoBoard .man-miss {
+
+    background: red !important;
+
+    border: 3px solid #ff7777 !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 0 12px
+        rgba(255, 0, 0, 0.7);
+}
+
+
+#mosquitoBoard .man-bite {
+
+    background: orange !important;
+
+    border: 3px solid #ffd27f !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 0 12px
+        rgba(255, 165, 0, 0.8);
+}
+
+
+#mosquitoBoard .man-hit {
+
+    background: red !important;
+
+    border: 3px solid white !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 0 18px
+        rgba(255, 0, 0, 0.9);
+}
+
+
+.mosquito-man-attack {
+
+    background: red !important;
+
+    border: 3px solid #ff7777 !important;
+
+    color: white !important;
+}
+
+
+/* =========================================================
+   ULTIMATE HARDCORE HORROR MODE
+   NEW DARKNESS SYSTEM
+   ========================================================= */
+
+#hardcoreScreen {
+
+    position: relative !important;
+
+    width: 100% !important;
+    min-height: 100vh !important;
+
+    padding: 25px 15px;
+
+    overflow: hidden;
+
+    background: #000 !important;
+
+    color: #aaa;
+}
+
+
+/* =========================================================
+   HORROR VIGNETTE
+   ========================================================= */
+
+#hardcoreScreen::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+
+            #151515 0%,
+            #090909 35%,
+            #020202 70%,
+            #000 100%
+        );
+}
+
+
+#hardcoreScreen > * {
+
+    position: relative;
+
+    z-index: 5;
+}
+
+
+/* =========================================================
+   HARDCORE BOARD
+   ========================================================= */
+
+#hardcoreBoardWrapper {
+
+    position: relative;
+
+    z-index: 20;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    width: 100%;
+
+    margin: 25px auto;
+}
+
+
+#hardcoreBoard {
+
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(6, 65px) !important;
+
+    grid-template-rows:
+        repeat(6, 65px) !important;
+
+    gap: 4px !important;
+
+    width: max-content !important;
+    height: max-content !important;
+
+    padding: 7px;
+
+    background: #000 !important;
+
+    border: 1px solid #080808;
+
+    box-shadow:
+        0 0 70px #000;
+}
+
+
+/* =========================================================
+   BASE TILE
+   ========================================================= */
+
+#hardcoreBoard .hardcoreCell {
+
+    position: relative;
+
+    width: 65px !important;
+    height: 65px !important;
+
+    min-width: 65px !important;
+    min-height: 65px !important;
+
+    max-width: 65px !important;
+    max-height: 65px !important;
+
+    display: flex !important;
+
+    justify-content: center !important;
+    align-items: center !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    background: #000 !important;
+
+    border: 1px solid #030303;
+
+    cursor: pointer;
+
+    transition:
+        background 0.12s,
+        border 0.12s,
+        box-shadow 0.12s;
+}
+
+
+/* =========================================================
+   NORMAL DARK BOARD
+   ========================================================= */
+
+#hardcoreBoard .hardcoreDark {
+
+    background: #000 !important;
+
+    border-color: #020202 !important;
+
+    box-shadow: none !important;
+}
+
+
+/* =========================================================
+   CANDLELIGHT
+   ENTIRE BOARD BECOMES VISIBLE
+   ========================================================= */
+
+#hardcoreBoard .hardcoreIlluminated {
+
+    background:
+        radial-gradient(
+            circle,
+            #3a3428 0%,
+            #29251e 55%,
+            #171510 100%
+        ) !important;
+
+    border-color: #4d4638 !important;
+
+    box-shadow:
+        inset 0 0 15px
+        rgba(255, 180, 70, 0.08);
+}
+
+
+/* =========================================================
+   BLUE — ONLY LEGAL MOSQUITO MOVEMENT
+   ========================================================= */
+
+#hardcoreBoard .hardcoreMoveTile {
+
+    background:
+        radial-gradient(
+            circle,
+            #1677c8 0%,
+            #0b3c68 55%,
+            #031522 100%
+        ) !important;
+
+    border:
+        3px solid #299cff !important;
+
+    box-shadow:
+        inset 0 0 15px
+        rgba(40, 150, 255, 0.5),
+
+        0 0 12px
+        rgba(20, 130, 255, 0.5);
+}
+
+
+/*
+   When candle is lit, blue movement
+   remains obvious.
+*/
+
+#hardcoreBoard .hardcoreIlluminated.hardcoreMoveTile {
+
+    background:
+        radial-gradient(
+            circle,
+            #228de0,
+            #0d4c7c
+        ) !important;
+
+}
+
+
+/* =========================================================
+   RED — ACTUAL CURRENT MAN ATTACK
+   ========================================================= */
+
+#hardcoreBoard .hardcoreAttackTile {
+
+    background:
+        radial-gradient(
+            circle,
+            #d40000 0%,
+            #720000 50%,
+            #260000 100%
+        ) !important;
+
+    border:
+        3px solid #ff2929 !important;
+
+    box-shadow:
+        inset 0 0 18px
+        rgba(255, 0, 0, 0.55),
+
+        0 0 14px
+        rgba(255, 0, 0, 0.55);
+}
+
+
+/*
+   RED takes priority over BLUE.
+*/
+
+#hardcoreBoard
+.hardcoreMoveTile
+.hardcoreAttackTile {
+
+    background:
+        radial-gradient(
+            circle,
+            #df0000,
+            #620000
+        ) !important;
+
+    border-color:
+        #ff3838 !important;
+}
+
+
+/* =========================================================
+   BLOOD
+   ========================================================= */
+
+#hardcoreBoard .hardcoreBlood {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 34px;
+
+    pointer-events: none;
+
+    z-index: 10;
+
+    filter:
+        drop-shadow(
+            0 0 8px
+            rgba(180, 0, 0, 0.8)
+        );
+
+    animation:
+        hardcoreBloodPulse
+        2s infinite;
+}
+
+
+@keyframes hardcoreBloodPulse {
+
+    0%,
+    100% {
+
+        transform:
+            scale(0.95);
+
+        opacity: 0.8;
+    }
+
+    50% {
+
+        transform:
+            scale(1.05);
+
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   SCARY2
+   ========================================================= */
+
+#hardcoreBoard .hardcoreScarySprite {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover;
+
+    display: block;
+
+    pointer-events: none;
+
+    z-index: 20;
+
+    animation:
+        hardcoreScaryAppear
+        0.12s
+        steps(2);
+}
+
+
+@keyframes hardcoreScaryAppear {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            scale(1.3);
+    }
+
+    100% {
+
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOSQUITO-CHAN
+   ========================================================= */
+
+#hardcoreBoard .hardcoreMosquitoSprite {
+
+    position: relative;
+
+    z-index: 30;
+
+    width: 82% !important;
+    height: 82% !important;
+
+    object-fit: contain;
+
+    display: block;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    filter:
+        drop-shadow(
+            0 0 8px
+            rgba(255,255,255,0.4)
+        );
+
+    animation:
+        hardcoreMosquitoFloat
+        1.4s
+        ease-in-out
+        infinite;
+}
+
+
+@keyframes hardcoreMosquitoFloat {
+
+    0% {
+
+        transform:
+            translateY(0);
+    }
+
+    50% {
+
+        transform:
+            translateY(-3px);
+    }
+
+    100% {
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+/* =========================================================
+   HARDCORE HUD
+   ========================================================= */
+
+#hardcoreHud {
+
+    position: relative;
+
+    z-index: 30;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    margin: 15px auto;
+}
+
+
+#hardcoreHud .hudBox {
+
+    background: #101010;
+
+    border:
+        1px solid #292929;
+
+    color: #888;
+
+    box-shadow:
+        0 0 15px #000;
+}
+
+
+/* =========================================================
+   CANDLE BUTTON
+   ========================================================= */
+
+#hardcoreTorchBtn {
+
+    background:
+        #76501a !important;
+
+    border:
+        1px solid #c08a32 !important;
+
+    color:
+        #ffe0a0 !important;
+
+    box-shadow:
+        0 0 10px
+        rgba(220,150,40,0.25);
+}
+
+
+#hardcoreTorchBtn:hover {
+
+    background:
+        #9b681e !important;
+
+    box-shadow:
+        0 0 20px
+        rgba(255,170,50,0.55);
+}
+
+
+/* =========================================================
+   HARDCORE CONTROLS
+   ========================================================= */
+
+#hardcoreControls {
+
+    position: relative;
+
+    z-index: 30;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+    margin: 20px auto;
+}
+
+
+/* =========================================================
+   FULL-SCREEN JUMPSCARE
+   ========================================================= */
+
+#hardcoreJumpscare {
+
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    z-index: 50000 !important;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: #000;
+}
+
+
+#hardcoreJumpscare img {
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    object-fit: contain;
+
+    animation:
+        hardcoreJumpscareShake
+        0.08s infinite;
+}
+
+
+@keyframes hardcoreJumpscareShake {
+
+    0% {
+        transform:
+            translate(0,0)
+            scale(1);
+    }
+
+    25% {
+        transform:
+            translate(-10px,5px)
+            scale(1.04);
+    }
+
+    50% {
+        transform:
+            translate(8px,-6px)
+            scale(1.07);
+    }
+
+    75% {
+        transform:
+            translate(-7px,-4px)
+            scale(1.04);
+    }
+
+    100% {
+        transform:
+            translate(0,0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   DEATH SCREEN
+   ========================================================= */
+
+#hardcoreDeathScreen {
+
+    position: fixed !important;
+
+    inset: 0 !important;
+
+    z-index: 60000 !important;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    background: #000;
+}
+
+
+#hardcoreDeathScreen h1 {
+
+    color: #900;
+
+    text-shadow:
+        0 0 15px #500,
+        0 0 30px #300;
+
+    animation:
+        hardcoreDeathPulse
+        0.8s infinite;
+}
+
+
+@keyframes hardcoreDeathPulse {
+
+    0%,
+    100% {
+        opacity: 0.35;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 
@@ -890,63 +1644,8 @@ button:disabled {
 
 @media (max-width: 600px) {
 
-    body {
-        overflow-x: hidden;
-    }
+    #hardcoreBoard {
 
-
-    /* ---------------------------------------------
-       Normal boards
-       --------------------------------------------- */
-
-    #gameBoard,
-    #mosquitoBoard {
-        grid-template-columns:
-            repeat(7, 48px);
-
-        gap: 3px;
-    }
-
-
-    .square,
-    .label {
-        width: 48px;
-        height: 48px;
-        font-size: 13px;
-    }
-
-
-    /* ---------------------------------------------
-       Dialogue
-       --------------------------------------------- */
-
-    #dialogueBox,
-    #manDialogueBox {
-        flex-direction: column;
-        width: 95%;
-    }
-
-
-    #dialogue,
-    #manDialogue {
-        width: 95%;
-    }
-
-
-    #mosquitoPortrait,
-    #manPortrait {
-        width: 120px;
-        height: 120px;
-    }
-
-
-    /* ---------------------------------------------
-       Multiplayer board
-       --------------------------------------------- */
-
-    .multiplayerBoard,
-    #multiplayerManBoard,
-    #multiplayerMosquitoBoard {
         grid-template-columns:
             repeat(6, 48px) !important;
 
@@ -955,136 +1654,33 @@ button:disabled {
 
         gap: 3px !important;
 
-        width: 303px !important;
-        height: 303px !important;
-
-        min-width: 303px !important;
-        max-width: 303px !important;
-
-        min-height: 303px !important;
-        max-height: 303px !important;
+        padding: 5px;
     }
 
 
-    .multiplayerCell {
+    #hardcoreBoard .hardcoreCell {
+
         width: 48px !important;
         height: 48px !important;
 
         min-width: 48px !important;
-        max-width: 48px !important;
-
         min-height: 48px !important;
+
+        max-width: 48px !important;
         max-height: 48px !important;
-
-        font-size: 12px;
     }
 
 
-    .mpMosquitoImage {
-        width: 37px !important;
-        height: 37px !important;
+    #hardcoreBoard .hardcoreMosquitoSprite {
+
+        width: 84% !important;
+        height: 84% !important;
     }
 
 
-    /* ---------------------------------------------
-       Multiplayer HUD
-       --------------------------------------------- */
+    #hardcoreBoard .hardcoreBlood {
 
-    #multiplayerManHud,
-    #multiplayerMosquitoHud {
-        width: 98%;
-        gap: 7px;
+        font-size: 25px;
     }
 
-
-    #multiplayerManHud .hudBox,
-    #multiplayerMosquitoHud .hudBox {
-        min-width: 120px;
-        padding: 10px 12px;
-        font-size: 15px;
-    }
-
-
-    #multiplayerGambleBtn {
-        font-size: 11px;
-        padding: 7px 9px;
-    }
-
-
-    /* ---------------------------------------------
-       Victory
-       --------------------------------------------- */
-
-    #mpVictoryScreen h1 {
-        font-size: 30px;
-    }
-
-
-    #mpVictoryScreen img {
-        max-width: 75vw;
-        max-height: 40vh;
-    }
-
-
-    #mpVictoryScreen p {
-        font-size: 18px;
-    }
-
-}
-
-/* =========================================================
-   VS COMPUTER — MOSQUITO LEGAL MOVEMENT
-   ========================================================= */
-
-.mosquito-move-option {
-    background: #1677ff !important;
-    border: 3px solid #70b5ff !important;
-    color: white !important;
-    box-shadow: 0 0 12px rgba(22, 119, 255, 0.8);
-}
-
-.mosquito-move-option:hover {
-    background: #3290ff !important;
-    border-color: #9dccff !important;
-}
-
-/* =========================================================
-   VS COMPUTER — MAN ATTACK COLORS
-   ========================================================= */
-
-/* Normal Man miss — RED */
-#mosquitoBoard .man-miss {
-    background: red !important;
-    border: 3px solid #ff7777 !important;
-    color: white !important;
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
-}
-
-
-/* Man bites mosquito — ORANGE */
-#mosquitoBoard .man-bite {
-    background: orange !important;
-    border: 3px solid #ffd27f !important;
-    color: white !important;
-    box-shadow: 0 0 12px rgba(255, 165, 0, 0.8);
-}
-
-
-/* Man catches mosquito — RED */
-#mosquitoBoard .man-hit {
-    background: red !important;
-    border: 3px solid white !important;
-    color: white !important;
-    box-shadow: 0 0 18px rgba(255, 0, 0, 0.9);
-}
-
-
-/* =========================================================
-   VS COMPUTER — MAN'S LATEST ATTACK
-   ========================================================= */
-
-.mosquito-man-attack {
-    background: red !important;
-    border: 3px solid #ff7777 !important;
-    color: white !important;
 }
